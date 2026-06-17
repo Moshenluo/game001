@@ -1759,7 +1759,7 @@ if(G.aiMonsters.length){G.aiMonsters.forEach(am=>{if(am.min<=G.month)pool.push(a
 if(!pool.length)pool=[...ENEMIES];
 const e=pick(pool);
 const isElite=Math.random()<.15;const em=isElite?1.4:1;
-const mHp=Math.floor(e.hp*starScale*tierScale*diffScale*em*1.2);
+const mHp=Math.floor(e.hp*starScale*tierScale*diffScale*em*1.5);
 const mAtk=Math.floor(e.atk*starScale*tierScale*(dc.eAtk||1)*em*1.15);
 const mDef=Math.floor((e.def||2)*starScale*tierScale*em);
 const mSkills=[];
@@ -2123,14 +2123,13 @@ enemy.hp-=dmg;G.dmgDealt+=dmg;
 if(bloodSteal>0){const st=Math.floor(dmg*bloodSteal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st;addL(`🩸 吸血 +${st}`,'lo')}
 // Awakening DOT (passive engine)
 const _peDot = passiveEngine.getVal('dot_apply');
-if(_peDot){const dotDur=passiveEngine.getCond('dot_apply')?.dotDur||3;eDot=Math.floor(pAtk*_peDot);eDotDur=dotDur;addL(`🔥 灼烧附加 ${eDot}/回合`,'lo')}
+if(_peDot){const dotDur=passiveEngine.getCond('dot_apply')?.dotDur||3;eDot=Math.max(1,Math.floor(pAtk*_peDot));eDotDur=dotDur;addL(`🔥 灼烧附加 ${eDot}/回合`,'lo')}
 // Storm chain (awakening, passive engine)
 const _peChain = passiveEngine.getVal('chain_strike');
 if(_peChain && atkCount % _peChain === 0){
-  const chainDmg=passiveEngine.getCond('chain_strike')?.chainDmg||0.5;
-  const cd=Math.floor(pAtk*chainDmg);enemy.hp-=cd;G.dmgDealt+=cd;addL(`⚡ 雷击! ${cd} 无视防御`,'lo')}
+  const cd=Math.floor(pAtk*(passiveEngine.getCond('chain_strike')?.chainDmg||0.3));enemy.hp-=cd;G.dmgDealt+=cd;addL(`⚡ 雷击! ${cd} 无视防御`,'lo')}
 // Bag chain (thunderCrown relic)
-if(_bb.chainCount>0&&atkCount%_bb.chainCount===0){const bagChain=Math.floor(pAtk*0.4);enemy.hp-=bagChain;G.dmgDealt+=bagChain;addL(`👑 圣物雷击! ${bagChain} 无视防御`,'lo')}
+if(_bb.chainCount>0&&atkCount%_bb.chainCount===0){const bagChain=Math.floor(pAtk*0.25);enemy.hp-=bagChain;G.dmgDealt+=bagChain;addL(`👑 圣物雷击! ${bagChain} 无视防御`,'lo')}
 }
 else if(action.type==='skill'){
 const sk=action.skill;G.skCD[sk.id]=sk.cd;p.en-=sk.cost||0;
@@ -2251,7 +2250,7 @@ if(eAtkDur>0){eAtkDur--;if(!eAtkDur)eAtkBuff=0}if(eDefDur>0){eDefDur--;if(!eDefD
 const _peHpLoss = passiveEngine.getPenVal('hp_loss');
 if(_peHpLoss){const bl=Math.floor(p.maxHp*_peHpLoss);p.hp-=bl;addL(`🩸 血之代价 -${bl}`,'le')}
 const _peSelfBurn = passiveEngine.getPenVal('self_burn');
-if(_peSelfBurn){const fb=Math.floor(p.maxHp*_peSelfBurn);p.hp-=fb;addL(`🔥 灼烧反噬 -${fb}`,'le')}
+if(_peSelfBurn){const fb=Math.min(Math.floor(p.maxHp*0.01),Math.floor(p.maxHp*_peSelfBurn));p.hp-=fb;addL(`🔥 灼烧反噬 -${fb}`,'le')}
 // Paralyze (passive engine)
 const _peParalyze = passiveEngine.getPenVal('paralyze');
 if(_peParalyze && Math.random()<_peParalyze){addL(`⚡ 被麻痹! 下回合无法行动`,'le');paralyzed=true}
@@ -2518,9 +2517,10 @@ G.aiMaps=[];
 const ageYears=getAgeYears();
 const hasTreasMap=G.bag.some(bi=>bi.id==='treasMap');
 const hasRuinGuide=G.bag.some(bi=>bi.id==='ruinGuide');
+const pl=G.p?G.p.level:1;
 const dirName=G.awk?DIR_NAMES[G.awk.direction]+'系':'通用';
 // AI only generates ruins/encounters/special areas (fixed locations handle towns/forests/roads)
-const prompt=`为Roguelike游戏《命运裂隙》生成3个随机发现的遗迹、墓穴或奇遇地点。玩家当前${ageYears}岁, Lv.${G.p.level}, ${dirName}觉醒者。
+const prompt=`为Roguelike游戏《命运裂隙》生成3个随机发现的遗迹、墓穴或奇遇地点。玩家当前${ageYears}岁, Lv.${pl}, ${dirName}觉醒者。
 
 重要:
 1. 只生成遗迹(ruins)、特殊(special)或深渊(abyss)类型的随机发现地点
@@ -2588,7 +2588,7 @@ async function generateAIMonstersForMap(mapData){
 const prompt=`为Roguelike游戏《命运裂隙》生成3个独特怪物，它们生活在「${mapData.icon}${mapData.name}」。
 地区类型: ${mapData.type} | 描述: ${mapData.desc}
 ${mapData.monsterHint?'怪物特征: '+mapData.monsterHint:''}
-难度: ${G.dc.name} | 玩家等级: Lv.${G.p.level}
+难度: ${G.dc.name} | 玩家等级: Lv.${G.p?G.p.level:1}
 
 要求: 名字2-6字有创意, emoji, hp:20-70, atk:6-18, def:1-8, min:1-5, 描述1句话
 只输出JSON数组:
