@@ -30,7 +30,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .awk-circle{width:220px;height:220px;border-radius:50%;border:3px solid var(--gold);position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .5s;animation:awkBreathe 3s ease-in-out infinite}
 .awk-circle:hover{box-shadow:0 0 50px rgba(240,192,64,.4);transform:scale(1.05);animation:awkBreathe 1.5s ease-in-out infinite}
 .awk-circle::before{content:'';position:absolute;width:250px;height:250px;border-radius:50%;border:1px solid rgba(240,192,64,.15);animation:spin 12s linear infinite}
-.awk-circle::after{content:'⚝ ✧ ⚝ ✧ ⚝ ✧ ⚝ ✧';position:absolute;width:280px;height:280px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7em;color:rgba(240,192,64,.25);letter-spacing:12px;animation:spin 20s linear reverse infinite}
+.awk-circle::after{content:'';position:absolute;width:280px;height:280px;border-radius:50%;border:2px dashed rgba(240,192,64,.2);animation:spin 20s linear reverse infinite;pointer-events:none}
 .awk-inner{width:160px;height:160px;border-radius:50%;border:2px solid rgba(240,192,64,.3);display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(circle,rgba(240,192,64,.04),var(--bg));position:relative;z-index:1}
 .awk-inner .txt{color:var(--gold);font-size:1.1em;margin-top:6px}.awk-inner .sub{color:var(--t3);font-size:.8em}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -105,6 +105,8 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;max-height:340px;overflow-y:auto}
 .shop-item{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s}.shop-item:hover{border-color:var(--gold);background:var(--bgch)}.shop-item .si-e{font-size:1.5em}.shop-item .si-n{font-size:.72em;color:var(--t1);margin-top:2px}.shop-item .si-p{font-size:.7em;color:var(--gold);margin-top:3px}
 .shop-btn{background:var(--bgc);border:1px solid var(--gold);border-radius:8px;padding:6px 14px;color:var(--gold);cursor:pointer;font-size:.85em;margin-bottom:8px;transition:all .2s}.shop-btn:hover{background:rgba(240,192,64,.1)}
+.debuff-bar{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0;min-height:0}.debuff-bar:empty{display:none}
+.debuff-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:.7em;animation:fadeIn .3s}.debuff-badge.poison{background:rgba(64,200,64,.15);color:#60d060;border:1px solid rgba(64,200,64,.3)}.debuff-badge.burn{background:rgba(240,100,40,.15);color:#f08040;border:1px solid rgba(240,100,40,.3)}.debuff-badge.freeze{background:rgba(80,180,240,.15);color:#60c0f0;border:1px solid rgba(80,180,240,.3)}.debuff-badge.paralyze{background:rgba(240,200,40,.15);color:#d0c040;border:1px solid rgba(240,200,40,.3)}.debuff-badge.curse{background:rgba(160,64,160,.15);color:#c060c0;border:1px solid rgba(160,64,160,.3)}
 .go-t{font-size:2.5em;color:var(--red);margin-bottom:10px;text-shadow:0 0 40px rgba(224,64,80,.3);letter-spacing:2px}
 .go-box{background:var(--bg2);border-radius:12px;padding:24px 32px;margin:20px 0;text-align:left;min-width:320px;border:1px solid var(--bdr);box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .go-r{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}.go-r:last-child{border-bottom:none}.go-r .label{color:var(--t2)}.go-r .value{color:var(--gold);font-weight:bold}
@@ -475,6 +477,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="bar-w" style="margin-top:3px"><div class="bar-en" id="barEN" style="width:100%"></div></div>
 <div class="xp-wrap"><div class="xp-bar" id="barXP" style="width:0%"></div></div>
 <div class="skbar" id="skBar"></div>
+<div class="debuff-bar" id="debuffBar"></div>
 </div>
 <button class="bag-btn" onclick="openBag()">🎒 背包 (<span id="bagCount">0</span>/<span id="bagMax">20</span>)</button>
 <button class="save-btn" onclick="openBestiary()" style="margin-left:6px">📖 图鉴</button>
@@ -750,7 +753,7 @@ atkPot:{name:'攻击药剂',emoji:'⚗️',type:'consumable',rarity:'common',des
 defPot:{name:'铁壁药剂',emoji:'🧴',type:'consumable',rarity:'common',desc:'下一场战斗防御+5',effect:{tempDef:5}},
 enCrystal:{name:'聚能水晶',emoji:'💎',type:'consumable',rarity:'rare',desc:'立即恢复50%能量',effect:{enPct:0.5}},
 berserk:{name:'狂暴秘药',emoji:'🍷',type:'consumable',rarity:'epic',desc:'下场战斗暴击率+20%暴击伤害+0.5',effect:{tempCrit:0.2,tempCd:0.5}},
-antidote:{name:'解毒药水',emoji:'🫧',type:'consumable',rarity:'common',desc:'清除中毒效果并回复15%生命',effect:{healPct:0.15}},
+antidote:{name:'解毒药水',emoji:'🫧',type:'consumable',rarity:'common',desc:'清除中毒效果并回复15%生命',effect:{healPct:0.15,clearPoison:true}},
 bomb:{name:'爆裂炸弹',emoji:'💣',type:'consumable',rarity:'rare',desc:'下场战斗开始时对敌人造成40伤害',effect:{battleDmg:40}},
 rope:{name:'绳索',emoji:'🪢',type:'consumable',rarity:'common',desc:'逃离某些危险场景',effect:{utility:true}},
 tent:{name:'旅行帐篷',emoji:'⛺',type:'consumable',rarity:'common',desc:'回复20%生命并获得临时防御+3',effect:{healPct:0.2,tempDef:3}},
@@ -829,8 +832,8 @@ const TYPE_CN={consumable:'消耗品',material:'材料',special:'特殊',equipme
 const SHOP_TIERS={basic:{sellMul:0.4,label:'基础商店'},advanced:{sellMul:0.5,label:'高级商店'},premium:{sellMul:0.6,label:'精品商店'}};
 const SHOP_INVENTORY={
 basic:['hpPot','atkPot','defPot','antidote','rope','tent','ironSword','leatherArmor','ironRing'],
-advanced:['hpPot','hpPotL','atkPot','defPot','enCrystal','antidote','bomb','rope','tent','ironSword','steelSword','leatherArmor','chainMail','ironRing','energyOrb','luckyCharm','monsterMat','ironOre','gemStone','treasMap','ruinGuide'],
-premium:['hpPotL','atkPot','defPot','enCrystal','berserk','antidote','bomb','mystKey','awkShard','magicEss','steelSword','shadowDagger','chainMail','energyOrb','luckyCharm','boneRing','voidCloak','crystalStaff','berserkerAxe','scoutBoots','warHorn','monsterMat','gemStone','treasMap','ruinGuide','ancientCoin']
+advanced:['hpPot','hpPotL','atkPot','defPot','enCrystal','antidote','purifyWater','bomb','rope','tent','ironSword','steelSword','leatherArmor','chainMail','ironRing','energyOrb','luckyCharm','monsterMat','ironOre','gemStone','treasMap','ruinGuide'],
+premium:['hpPotL','atkPot','defPot','enCrystal','berserk','antidote','purifyWater','fateElixir','bomb','mystKey','awkShard','magicEss','steelSword','shadowDagger','chainMail','energyOrb','luckyCharm','boneRing','voidCloak','crystalStaff','berserkerAxe','scoutBoots','warHorn','monsterMat','gemStone','treasMap','ruinGuide','ancientCoin']
 };
 
 // === Age/Lifespan System (12 months = 1 year) ===
@@ -1038,7 +1041,7 @@ ice:{name:'永冬之王·冰霜巨龙',emoji:'🐉',hp:180,atk:28,def:13,min:5}
 };
 
 // ===== GAME STATE =====
-let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,bossKills:0,npcKills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null,bestiary:{}};
+let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,bossKills:0,npcKills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null,bestiary:{},debuffs:{}};
 
 // ===== AI API =====
 // Check if worker proxy is available (for leaderboard/achievements/save only)
@@ -1162,7 +1165,7 @@ G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
 G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
 _evtQueue=[];_fillPromise=null;_preloadedMonsters={};
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
-G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};
+G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};G.debuffs={};
 await showTrans('踏入命运裂隙...',1200);showRegionPicker();
 }
 
@@ -1327,6 +1330,7 @@ bonusEl.textContent='🎒 装备加成: '+bonusParts.join(' | ')}
 else{const bonusEl=document.getElementById('bagBonusLine');if(bonusEl)bonusEl.remove()}
 $('bagCount').textContent=G.bag.length;$('bagMax').textContent=G.bagMax;
 $('uiGold').textContent=G.gold;
+renderDebuffBar();
 const sb=$('skBar');sb.innerHTML='';
 p.skills.forEach(sk=>{const cd=G.skCD[sk.id]||0;
 const t=document.createElement('span');t.className='skt'+(cd>0?' cd':'');
@@ -1845,7 +1849,8 @@ if(ef.enPct){p.en=Math.min(_useMaxEn,p.en+Math.floor(_useMaxEn*ef.enPct))}
 if(ef.tempCrit){G.tempBuffs.crit=(G.tempBuffs.crit||0)+ef.tempCrit}
 if(ef.tempCd){G.tempBuffs.cd=(G.tempBuffs.cd||0)+ef.tempCd}
 if(ef.battleDmg){G.tempBuffs.battleDmg=(G.tempBuffs.battleDmg||0)+ef.battleDmg}
-if(ef.clearDebuffs){G.p.curse=0;G.tempBuffs.atk=Math.max(0,G.tempBuffs.atk||0);G.tempBuffs.def=Math.max(0,G.tempBuffs.def||0)}
+if(ef.clearDebuffs){clearAllDebuffs()}
+if(ef.clearPoison){removeDebuff('poison');addL('🫧 中毒已清除','lp')}
 if(ef.canEscape){G.tempBuffs.canEscape=true}
 if(ef.tempIronSkin){G.tempBuffs.ironSkin=(ef.tempIronSkin||3)}
 if(ef.luckyNext){G.tempBuffs.luckyNext=true}
@@ -1941,6 +1946,84 @@ $('shopMsg').textContent=`出售了 ${item.emoji} ${item.name} +${price}💰`;$(
 renderShop();updateUI();
 }
 
+// ===== DEBUFF SYSTEM =====
+const DEBUFF_TYPES={
+poison:{name:'中毒',emoji:'🟢',cls:'poison',dotPct:0.03,desc:'每回合损失3%最大生命'},
+burn:{name:'灼烧',emoji:'🔥',cls:'burn',dotPct:0.05,desc:'每回合损失5%最大生命'},
+freeze:{name:'冰冻',emoji:'❄️',cls:'freeze',skipChance:0.25,desc:'25%概率无法行动'},
+paralyze:{name:'麻痹',emoji:'⚡',cls:'paralyze',dodgeReduction:0.3,desc:'闪避率-30%'},
+curse:{name:'诅咒',emoji:'☠️',cls:'curse',atkReduction:0.2,desc:'攻击力-20%'}
+};
+function applyDebuff(type,stacks){
+if(!G.debuffs)G.debuffs={};
+const dt=DEBUFF_TYPES[type];if(!dt)return;
+G.debuffs[type]=(G.debuffs[type]||0)+stacks;
+if(type==='curse')G.p.curse=(G.p.curse||0)+stacks;
+addL(`${dt.emoji} ${dt.name}! (${G.debuffs[type]}层) — ${dt.desc}`,'le');
+updateUI();
+}
+function removeDebuff(type){
+if(!G.debuffs)return;
+delete G.debuffs[type];
+if(type==='curse')G.p.curse=0;
+updateUI();
+}
+function clearAllDebuffs(){
+G.debuffs={};G.p.curse=0;
+addL('✨ 所有负面状态已清除','lp');
+updateUI();
+}
+function tickDebuffsTurn(turn,effMaxHp){
+if(!G.debuffs)return 0;let totalDot=0;
+if(G.debuffs.poison>0){const dot=Math.max(1,Math.floor(effMaxHp*DEBUFF_TYPES.poison.dotPct*G.debuffs.poison));G.p.hp-=dot;totalDot+=dot;addL(`🟢 毒素侵蚀 -${dot}HP`,'le')}
+if(G.debuffs.burn>0){const dot=Math.max(1,Math.floor(effMaxHp*DEBUFF_TYPES.burn.dotPct));G.p.hp-=dot;totalDot+=dot;addL(`🔥 灼烧 -${dot}HP`,'le')}
+return totalDot;
+}
+function checkFreezeSkip(){
+if(!G.debuffs||!G.debuffs.freeze)return false;
+return Math.random()<DEBUFF_TYPES.freeze.skipChance;
+}
+function getDebuffDodgeReduction(){
+if(!G.debuffs||!G.debuffs.paralyze)return 0;
+return DEBUFF_TYPES.paralyze.dodgeReduction;
+}
+function decayDebuffsAfterBattle(){
+if(!G.debuffs)return;
+for(const k in G.debuffs){
+if(k==='burn'){delete G.debuffs[k];continue}
+G.debuffs[k]--;
+if(G.debuffs[k]<=0){delete G.debuffs[k];if(k==='curse')G.p.curse=0;addL(`✨ ${DEBUFF_TYPES[k].name}已消散`,'lp')}
+}
+updateUI();
+}
+// Monster debuff map: which monsters can apply debuffs on hit
+const MONSTER_DEBUFFS={
+spider:{type:'poison',chance:.35},serpent:{type:'poison',chance:.40},seaSerpent:{type:'poison',chance:.35},
+lavaElem:{type:'burn',chance:.40},demon:{type:'burn',chance:.25},
+iceWolf:{type:'freeze',chance:.20},frostGiant:{type:'freeze',chance:.30},blizzardSpirit:{type:'freeze',chance:.35},iceGolem:{type:'freeze',chance:.20},polarWyrm:{type:'freeze',chance:.25},
+krakenTent:{type:'paralyze',chance:.25},phantom:{type:'paralyze',chance:.20},
+cursedKnight:{type:'curse',chance:.30},wraith:{type:'curse',chance:.25},darkMage:{type:'curse',chance:.35}
+};
+function tryApplyMonsterDebuff(enemyKey){
+const md=MONSTER_DEBUFFS[enemyKey];if(!md)return;
+if(Math.random()<md.chance)applyDebuff(md.type,1);
+}
+function renderDebuffBar(){
+const bar=$('debuffBar');if(!bar)return;bar.innerHTML='';
+if(!G.debuffs)return;
+for(const k in G.debuffs){
+const dt=DEBUFF_TYPES[k];if(!dt)continue;
+const badge=document.createElement('span');badge.className='debuff-badge '+dt.cls;
+badge.textContent=`${dt.emoji} ${dt.name} ×${G.debuffs[k]}`;badge.title=dt.desc;
+bar.appendChild(badge);
+}
+if(G.p.curse&&G.p.curse>0&&!G.debuffs.curse){
+const badge=document.createElement('span');badge.className='debuff-badge curse';
+badge.textContent=`☠️ 诅咒 ×${G.p.curse}`;badge.title='攻击力-20%';
+bar.appendChild(badge);
+}
+}
+
 // ===== BATTLE SYSTEM =====
 function genEnemy(isBoss, isBreakthrough){
 const dc=G.dc;const ageYears=getAgeYears()-START_AGE;const pl=G.p.level;
@@ -2001,7 +2084,7 @@ const mSkills=[];
 if(isElite){mSkills.push(pick(MONSTER_SKILLS));if(Math.random()<0.3)mSkills.push(pick(MONSTER_SKILLS))}
 const prefix=isElite?'精英 ':starBoost>=2?'危险 ':'';
 return{name:prefix+e.name,emoji:e.emoji,hp:mHp,maxHp:mHp,atk:mAtk,def:mDef,
-lv:monsterLv,isBoss:false,isElite,region:G.region,stars:monsterStar,tier:tierIdx,tierName,skills:mSkills,isDangerous:starBoost>=2};
+key:e.id||'',lv:monsterLv,isBoss:false,isElite,region:G.region,stars:monsterStar,tier:tierIdx,tierName,skills:mSkills,isDangerous:starBoost>=2};
 }
 
 // AI Monster Generation - generate region-themed monsters when entering a region
@@ -2226,6 +2309,7 @@ else if(sk.defBuff){eDefBuff=sk.defBuff;eDefDur=sk.dur||3;addL(`  🛡️ 防御
 else if(sk.instantKill){if(Math.random()<sk.instantKill&&p.hp/p.maxHp<0.3){p.hp=0;addL(`  💀 死亡凝视! 灵魂被抽离!`,'le')}else{let dmg=_skDmg(enemy.atk);p.hp-=dmg;addL(`  凝视造成 ${dmg} 伤害`,'le')}}
 else if(sk.atkDebuff){const rawMult=sk.mult||1.0;let dmg=_skDmg(Math.floor(enemy.atk*rawMult));p.hp-=dmg;pAtkBuff=Math.max(pAtkBuff-sk.atkDebuff,-0.5);addL(`  👻 造成${dmg}伤害, 你的攻击降低!`,'le')}
 else{let dmg=_skDmg(enemy.atk);p.hp-=dmg;addL(`  造成 ${dmg} 伤害`,'le')}
+tryApplyMonsterDebuff(enemy.key);
 return true;}
 return false;
 }catch(e){console.error('[Battle] tryMonsterSkill error:',e.message,e.stack);
@@ -2263,13 +2347,17 @@ if(enemy.hp<=0){addL(`☠️ 敌人被持续伤害击杀!`,'ls');updBU();break}}
 // Awakening HP regen
 const _peRegen = passiveEngine.getVal('hp_regen');
 if(_peRegen){const hr=Math.floor(p.maxHp*_peRegen);p.hp=Math.min(bEffMaxHp,p.hp+hr);G.healing+=hr}
+// Debuff DOT tick (poison/burn)
+if(G.debuffs && Object.keys(G.debuffs).length>0){tickDebuffsTurn(turn, bEffMaxHp);if(p.hp<=0){updBU();break}}
+// Debuff freeze check (skip turn)
+if(checkFreezeSkip()){addL(`❄️ 你被冰冻，无法行动!`,'le');paralyzed=true}
 
 // Phase 2: Player action (include bag bonuses)
 const _bb=getBagBonuses();
 let pAtk=p.atk+_bb.atk+pAtkBuff+Math.floor(G.tempBuffs.atk||0),pDef=p.def+_bb.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
 // Curse debuff: -20% ATK per curse stack
 if(G.p.curse&&G.p.curse>0){pAtk=Math.floor(pAtk*0.8);if(turn===1)addL(`☠️ 诅咒: ATK-20% (${G.p.curse}场)`,'le')}
-const effMaxHp=p.maxHp+_bb.maxHp;const effCR=p.cr+_bb.critRate+(p.lk*.002);const effCD=p.cd+_bb.critDamage;const effDG=p.dg+_bb.dodgeRate;
+const effMaxHp=p.maxHp+_bb.maxHp;const effCR=p.cr+_bb.critRate+(p.lk*.002);const effCD=p.cd+_bb.critDamage;const effDG=p.dg+_bb.dodgeRate-getDebuffDodgeReduction();
 let bagLifesteal=_bb.lifesteal;let bagHpRegen=_bb.hpRegen;
 atkCount++;let bloodSteal=0;
 const _peLS = passiveEngine.getVal('lifesteal');
@@ -2310,7 +2398,7 @@ if(usedSkill){const _skDmg=Math.max(0,Math.floor(_pHpBeforePar-p.hp));if(_skDmg>
 if(!usedSkill){
 let eDmg=Math.max(1,Math.floor(enemy.atk*(1+eAtkBuff))-pDef+R(-2,2));
 if(Math.random()<effDG+passiveEngine.getVal('dodge_bonus')){addL(`💨 闪避!`,'lp');G.dodges++;eDmg=0;showDmgPopup('闪避!','dodge','bPH')}
-if(eDmg>0){if(pShield>0){const ab=Math.min(pShield,eDmg);pShield-=ab;eDmg-=ab}p.hp-=eDmg;addL(`${enemy.emoji} 造成 ${eDmg} 伤害`,'le');showDmgPopup('-'+eDmg,'enemy','bPH')}
+if(eDmg>0){if(pShield>0){const ab=Math.min(pShield,eDmg);pShield-=ab;eDmg-=ab}p.hp-=eDmg;addL(`${enemy.emoji} 造成 ${eDmg} 伤害`,'le');showDmgPopup('-'+eDmg,'enemy','bPH');tryApplyMonsterDebuff(enemy.key)}
 }} else {addL(`${enemy.emoji} 被冻结，跳过行动`,'ls');skipEnemyTurn=false}
 if(pDefDur>0){pDefDur--;if(!pDefDur)pDefBuff=0}if(pRefDur>0){pRefDur--;if(!pRefDur)pReflect=0}
 if(pAtkDur>0){pAtkDur--;if(!pAtkDur)pAtkBuff=0}if(pCritDur>0){pCritDur--;if(!pCritDur){pCritB=0;if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd;G.tempBuffs.cd=0}}}
@@ -2471,6 +2559,7 @@ if(G.tempBuffs.ironSkin&&G.tempBuffs.ironSkin>0){eDmg=Math.floor(eDmg*0.5);addL(
 if(pShield>0){const ab=Math.min(pShield,eDmg);pShield-=ab;eDmg-=ab;addL(`🔮 护盾吸收 ${ab}`,'ld')}
 if(pReflect>0&&pRefDur>0){const rd=Math.floor(eDmg*pReflect);enemy.hp-=rd;G.dmgDealt+=rd;addL(`🌿 反弹 ${rd}`,'lp')}
 p.hp-=eDmg;addL(`${enemy.emoji} ${enemy.name}攻击，造成 ${eDmg} 伤害`,'le');showDmgPopup('-'+eDmg,'enemy','bPH');
+if(eDmg>0)tryApplyMonsterDebuff(enemy.key);
 }}}
 // Frost freeze (passive engine)
 const _peFreeze = passiveEngine.getVal('freeze_chance');
@@ -2519,6 +2608,7 @@ await completeBreakthrough(G._btStars||3);
 }else{battleWin(enemy)}
 }else{
 addL(`--- 你被击败了... ---`,'ls');
+clearAllDebuffs();
 if(isBreakthrough){setTimeout(()=>{showScr('gameScr');addL('突破失败...你可以继续修炼再试','le');G._btMonster=null;advanceEvt()},2000)}
 else{setTimeout(()=>gameOver('death'),1500)}
 }
@@ -2540,6 +2630,8 @@ G.kills++;if(enemy.isBoss)G.bossKills++;if(enemy.isNPC)G.npcKills++;
 const _bName=enemy.name;if(_bName&&G.bestiary){if(!G.bestiary[_bName])G.bestiary[_bName]={kills:0,firstSeen:G.month,emoji:enemy.emoji||'👹',region:G.region||'unknown',isBoss:!!enemy.isBoss,maxStars:0};G.bestiary[_bName].kills++;if((enemy.stars||1)>G.bestiary[_bName].maxStars)G.bestiary[_bName].maxStars=enemy.stars||1}
 // Decrement curse counter
 if(G.p.curse&&G.p.curse>0){G.p.curse--;if(G.p.curse===0)addL(`✨ 诅咒已消散`,'lp')}
+// Debuff decay after battle
+decayDebuffsAfterBattle();
 const xpMult=enemy.isBoss?80:enemy.isElite?35:15;const xpGain=enemy.lv*xpMult+(enemy.stars||1)*5;
 const leveled=gainXP(xpGain);
 // killHeal passive (boneRing etc.)
@@ -2966,6 +3058,10 @@ if(mapIdx>=0)removeFromBag(G.bag[mapIdx].uid);
 const guideIdx=G.bag.findIndex(bi=>bi.id==='ruinGuide');
 if(guideIdx>=0)removeFromBag(G.bag[guideIdx].uid);
 }
+// Temple/Shrine auto-purification
+if(map.id==='soulrest_shrine'||/神殿|神龛|temple|shrine/i.test(map.name+(map.desc||''))){
+if(G.debuffs&&Object.keys(G.debuffs).length>0){clearAllDebuffs();addL('✨ 神龛净化了所有负面状态!','lp')}
+}
 // Generate AI monsters for current map (async, background)
 generateAIMonstersForMap(map);
 // Pre-generate NEXT month's maps in background while player plays this month
@@ -2977,6 +3073,10 @@ showTrans(`${map.icon} 前往${map.name}...`,1000).then(()=>startMonth());
 function selectRegion(id){
 const rg=REGIONS[id];if(!rg)return;
 G.region=id;G.regionsVisited.push(id);
+// Temple/Shrine auto-purification
+if(id==='soulrest'||id==='soulrest_shrine'||/神殿|神龛|temple|shrine/i.test(rg.name)){
+if(G.debuffs&&Object.keys(G.debuffs).length>0){clearAllDebuffs();addL('✨ 神龛净化了所有负面状态!','lp')}
+}
 if(id==='ruins'){
 const mapIdx=G.bag.findIndex(bi=>bi.id==='treasMap');
 if(mapIdx>=0)removeFromBag(G.bag[mapIdx].uid);
@@ -3301,7 +3401,7 @@ currentAgeMonth:G.currentAgeMonth,lifespanMonths:G.lifespanMonths,
 breakthroughTier:G.breakthroughTier,
 regionsVisited:G.regionsVisited,bag:G.bag,
 isBoss:G.isBoss,maxSlot:G.maxSlot,nextSkillLv:G.nextSkillLv,
-themes:G.themes,starKills:G.starKills,bestiary:G.bestiary
+themes:G.themes,starKills:G.starKills,bestiary:G.bestiary,debuffs:G.debuffs
 };
 const res=await fetch(WORKER_URL+'/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
 body:JSON.stringify({playerId:PLAYER_ID||undefined,playerName:G.awk?G.awk.name:'冒险者',data:saveData})});
@@ -3358,7 +3458,7 @@ G.currentAgeMonth=sd.currentAgeMonth||192;G.lifespanMonths=sd.lifespanMonths||48
 G.breakthroughTier=sd.breakthroughTier||0;
 G.regionsVisited=sd.regionsVisited||[];G.bag=sd.bag||[];
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
-G.themes=sd.themes||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};
+G.themes=sd.themes||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
 G.awk=sd.awk;G.p=sd.p;
 document.getElementById('loadModal').classList.remove('on');
 await showTrans('命运正在重连...',1200);
