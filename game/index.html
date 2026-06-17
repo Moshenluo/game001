@@ -925,14 +925,14 @@ monsters:['iceWolf','frostGiant','blizzardSpirit','iceGolem','polarWyrm']}
 
 // === World Map: Region Groups ===
 const REGION_GROUPS={
-soulrest:{name:'灵息区',icon:'🌿',desc:'裂隙中心的宁静谷地，冒险者的起点'},
-shadow_forest:{name:'残影之林',icon:'🌑',desc:'幽暗的古老森林，钟楼与教堂隐匿其中'},
-scorch:{name:'焦灼荒原',icon:'🌋',desc:'熔岩与火焰的荒原，斗技场矗立其中'},
-abyss:{name:'深渊之域',icon:'🕳️',desc:'漂浮在虚空中的暗紫岛屿'},
-fate_tower:{name:'宿命之塔',icon:'🗼',desc:'直入星空的神秘螺旋高塔'},
-grey:{name:'灰白走廊',icon:'🏜️',desc:'荒芜的沙漠古道与古老宫殿废墟'},
-coral:{name:'珊瑚海域',icon:'🐚',desc:'碧蓝的珊瑚礁海岸与海盗港口'},
-ice:{name:'永终冰原',icon:'🏔️',desc:'永冻的冰雪山脉，极光之下的冰川洞穴'}
+soulrest:{name:'灵息区',icon:'🌿',desc:'裂隙中心的宁静谷地，冒险者的起点',bg:'images/region_soulrest.png'},
+shadow_forest:{name:'残影之林',icon:'🌑',desc:'幽暗的古老森林，钟楼与教堂隐匿其中',bg:'images/region_shadow_forest.png'},
+scorch:{name:'焦灼荒原',icon:'🌋',desc:'熔岩与火焰的荒原，斗技场矗立其中',bg:'images/region_scorch.png'},
+abyss:{name:'深渊之域',icon:'🕳️',desc:'漂浮在虚空中的暗紫岛屿',bg:'images/region_abyss.png'},
+fate_tower:{name:'宿命之塔',icon:'🗼',desc:'直入星空的神秘螺旋高塔',bg:'images/region_fate_tower.png'},
+grey:{name:'灰白走廊',icon:'🏜️',desc:'荒芜的沙漠古道与古老宫殿废墟',bg:'images/region_grey.png'},
+coral:{name:'珊瑚海域',icon:'🐚',desc:'碧蓝的珊瑚礁海岸与海盗港口',bg:'images/region_coral.png'},
+ice:{name:'永终冰原',icon:'🏔️',desc:'永冻的冰雪山脉，极光之下的冰川洞穴',bg:'images/region_ice.png'}
 };
 // === World Map: Fixed Locations (28) ===
 const WORLD_LOCATIONS=[
@@ -2876,9 +2876,9 @@ const regionOrder=['soulrest','shadow_forest','scorch','grey','coral','ice','aby
 regionOrder.forEach(rk=>{
 const rg=REGION_GROUPS[rk];if(!rg)return;
 const locs=WORLD_LOCATIONS.filter(l=>l.region===rk);if(!locs.length)return;
-// Region header
-const hdr=document.createElement('div');hdr.style.cssText='grid-column:1/-1;text-align:left;color:var(--gold);font-size:.9em;margin:10px 0 2px;padding:4px 8px;border-bottom:1px solid rgba(240,192,64,.2);background:rgba(240,192,64,.04);border-radius:4px';
-hdr.innerHTML=`${rg.icon} <b>${rg.name}</b> <span style="color:var(--t3);font-size:.8em;margin-left:6px">${rg.desc}</span>`;
+// Region header with background image
+const hdr=document.createElement('div');hdr.style.cssText='grid-column:1/-1;display:flex;align-items:center;gap:10px;color:var(--gold);font-size:.9em;margin:10px 0 2px;padding:6px 10px;border-bottom:1px solid rgba(240,192,64,.2);background:rgba(240,192,64,.04);border-radius:6px';
+hdr.innerHTML=`${rg.bg?`<img src="${rg.bg}" style="width:60px;height:36px;border-radius:4px;object-fit:cover;flex-shrink:0;border:1px solid rgba(240,192,64,.3)" loading="lazy">`:''}${rg.icon} <b>${rg.name}</b> <span style="color:var(--t3);font-size:.8em;margin-left:4px">${rg.desc}</span>`;
 grid.appendChild(hdr);
 locs.forEach(loc=>{
 const locked=pl<loc.minLv;
