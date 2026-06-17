@@ -133,6 +133,34 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .sfx-dot{background:rgba(160,80,224,.12);color:var(--pur);border:1px solid rgba(160,80,224,.25)}
 .sfx-row .sfx-label{font-size:.68em;color:var(--t3);margin-right:4px;flex-shrink:0;font-weight:bold;min-width:32px}
 .sfx-empty{font-size:.65em;color:var(--t3);font-style:italic;opacity:.6}
+/* Leaderboard */
+.lb-panel{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:20px;max-width:500px;width:100%;margin:16px auto}
+.lb-panel h3{color:var(--gold);margin-bottom:14px;text-align:center;font-size:1.2em}
+.lb-table{width:100%;border-collapse:collapse;font-size:.85em}
+.lb-table th{color:var(--t3);font-weight:normal;padding:6px 8px;border-bottom:1px solid var(--bdr);text-align:left;font-size:.8em}
+.lb-table td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04)}
+.lb-table tr:first-child td{color:var(--gold);font-weight:bold}
+.lb-table tr:nth-child(2) td{color:#c0c0c0}
+.lb-table tr:nth-child(3) td{color:#cd7f32}
+.lb-rank{width:30px;text-align:center}
+.lb-empty{text-align:center;color:var(--t3);padding:20px;font-style:italic}
+/* Achievements */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin:12px 0}
+.ach-card{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:10px;text-align:center;transition:all .3s;opacity:.4}
+.ach-card.earned{opacity:1;border-color:var(--gold);background:rgba(240,192,64,.06)}
+.ach-card.is-new{animation:pulse 1s infinite;border-color:var(--grn)}
+.ach-card .ach-icon{font-size:1.5em;margin-bottom:4px}
+.ach-card .ach-name{font-size:.85em;font-weight:bold;color:var(--t1)}
+.ach-card .ach-desc{font-size:.7em;color:var(--t3);margin-top:2px}
+.ach-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--bg2);border:2px solid var(--gold);border-radius:12px;padding:12px 24px;z-index:2000;animation:fadeIn .5s;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.ach-toast .at-title{color:var(--gold);font-weight:bold;font-size:1em}
+.ach-toast .at-desc{color:var(--t2);font-size:.8em;margin-top:4px}
+/* Save/Load */
+.save-btn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:4px 12px;color:var(--t2);cursor:pointer;font-size:.8em;transition:all .2s}.save-btn:hover{border-color:var(--gold);color:var(--gold)}
+.save-modal{background:var(--bg2);border:1px solid var(--gold);border-radius:12px;padding:20px;max-width:400px;width:90%;text-align:center}
+.save-code{font-family:monospace;font-size:1.4em;color:var(--gold);background:var(--bgc);padding:10px 20px;border-radius:8px;border:2px dashed var(--bdr);margin:10px 0;letter-spacing:2px;user-select:all;cursor:pointer}
+.title-btns{display:flex;gap:10px;margin-top:12px;justify-content:center}
+.title-btn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:8px 18px;color:var(--t2);cursor:pointer;font-size:.85em;transition:all .2s}.title-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--bgch)}
 </style>
 </head>
 <body>
@@ -140,12 +168,42 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <span class="gear" onclick="toggleSettings()">⚙️</span>
 <div class="modal-bg" id="settingsModal"><div class="modal">
 <h3>⚙️ API 设置</h3>
+<label>Worker 代理地址 <span style="color:var(--grn);font-size:.8em">(推荐，留空则需填写API Key)</span></label><input id="cfgWorker" placeholder="https://rift-of-fate.xxx.workers.dev">
 <label>API 地址</label><input id="cfgUrl" value="https://api.deepseek.com/chat/completions">
 <label>API Key</label><input id="cfgKey" placeholder="请输入你的 API Key" type="password">
 <label>模型</label><input id="cfgModel" value="deepseek-chat">
 <label>温度 (0-1)</label><input id="cfgTemp" value="0.85" type="number" step="0.05" min="0" max="2">
 <div class="btn-row"><button class="btn-sm btn-no" onclick="toggleSettings()">取消</button><button class="btn-sm btn-ok" onclick="saveSettings()">保存</button></div>
 </div></div>
+<!-- Leaderboard Modal -->
+<div class="modal-bg" id="lbModal"><div class="modal" style="max-width:560px">
+<h3>🏆 排行榜</h3>
+<div id="lbContent"><div class="lb-empty">加载中...</div></div>
+<div class="btn-row"><button class="btn-sm btn-no" onclick="document.getElementById('lbModal').classList.remove('on')">关闭</button></div>
+</div></div>
+<!-- Load Game Modal -->
+<div class="modal-bg" id="loadModal"><div class="modal save-modal">
+<h3>📂 续玩存档</h3>
+<p style="color:var(--t2);font-size:.85em;margin-bottom:12px">输入你的玩家代码来加载之前的存档</p>
+<input id="loadCodeInput" placeholder="输入玩家代码 (如 P1A2B3C4D)" style="text-align:center;font-family:monospace;font-size:1.1em;letter-spacing:2px">
+<div id="loadResult" style="margin-top:12px"></div>
+<div class="btn-row"><button class="btn-sm btn-no" onclick="document.getElementById('loadModal').classList.remove('on')">取消</button><button class="btn-sm btn-ok" onclick="doLoadGame()">加载</button></div>
+</div></div>
+<!-- Achievements Modal -->
+<div class="modal-bg" id="achModal"><div class="modal" style="max-width:600px">
+<h3>🏅 成就</h3>
+<div id="achContent"><div class="lb-empty">加载中...</div></div>
+<div class="btn-row"><button class="btn-sm btn-no" onclick="document.getElementById('achModal').classList.remove('on')">关闭</button></div>
+</div></div>
+<!-- Save Game Modal (in-game) -->
+<div class="modal-bg" id="saveModal"><div class="modal save-modal">
+<h3>💾 云端存档</h3>
+<p style="color:var(--t2);font-size:.85em;margin-bottom:12px">保存当前进度到云端，记住你的玩家代码</p>
+<div id="saveResult"></div>
+<div class="btn-row"><button class="btn-sm btn-no" onclick="document.getElementById('saveModal').classList.remove('on')">关闭</button><button class="btn-sm btn-ok" onclick="doSaveGame()">保存</button></div>
+</div></div>
+<!-- Achievement Toast Container -->
+<div id="achToasts" style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none"></div>
 <!-- Title -->
 <div id="titleScr" class="scr on">
 <div class="t-logo">命 运 裂 隙</div>
@@ -157,7 +215,13 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="dc h" onclick="startGame('hard')"><h3>🔥 困难</h3><p>高难挑战<br>敌人更强，奖励更丰</p></div>
 <div class="dc x" onclick="startGame('hell')"><h3>💀 地狱</h3><p>极限挑战<br>高风险高收益</p></div>
 </div>
-<p style="color:var(--t3);font-size:.75em">DeepSeek AI 实时驱动 · 觉醒系统 · 限时技能 · 背包收集 · 互动战斗</p>
+<div class="title-btns">
+<button class="title-btn" onclick="showLeaderboard()">🏆 排行榜</button>
+<button class="title-btn" onclick="showLoadDialog()">📂 续玩存档</button>
+<button class="title-btn" onclick="showAchievementsPanel()">🏅 成就</button>
+</div>
+<p style="color:var(--t3);font-size:.75em;margin-top:16px">DeepSeek AI 实时驱动 · 觉醒系统 · 限时技能 · 背包收集 · 互动战斗</p>
+<div id="workerBadge" style="margin-top:8px;font-size:.75em;padding:4px 12px;border-radius:6px;display:none"></div>
 </div>
 <!-- Awakening -->
 <div id="awkScr" class="scr"><div class="awk-wrap" id="awkWrap">
@@ -192,6 +256,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="skbar" id="skBar"></div>
 </div>
 <button class="bag-btn" onclick="openBag()">🎒 背包 (<span id="bagCount">0</span>/<span id="bagMax">20</span>)</button>
+<button class="save-btn" onclick="openSaveModal()" style="margin-left:6px">💾 存档</button>
 <div class="ep" id="evtProg"></div>
 <div class="earea" id="evtArea"></div>
 </div>
@@ -239,9 +304,15 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 
 <script>
 // ===== CONFIG =====
+// Worker proxy URL — set this to your Cloudflare Worker URL after deployment
+// Players can play without their own API key when this is configured
+let WORKER_URL='https://rift-of-fate.YOUR-SUBDOMAIN.workers.dev';
 let CFG={url:'https://api.deepseek.com/chat/completions',key:'',model:'deepseek-chat',temp:0.85};
 // Load saved settings from localStorage
-try{const saved=JSON.parse(localStorage.getItem('rift_cfg')||'{}');if(saved.url)CFG.url=saved.url;if(saved.key)CFG.key=saved.key;if(saved.model)CFG.model=saved.model;if(saved.temp)CFG.temp=saved.temp}catch(e){}
+try{const saved=JSON.parse(localStorage.getItem('rift_cfg')||'{}');if(saved.url)CFG.url=saved.url;if(saved.key)CFG.key=saved.key;if(saved.model)CFG.model=saved.model;if(saved.temp)CFG.temp=saved.temp;
+if(saved.workerUrl)WORKER_URL=saved.workerUrl}catch(e){}
+// Player ID for save/load/achievements
+let PLAYER_ID=localStorage.getItem('rift_player_id')||'';
 function toggleSettings(){
 const m=document.getElementById('settingsModal');m.classList.toggle('on');
 if(m.classList.contains('on')){
@@ -249,9 +320,11 @@ document.getElementById('cfgUrl').value=CFG.url;
 document.getElementById('cfgKey').value=CFG.key;
 document.getElementById('cfgModel').value=CFG.model;
 document.getElementById('cfgTemp').value=CFG.temp;
+document.getElementById('cfgWorker').value=WORKER_URL;
 }}
 function saveSettings(){CFG.url=document.getElementById('cfgUrl').value;CFG.key=document.getElementById('cfgKey').value;CFG.model=document.getElementById('cfgModel').value;CFG.temp=parseFloat(document.getElementById('cfgTemp').value)||0.85;
-try{localStorage.setItem('rift_cfg',JSON.stringify({url:CFG.url,key:CFG.key,model:CFG.model,temp:CFG.temp}))}catch(e){}
+WORKER_URL=document.getElementById('cfgWorker').value.trim();
+try{localStorage.setItem('rift_cfg',JSON.stringify({url:CFG.url,key:CFG.key,model:CFG.model,temp:CFG.temp,workerUrl:WORKER_URL}))}catch(e){}
 const kn=document.getElementById('keyNotice');if(kn)kn.remove();
 toggleSettings()}
 
@@ -581,20 +654,27 @@ abyss:{name:'深渊领主',emoji:'👿',hp:200,atk:30,def:14,min:5}
 };
 
 // ===== GAME STATE =====
-let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null};
+let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,bossKills:0,npcKills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null};
 
 // ===== AI API =====
+// Check if worker proxy is available
+function isWorkerAvailable(){return WORKER_URL&&WORKER_URL.includes('workers.dev')&&!WORKER_URL.includes('YOUR-SUBDOMAIN')}
+
 async function callAI(prompt,timeout=20000){
 try{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
-const res=await fetch(CFG.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CFG.key},
+const useWorker=isWorkerAvailable();
+const targetUrl=useWorker?(WORKER_URL+'/api/ai'):CFG.url;
+const headers={'Content-Type':'application/json'};
+if(!useWorker&&CFG.key)headers['Authorization']='Bearer '+CFG.key;
+const res=await fetch(targetUrl,{method:'POST',headers,
 body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:2000}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok){throw new Error('API HTTP '+res.status)}
 const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
 let jsonStr=null;const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
 if(!jsonStr){let d=0,s=-1,e=-1;for(let i=0;i<text.length;i++){if(text[i]==='{'){if(d===0)s=i;d++}else if(text[i]==='}'){d--;if(d===0&&s>=0){e=i+1;break}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
-if(!jsonStr)throw new Error('No JSON');const parsed=JSON.parse(jsonStr);console.log('[AI] OK:',parsed.name||'');return parsed;
+if(!jsonStr)throw new Error('No JSON');const parsed=JSON.parse(jsonStr);return parsed;
 }catch(e){console.error('[AI] FAIL:',e.message);return null}
 }
 
@@ -602,7 +682,11 @@ if(!jsonStr)throw new Error('No JSON');const parsed=JSON.parse(jsonStr);console.
 async function callAIText(prompt,timeout=15000){
 try{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
-const res=await fetch(CFG.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CFG.key},
+const useWorker=isWorkerAvailable();
+const targetUrl=useWorker?(WORKER_URL+'/api/ai'):CFG.url;
+const headers={'Content-Type':'application/json'};
+if(!useWorker&&CFG.key)headers['Authorization']='Bearer '+CFG.key;
+const res=await fetch(targetUrl,{method:'POST',headers,
 body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是游戏叙事作家，用中文写出富有诗意和沉浸感的文字。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:500}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok)throw new Error('API HTTP '+res.status);
@@ -1693,7 +1777,7 @@ const area=$('evtArea');if(area)area.appendChild(errDiv);
 
 async function battleWin(enemy){
 try{
-G.kills++;const xpMult=enemy.isBoss?80:enemy.isElite?35:15;const xpGain=enemy.lv*xpMult+(enemy.stars||1)*5;
+G.kills++;if(enemy.isBoss)G.bossKills++;if(enemy.isNPC)G.npcKills++;const xpMult=enemy.isBoss?80:enemy.isElite?35:15;const xpGain=enemy.lv*xpMult+(enemy.stars||1)*5;
 const leveled=gainXP(xpGain);
 // killHeal passive (boneRing etc.)
 const _bbKill=getBagBonuses();
@@ -1707,6 +1791,7 @@ const goldBase=enemy.isBoss?R(40,80):enemy.isElite?R(15,30):R(5,15);
 const goldReward=Math.floor(goldBase*(1+G.month*0.1)*(G.dc.reward||1));
 G.gold+=goldReward;G.totalGold+=goldReward;
 addL(`--- 战斗胜利! ---`,'ls');
+maybeCheckAchievements();
 let winExtras=`+${aH} 生命 | +${xpGain} 经验 | +${goldReward}💰`;
 if(_bbKill.killHeal>0)winExtras+=` | 💀 击杀回复+${_bbKill.killHeal}`;
 addL(winExtras,'lp');
@@ -2179,9 +2264,20 @@ box.innerHTML=`
 <div class="go-r"><span class="label">剩余金币</span><span class="value">${G.gold}💰</span></div>`;
 // Save play record
 savePlayRecord(reason);
+// Submit to leaderboard & check achievements
+submitToLeaderboard();
+checkAndShowAchievements();
 // Show history button
 const histBtn=document.createElement('button');histBtn.className='btn-sm btn-no';histBtn.style.marginTop='12px';histBtn.textContent='📜 查看历史记录';
 histBtn.onclick=()=>showPlayHistory();box.appendChild(histBtn);
+// Show leaderboard button
+if(isWorkerAvailable()){
+const lbBtn=document.createElement('button');lbBtn.className='btn-sm btn-no';lbBtn.style.marginTop='8px';lbBtn.textContent='🏆 查看排行榜';
+lbBtn.onclick=()=>showLeaderboard();box.appendChild(lbBtn);
+}
+// Show achievements button
+const achBtn=document.createElement('button');achBtn.className='btn-sm btn-no';achBtn.style.marginTop='8px';achBtn.textContent='🏅 查看成就';
+achBtn.onclick=()=>showAchievementsPanel();box.appendChild(achBtn);
 }
 
 // ===== PLAY RECORDS SAVE SYSTEM =====
@@ -2256,10 +2352,260 @@ area.appendChild(card);
 G._nextEnemy=npc;
 }
 
+// ===== LEADERBOARD =====
+async function showLeaderboard(){
+const modal=document.getElementById('lbModal');modal.classList.add('on');
+const content=$('lbContent');content.innerHTML='<div class="lb-empty">加载中...</div>';
+if(!isWorkerAvailable()){content.innerHTML='<div class="lb-empty">排行榜需要 Worker 服务<br>请先配置 Worker 代理地址</div>';return}
+try{
+const res=await fetch(WORKER_URL+'/api/leaderboard?limit=20');
+const board=await res.json();
+if(!board.length){content.innerHTML='<div class="lb-empty">暂无记录，成为第一个上榜的冒险者吧!</div>';return}
+let html='<table class="lb-table"><tr><th class="lb-rank">#</th><th>冒险者</th><th>等级</th><th>击杀</th><th>难度</th><th>分数</th><th>日期</th></tr>';
+board.forEach((e,i)=>{
+html+=`<tr><td class="lb-rank">${i+1}</td><td>${e.name||'无名'}</td><td>Lv.${e.level}</td><td>${e.kills||0}</td><td>${e.difficulty||'normal'}</td><td>${e.score||0}</td><td>${e.date||'-'}</td></tr>`;
+});
+html+='</table>';content.innerHTML=html;
+}catch(e){content.innerHTML='<div class="lb-empty">加载失败: '+e.message+'</div>'}
+}
+
+async function submitToLeaderboard(){
+if(!isWorkerAvailable()||!G.p)return;
+try{
+const score=G.p.level*100+G.kills*10+G.breakthroughTier*200+Math.floor(G.totalGold/10);
+await fetch(WORKER_URL+'/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({
+name:G.awk?G.awk.name:'冒险者',level:G.p.level,kills:G.kills,months:G.month,
+difficulty:G.diff,score,gold:G.totalGold,breakthroughs:G.breakthroughTier
+})});
+}catch(e){console.warn('[Leaderboard] submit failed:',e)}
+}
+
+// ===== ACHIEVEMENTS =====
+const ACH_DEFS={
+first_blood:{name:'初战告捷',desc:'击败第一个敌人',icon:'⚔️'},
+kills_10:{name:'十杀勇者',desc:'累计击杀10个敌人',icon:'💀'},
+kills_50:{name:'半百屠夫',desc:'累计击杀50个敌人',icon:'☠️'},
+kills_100:{name:'百杀传说',desc:'累计击杀100个敌人',icon:'🏆'},
+boss_hunter:{name:'猎龙者',desc:'击败第一个BOSS',icon:'🐉'},
+boss_hunter_5:{name:'龙王克星',desc:'击败5个BOSS',icon:'👑'},
+level_10:{name:'初窥门径',desc:'达到10级',icon:'📈'},
+level_30:{name:'炉火纯青',desc:'达到30级',icon:'🔥'},
+level_50:{name:'登峰造极',desc:'达到50级',icon:'⭐'},
+level_100:{name:'超凡入圣',desc:'达到100级',icon:'✨'},
+breakthrough_1:{name:'破境初成',desc:'完成第一次突破',icon:'⚡'},
+breakthrough_5:{name:'五重天劫',desc:'完成5次突破',icon:'🌩️'},
+gold_1000:{name:'小富即安',desc:'累计获得1000金币',icon:'💰'},
+gold_5000:{name:'富甲一方',desc:'累计获得5000金币',icon:'🏦'},
+survive_12:{name:'一岁轮回',desc:'存活12个月(1年)',icon:'📅'},
+survive_60:{name:'五载春秋',desc:'存活60个月(5年)',icon:'🗓️'},
+legendary_challenge:{name:'传说挑战者',desc:'完成挑战级突破',icon:'🔴'},
+npc_victor:{name:'江湖扬名',desc:'击败5个NPC',icon:'🥋'},
+explorer:{name:'世界探索者',desc:'探索10个不同地点',icon:'🗺️'},
+lucky_star:{name:'幸运之星',desc:'幸运值达到25',icon:'🍀'},
+hell_clear:{name:'地狱行者',desc:'在地狱难度存活超过6个月',icon:'💀'}
+};
+
+function getLocalAchievements(){
+try{return JSON.parse(localStorage.getItem('rift_achievements')||'[]')}catch(e){return[]}
+}
+function saveLocalAchievements(achs){
+try{localStorage.setItem('rift_achievements',JSON.stringify(achs))}catch(e){}
+}
+
+function checkLocalAchievements(){
+const earned=[];
+if(G.kills>=1)earned.push('first_blood');
+if(G.kills>=10)earned.push('kills_10');
+if(G.kills>=50)earned.push('kills_50');
+if(G.kills>=100)earned.push('kills_100');
+if(G.bossKills>=1)earned.push('boss_hunter');
+if(G.bossKills>=5)earned.push('boss_hunter_5');
+if(G.p&&G.p.level>=10)earned.push('level_10');
+if(G.p&&G.p.level>=30)earned.push('level_30');
+if(G.p&&G.p.level>=50)earned.push('level_50');
+if(G.p&&G.p.level>=100)earned.push('level_100');
+if(G.breakthroughTier>=1)earned.push('breakthrough_1');
+if(G.breakthroughTier>=5)earned.push('breakthrough_5');
+if(G.totalGold>=1000)earned.push('gold_1000');
+if(G.totalGold>=5000)earned.push('gold_5000');
+if(G.month>=12)earned.push('survive_12');
+if(G.month>=60)earned.push('survive_60');
+if(G.npcKills>=5)earned.push('npc_victor');
+if(G.regionsVisited&&G.regionsVisited.length>=10)earned.push('explorer');
+if(G.p&&G.p.lk>=25)earned.push('lucky_star');
+if(G.diff==='hell'&&G.month>=6)earned.push('hell_clear');
+return earned;
+}
+
+function showAchievementToast(newAchs){
+const container=$('achToasts');
+newAchs.forEach((id,i)=>{
+const def=ACH_DEFS[id];if(!def)return;
+const toast=document.createElement('div');toast.className='ach-toast';
+toast.innerHTML=`<div class="at-title">${def.icon} 成就解锁: ${def.name}</div><div class="at-desc">${def.desc}</div>`;
+container.appendChild(toast);
+setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .5s';setTimeout(()=>toast.remove(),600)},3000+i*500);
+});
+}
+
+async function checkAndShowAchievements(){
+const earned=checkLocalAchievements();
+const prev=getLocalAchievements();
+const newAchs=earned.filter(a=>!prev.includes(a));
+if(newAchs.length>0){
+saveLocalAchievements([...new Set([...prev,...earned])]);
+showAchievementToast(newAchs);
+}
+// Also sync to server if worker available
+if(isWorkerAvailable()&&PLAYER_ID){
+try{
+await fetch(WORKER_URL+'/api/achievements',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({playerId:PLAYER_ID,stats:{
+kills:G.kills,bossKills:G.bossKills,npcKills:G.npcKills,
+level:G.p?G.p.level:0,breakthroughs:G.breakthroughTier,
+totalGold:G.totalGold,months:G.month,
+regionsExplored:G.regionsVisited?G.regionsVisited.length:0,
+luck:G.p?G.p.lk:0,hellSurvive6:G.diff==='hell'&&G.month>=6
+}})});
+}catch(e){console.warn('[Achievements] sync failed:',e)}
+}
+}
+
+async function showAchievementsPanel(){
+const modal=document.getElementById('achModal');modal.classList.add('on');
+const content=$('achContent');
+const earned=getLocalAchievements();
+let html='<div class="ach-grid">';
+Object.entries(ACH_DEFS).forEach(([id,def])=>{
+const isEarned=earned.includes(id);
+html+=`<div class="ach-card ${isEarned?'earned':''}"><div class="ach-icon">${def.icon}</div><div class="ach-name">${def.name}</div><div class="ach-desc">${def.desc}</div></div>`;
+});
+html+='</div>';
+html+=`<div style="text-align:center;color:var(--t3);font-size:.85em;margin-top:10px">已解锁 ${earned.length} / ${Object.keys(ACH_DEFS).length} 个成就</div>`;
+content.innerHTML=html;
+}
+
+// Periodic achievement check during gameplay
+let _lastAchCheck=0;
+function maybeCheckAchievements(){
+if(Date.now()-_lastAchCheck<5000)return;
+_lastAchCheck=Date.now();
+checkAndShowAchievements();
+}
+
+// ===== SAVE / LOAD =====
+function openSaveModal(){
+if(!G.p){alert('当前没有进行中的游戏');return}
+const modal=document.getElementById('saveModal');modal.classList.add('on');
+$('saveResult').innerHTML='';
+}
+
+async function doSaveGame(){
+if(!G.p)return;
+const result=$('saveResult');
+if(!isWorkerAvailable()){
+result.innerHTML='<div style="color:var(--red)">需要 Worker 服务才能云端存档</div>';return;
+}
+result.innerHTML='<div class="loading">正在保存...</div>';
+try{
+const saveData={
+awk:G.awk,p:{...G.p},diff:G.diff,month:G.month,evtIdx:G.evtIdx,
+kills:G.kills,bossKills:G.bossKills,npcKills:G.npcKills,
+evts:G.evts,aiEvts:G.aiEvts,preEvts:G.preEvts,dmgDealt:G.dmgDealt,
+healing:G.healing,crits:G.crits,dodges:G.dodges,
+aiSkills:G.aiSkills,totalSkills:G.totalSkills,
+gold:G.gold,totalGold:G.totalGold,
+currentAgeMonth:G.currentAgeMonth,lifespanMonths:G.lifespanMonths,
+breakthroughTier:G.breakthroughTier,
+regionsVisited:G.regionsVisited,bag:G.bag,
+isBoss:G.isBoss,maxSlot:G.maxSlot,nextSkillLv:G.nextSkillLv,
+themes:G.themes,starKills:G.starKills
+};
+const res=await fetch(WORKER_URL+'/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({playerId:PLAYER_ID||undefined,playerName:G.awk?G.awk.name:'冒险者',data:saveData})});
+const data=await res.json();
+if(data.ok){
+PLAYER_ID=data.playerId;
+localStorage.setItem('rift_player_id',PLAYER_ID);
+result.innerHTML=`<div style="color:var(--grn)">存档成功!</div><div style="margin-top:8px;color:var(--t2);font-size:.85em">你的玩家代码:</div><div class="save-code" onclick="navigator.clipboard.writeText(this.textContent)" title="点击复制">${PLAYER_ID}</div><div style="color:var(--t3);font-size:.75em">请牢记此代码，下次可用于续玩<br>存档有效期90天</div>`;
+}else{result.innerHTML='<div style="color:var(--red)">保存失败: '+(data.error||'未知错误')+'</div>'}
+}catch(e){result.innerHTML='<div style="color:var(--red)">保存失败: '+e.message+'</div>'}
+}
+
+function showLoadDialog(){
+const modal=document.getElementById('loadModal');modal.classList.add('on');
+$('loadCodeInput').value='';$('loadResult').innerHTML='';
+}
+
+async function doLoadGame(){
+const code=$('loadCodeInput').value.trim();
+if(!code){$('loadResult').innerHTML='<div style="color:var(--red)">请输入玩家代码</div>';return}
+if(!isWorkerAvailable()){$('loadResult').innerHTML='<div style="color:var(--red)">需要 Worker 服务才能加载存档</div>';return}
+$('loadResult').innerHTML='<div class="loading">正在加载...</div>';
+try{
+const res=await fetch(WORKER_URL+'/api/load',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({playerId:code})});
+const data=await res.json();
+if(data.error){$('loadResult').innerHTML='<div style="color:var(--red)">'+data.error+'</div>';return}
+// Store loaded data for game restoration
+const sd=data.data;
+$('loadResult').innerHTML=`<div style="color:var(--grn)">找到存档! 冒险者: ${data.playerName||'未知'}</div>
+<div style="color:var(--t2);font-size:.85em;margin-top:6px">Lv.${sd.p?sd.p.level:'?'} | ${sd.diff||'?'} | 第${sd.month||'?'}月 | 击杀${sd.kills||0}</div>
+<button class="btn-sm btn-ok" style="margin-top:10px" onclick="restoreGame('${code}')">继续冒险</button>`;
+}catch(e){$('loadResult').innerHTML='<div style="color:var(--red)">加载失败: '+e.message+'</div>'}
+}
+
+async function restoreGame(playerId){
+try{
+const res=await fetch(WORKER_URL+'/api/load',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({playerId})});
+const data=await res.json();
+if(!data.data){alert('存档数据无效');return}
+const sd=data.data;
+PLAYER_ID=playerId;localStorage.setItem('rift_player_id',playerId);
+// Restore game state
+G.diff=sd.diff;G.dc=DIFF[sd.diff]||DIFF.normal;
+G.month=sd.month||1;G.evtIdx=sd.evtIdx||0;
+G.kills=sd.kills||0;G.bossKills=sd.bossKills||0;G.npcKills=sd.npcKills||0;
+G.evts=sd.evts||0;G.aiEvts=sd.aiEvts||0;G.preEvts=sd.preEvts||0;
+G.dmgDealt=sd.dmgDealt||0;G.healing=sd.healing||0;
+G.crits=sd.crits||0;G.dodges=sd.dodges||0;
+G.aiSkills=sd.aiSkills||0;G.totalSkills=sd.totalSkills||0;
+G.gold=sd.gold||0;G.totalGold=sd.totalGold||0;
+G.currentAgeMonth=sd.currentAgeMonth||192;G.lifespanMonths=sd.lifespanMonths||480;
+G.breakthroughTier=sd.breakthroughTier||0;
+G.regionsVisited=sd.regionsVisited||[];G.bag=sd.bag||[];
+G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
+G.themes=sd.themes||[];G.starKills=sd.starKills||{};
+G.awk=sd.awk;G.p=sd.p;
+document.getElementById('loadModal').classList.remove('on');
+await showTrans('命运正在重连...',1200);
+showScr('gameScr');updateUI();advanceEvt();
+}catch(e){alert('恢复失败: '+e.message)}
+}
+
+// ===== WORKER STATUS BADGE =====
+async function checkWorkerStatus(){
+const badge=$('workerBadge');if(!badge)return;
+if(!WORKER_URL||WORKER_URL.includes('YOUR-SUBDOMAIN')){
+badge.style.display='none';return;
+}
+badge.style.display='inline-block';badge.style.background='rgba(64,128,224,.12)';badge.style.color='var(--blu)';badge.textContent='🔄 检测服务状态...';
+try{
+const res=await fetch(WORKER_URL+'/health',{signal:AbortSignal.timeout(5000)});
+if(res.ok){
+badge.style.background='rgba(64,192,112,.12)';badge.style.color='var(--grn)';badge.textContent='✅ 云端服务已连接 — 内置AI密钥';
+}else throw new Error('HTTP '+res.status);
+}catch(e){
+badge.style.background='rgba(224,64,80,.12)';badge.style.color='var(--red)';badge.textContent='❌ 服务不可用 — 需要自带API Key';
+}
+}
+
 // ===== START =====
 async function startGame(diff){
-// Check API key before starting
-if(!CFG.key||!CFG.key.trim()){
+// Check API key before starting — skip if Worker proxy is available
+if(!isWorkerAvailable()&&(!CFG.key||!CFG.key.trim())){
 const modal=document.getElementById('settingsModal');
 modal.classList.add('on');
 const notice=document.createElement('div');notice.id='keyNotice';
@@ -2275,6 +2621,8 @@ $('awkWrap').innerHTML=`<div style="color:var(--gold);font-size:1.4em;margin-bot
 <div style="color:var(--t2);margin-bottom:20px">点击法阵，觉醒你的命运</div>
 <div class="awk-circle" id="awkCircle" onclick="doAwaken()"><div class="awk-inner"><span style="font-size:2.5em">✦</span><div class="txt">点击觉醒</div><div class="sub">AI 将为你创造独特命运</div></div></div>`;
 }
+// Check worker status on page load
+checkWorkerStatus();
 </script>
 </body>
 </html>
