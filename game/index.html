@@ -47,25 +47,29 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .srow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.85em;margin-bottom:4px}
 .si .sl{color:var(--t3);margin-right:3px}.si .sv{font-weight:bold}
 .sv.hp{color:var(--grn)}.sv.atk{color:var(--red)}.sv.def{color:var(--blu)}.sv.en{color:var(--pur)}.sv.cr{color:var(--org)}.sv.lk{color:var(--gold)}
-.bar-w{width:100%;height:8px;background:#1a1a2e;border-radius:4px;overflow:hidden;margin-top:4px}
-.bar-hp{height:100%;border-radius:4px;transition:width .6s,background .3s;background:linear-gradient(90deg,var(--grn),#60d060)}.bar-hp.mid{background:linear-gradient(90deg,var(--gold),#e0c060)}.bar-hp.low{background:linear-gradient(90deg,var(--red),#e06060)}
-.bar-en{height:100%;border-radius:4px;transition:width .6s;background:linear-gradient(90deg,#6060e0,var(--pur))}
+.bar-w{width:100%;height:8px;background:#1a1a2e;border-radius:4px;overflow:hidden;margin-top:4px;position:relative}
+.bar-hp{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1),background .4s;background:linear-gradient(90deg,var(--grn),#60d060);box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}.bar-hp.mid{background:linear-gradient(90deg,var(--gold),#e0c060)}.bar-hp.low{background:linear-gradient(90deg,var(--red),#e06060);animation:pulse 1.5s infinite}
+.bar-en{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,#6060e0,var(--pur));box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
 .skbar{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .skt{background:var(--bgc);border:1px solid var(--bdr);border-radius:6px;padding:3px 8px;font-size:.75em;color:var(--t2);cursor:default;position:relative}.skt .life{font-size:.65em;color:var(--org);margin-left:4px}.skt.cd{opacity:.5}.skt.empty{border-style:dashed;opacity:.3}
 .skt:hover .sktip{display:block}.sktip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:10px;width:200px;z-index:20;font-size:1.1em;line-height:1.5;text-align:left}
 .ep{display:flex;gap:8px;margin-bottom:12px}.edot{width:12px;height:12px;border-radius:50%;background:var(--bdr);transition:background .3s}.edot.done{background:var(--grn)}.edot.cur{background:var(--gold);box-shadow:0 0 8px rgba(240,192,64,.5)}.edot.boss{border:2px solid var(--red)}
 .bag-btn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:6px 14px;color:var(--t1);cursor:pointer;font-size:.85em;margin-bottom:8px;transition:all .2s}.bag-btn:hover{background:var(--bgch);border-color:var(--gold)}
 .earea{width:100%;flex:1;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding-bottom:20px}
-.ecard{width:100%;background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:24px;margin-bottom:16px}
+.ecard{width:100%;background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 2px 16px rgba(0,0,0,.15)}
 .etag{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:12px;font-size:.8em;margin-bottom:10px}.etag .ai-badge{background:var(--pur);color:#fff;font-size:.7em;padding:1px 6px;border-radius:4px;font-weight:bold;animation:pulse 2s infinite}.etag .pre-badge{background:var(--t3);color:#fff;font-size:.7em;padding:1px 6px;border-radius:4px}
 .etitle{font-size:1.4em;color:var(--gold);margin-bottom:12px}.edesc{font-size:1em;color:var(--t1);line-height:1.7;margin-bottom:18px;min-height:50px}
 .echc{display:flex;flex-direction:column;gap:10px}
-.echbtn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:14px 18px;cursor:pointer;transition:all .2s;text-align:left;color:var(--t1);font-size:.95em}.echbtn:hover{background:var(--bgch);border-color:var(--gold);transform:translateX(4px)}.echbtn .cn{color:var(--gold);font-weight:bold;margin-right:8px}
+.echbtn{background:var(--bgc);border:1px solid var(--bdr);border-left:3px solid var(--bdr);border-radius:8px;padding:14px 18px;cursor:pointer;transition:all .25s;text-align:left;color:var(--t1);font-size:.95em;position:relative}.echbtn:hover{background:var(--bgch);border-color:var(--gold);border-left-color:var(--gold);transform:translateX(4px);box-shadow:0 2px 12px rgba(240,192,64,.08)}.echbtn .cn{color:var(--gold);font-weight:bold;margin-right:8px}
+.echbtn.risk-safe{border-left-color:var(--grn)}.echbtn.risk-safe:hover{border-left-color:var(--grn);border-color:var(--grn)}
+.echbtn.risk-mid{border-left-color:var(--org)}.echbtn.risk-mid:hover{border-left-color:var(--org);border-color:var(--org)}
+.echbtn.risk-high{border-left-color:var(--red)}.echbtn.risk-high:hover{border-left-color:var(--red);border-color:var(--red)}
+.echbtn .check-badge{display:inline-block;font-size:.78em;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:normal}
 .eres{background:var(--bgc);border:1px solid var(--bdr);border-radius:10px;padding:18px;margin-top:10px;text-align:center;animation:fadeIn .5s}.eres .rt{font-size:1em;margin-bottom:12px;line-height:1.6}.eres .rf{font-size:.9em;color:var(--t2)}.rf .pos{color:var(--grn)}.rf .neg{color:var(--red)}
 .barea{width:100%;display:flex;flex-direction:column;gap:14px}
 .bent{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
-.be{flex:1;background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:16px;text-align:center}.be .bem{font-size:3em;margin-bottom:6px}.be .ben{font-weight:bold;font-size:1.05em;margin-bottom:8px}.be.pl .ben{color:var(--gold)}.be.en .ben{color:var(--red)}
-.bvs{font-size:1.5em;color:var(--red);font-weight:bold;align-self:center;flex-shrink:0}
+.be{flex:1;background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:16px;text-align:center;transition:border-color .3s,box-shadow .3s}.be .bem{font-size:3em;margin-bottom:6px}.be .ben{font-weight:bold;font-size:1.05em;margin-bottom:8px}.be.pl .ben{color:var(--gold)}.be.en .ben{color:var(--red)}.be.pl{border-color:rgba(240,192,64,.25)}.be.en{border-color:rgba(224,64,80,.25)}
+.bvs{font-size:1.5em;color:var(--red);font-weight:bold;align-self:center;flex-shrink:0;text-shadow:0 0 12px rgba(224,64,80,.3)}
 .blog{background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:14px;max-height:240px;overflow-y:auto;font-size:.85em;line-height:1.7}
 .blog::-webkit-scrollbar{width:6px}.blog::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
 .ls{color:#8ec07c;font-weight:bold}.le{color:#fb4934}.lp{color:#83a598}.lc{color:#fabd2f;font-weight:bold}.lk{color:#b16286;font-weight:bold}.ld{color:#b8bb26}.lo{color:#d3869b}.lcyan{color:#00bcd4}
@@ -83,8 +87,8 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .bag-slot:hover{border-color:var(--gold);background:var(--bgch)}.bag-slot.empty{opacity:.3;cursor:default;border-style:dashed}.bag-slot .bi{font-size:1.5em}.bag-slot .bn{font-size:.7em;color:var(--t2);margin-top:2px}
 .bag-detail{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-top:10px;text-align:center;animation:fadeIn .3s}
 .item-drop{background:var(--bgc);border:1px solid var(--gold);border-radius:8px;padding:12px;margin-top:8px;text-align:center;animation:fadeIn .4s}
-.go-t{font-size:2.5em;color:var(--red);margin-bottom:10px;text-shadow:0 0 30px rgba(224,64,80,.3)}
-.go-box{background:var(--bg2);border-radius:12px;padding:24px 32px;margin:20px 0;text-align:left;min-width:320px;border:1px solid var(--bdr)}
+.go-t{font-size:2.5em;color:var(--red);margin-bottom:10px;text-shadow:0 0 40px rgba(224,64,80,.3);letter-spacing:2px}
+.go-box{background:var(--bg2);border-radius:12px;padding:24px 32px;margin:20px 0;text-align:left;min-width:320px;border:1px solid var(--bdr);box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .go-r{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}.go-r:last-child{border-bottom:none}.go-r .label{color:var(--t2)}.go-r .value{color:var(--gold);font-weight:bold}
 .loading{display:flex;align-items:center;gap:8px;color:var(--t2);font-size:.9em}
 @keyframes ldots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}.loading::after{content:'';animation:ldots 1.5s infinite}
@@ -244,6 +248,29 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .be .bem{font-size:2em}
   .awk-circle{width:140px;height:140px}
   .awk-inner{width:100px;height:100px}
+}
+/* Desktop enhancements */
+@media(min-width:921px){
+  .scr{max-width:960px}
+  .ecard{padding:28px;border-radius:14px}
+  .etitle{font-size:1.5em}
+  .edesc{font-size:1.05em;line-height:1.8}
+  .echbtn{padding:16px 22px;font-size:1em}
+  .ba-btn{min-width:110px;padding:16px 10px;font-size:1em}
+  .ba-btn .ba-icon{font-size:1.6em}
+  .ba-btn .ba-sub{font-size:.75em}
+  .blog{max-height:280px;font-size:.9em;padding:16px}
+  .be{padding:20px}
+  .be .bem{font-size:3.5em}
+  .be .ben{font-size:1.15em}
+  .bag-grid{grid-template-columns:repeat(6,1fr)}
+  .pbar{padding:16px 22px}
+  .bar-w{height:10px}
+  .reg-grid{grid-template-columns:1fr 1fr 1fr;max-width:800px}
+  .reg-card{padding:20px}
+  .reg-card .rg-icon{font-size:2.2em}
+  .reg-card .rg-name{font-size:1.2em}
+  .reg-card .rg-desc{font-size:.85em}
 }
 .reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:640px;margin:16px 0}
 .reg-card{background:var(--bgc);border:2px solid var(--bdr);border-radius:12px;padding:16px;cursor:pointer;transition:all .3s;text-align:left}
@@ -1306,10 +1333,10 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 8. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
 9. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
 
-10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":8-18,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。
+10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":6-14,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。DC6=简单(80%)，DC8=中等(70%)，DC10=困难(60%)，DC12=极难(50-55%)。
    玩家当前属性: 力量${getStatVal('atk')} 体质${getStatVal('def')} 幸运${getStatVal('lk')} 等级${G.p.level} — DC值据此设定
 
-只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":12,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
+只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":8,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
 let evt=await callAI(prompt,20000),isAI=true;
 if(!evt||!evt.title||!evt.choices||!evt.choices.length){
 console.warn('[Event] AI returned invalid event, showing retry');
@@ -1349,10 +1376,13 @@ const canChoose=hasItem&&hasGold;
 const reqLabel=reqItem&&ITEMS[reqItem]?` <span style="color:var(--org);font-size:.8em">[需要: ${ITEMS[reqItem].emoji}${ITEMS[reqItem].name}]</span>`:'';
 const goldLabel=goldCost?` <span style="color:var(--gold);font-size:.8em">[${goldCost}💰]</span>`:'';
 // Attribute check label
-let checkLabel='';
+let checkLabel='';let riskClass='risk-safe';
 if(ch.check){const rate=calcCheckRate(ch.check);const statName=STAT_CN[ch.check.stat]||ch.check.stat;
-if(rate!==null){const pct=Math.floor(rate*100);const clr=pct>=70?'var(--grn)':pct>=40?'var(--org)':'var(--red)';
-checkLabel=` <span style="color:${clr};font-size:.8em">[${statName}判定 · ${pct}%]</span>`}}
+if(rate!==null){const pct=Math.floor(rate*100);const clr=pct>=60?'var(--grn)':pct>=35?'var(--org)':'var(--red)';
+checkLabel=` <span class="check-badge" style="background:rgba(${pct>=60?'64,192,112':pct>=35?'224,128,48':'224,64,80'},.12);color:${clr}">🎲 ${statName}判定 · ${pct}%</span>`;
+riskClass=pct>=60?'risk-mid':'risk-high'}}
+const ef=ch.effects||{};if(ef.damage||ef.atkLoss||ef.defLoss||ef.curse||ef.destroyItem||ef.goldSteal||ef.xpLoss){riskClass='risk-high'}else if(ch.check){riskClass=riskClass==='risk-safe'?'risk-mid':riskClass}
+b.className='echbtn '+riskClass;
 b.innerHTML=`<span class="cn">${['A','B','C'][i]}.</span> ${ch.label}${checkLabel}${reqLabel}${goldLabel}`;
 if(!canChoose){b.style.opacity='.4';b.style.cursor='not-allowed';
 b.innerHTML+=!hasItem?` <span style="color:var(--red);font-size:.75em">(缺少物品)</span>`:` <span style="color:var(--red);font-size:.75em">(金币不足)</span>`;
@@ -1370,11 +1400,12 @@ if(stat==='lk')return p.lk+bb.luck;if(stat==='level')return p.level;return 0}
 function calcCheckRate(check){if(!check)return null;
 const stat=getStatVal(check.stat),dc=Number(check.dc)||10;
 if(check.type==='threshold')return stat>=dc?1.0:0;
-// roll type: d20 + stat/5 >= dc
-return cl((stat/5+10.5-dc)/20,0.05,0.95)}
+// d20 + floor(stat/10) >= DC → need roll >= (DC - bonus) → P = (21 + bonus - DC) / 20
+const bonus=Math.floor(stat/10);
+return cl((21+bonus-dc)/20,0.05,0.95)}
 function doCheck(check){const stat=getStatVal(check.stat),dc=Number(check.dc)||10;
 if(check.type==='threshold')return{pass:stat>=dc,stat,dc,roll:null};
-const roll=R(1,20);return{pass:(roll+Math.floor(stat/5))>=dc,stat,dc,roll}}
+const roll=R(1,20);return{pass:(roll+Math.floor(stat/10))>=dc,stat,dc,roll}}
 
 function selectChoice(ch){
 try{
@@ -1384,7 +1415,7 @@ preloadNextEvent();
 // Attribute check: if choice has check field, resolve the check and apply success/failure effects
 if(ch.check){
 const result=doCheck(ch.check);const statName=STAT_CN[ch.check.stat]||ch.check.stat;
-const rollDetail=result.roll!==null?`${statName} ${result.stat} + 掷骰 ${result.roll} = ${Math.floor(result.stat/5)+result.roll}`:`${statName} ${result.stat}`;
+const rollDetail=result.roll!==null?`${statName} ${result.stat} + 掷骰 ${result.roll} = ${Math.floor(result.stat/10)+result.roll}`:`${statName} ${result.stat}`;
 const dcInfo=`${result.pass?'≥':'<'} DC ${result.dc}`;
 const checkMsg=result.pass?`✅ 判定成功! (${rollDetail} ${dcInfo})`:`❌ 判定失败! (${rollDetail} ${dcInfo})`;
 const checkClr=result.pass?'var(--grn)':'var(--red)';
@@ -1532,10 +1563,10 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 8. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
 9. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
 
-10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":8-18,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。
+10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":6-14,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。DC6=简单(80%)，DC8=中等(70%)，DC10=困难(60%)，DC12=极难(50-55%)。
    玩家当前属性: 力量${getStatVal('atk')} 体质${getStatVal('def')} 幸运${getStatVal('lk')} 等级${G.p.level} — DC值据此设定
 
-只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":12,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
+只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":8,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
 const evt=await callAI(prompt,20000);
 if(evt&&evt.title&&evt.choices&&evt.choices.length){
 const maxDmg=G.month<=4?.12:G.month<=12?.2:.3;
