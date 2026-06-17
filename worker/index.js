@@ -8,7 +8,7 @@ const RATE_LIMIT_WINDOW = 60; // seconds
 
 // DeepSeek API
 const AI_URL = 'https://api.deepseek.com/chat/completions';
-const AI_MODEL = 'deepseek-chat';
+const AI_MODEL = 'deepseek-v4-flash';
 const AI_TEMP = 0.85;
 const AI_MAX_TOKENS = 2000;
 
@@ -142,9 +142,10 @@ async function handleAI(request, env) {
 
   const body = await request.json();
 
-  // Build proxy request to DeepSeek
+  // Build proxy request to DeepSeek — map game model names to actual API names
+  const MODEL_MAP = { 'deepseek': AI_MODEL, 'deepseek-chat': AI_MODEL };
   const proxyBody = {
-    model: body.model || AI_MODEL,
+    model: MODEL_MAP[body.model] || body.model || AI_MODEL,
     messages: body.messages,
     temperature: body.temperature ?? AI_TEMP,
     max_tokens: body.max_tokens || AI_MAX_TOKENS,
