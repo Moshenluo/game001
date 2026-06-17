@@ -306,7 +306,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 // ===== CONFIG =====
 // Worker proxy URL — set this to your Cloudflare Worker URL after deployment
 // Players can play without their own API key when this is configured
-let WORKER_URL='https://rift-of-fate.YOUR-SUBDOMAIN.workers.dev';
+let WORKER_URL='https://rift-of-fate.1411795718.workers.dev';
 let CFG={url:'https://api.deepseek.com/chat/completions',key:'',model:'deepseek-chat',temp:0.85};
 // Load saved settings from localStorage
 try{const saved=JSON.parse(localStorage.getItem('rift_cfg')||'{}');if(saved.url)CFG.url=saved.url;if(saved.key)CFG.key=saved.key;if(saved.model)CFG.model=saved.model;if(saved.temp)CFG.temp=saved.temp;
@@ -658,7 +658,7 @@ let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:
 
 // ===== AI API =====
 // Check if worker proxy is available
-function isWorkerAvailable(){return WORKER_URL&&WORKER_URL.includes('workers.dev')&&!WORKER_URL.includes('YOUR-SUBDOMAIN')}
+function isWorkerAvailable(){return WORKER_URL&&WORKER_URL.includes('workers.dev')&&!WORKER_URL.includes('YOUR-SUBDOMAIN')&&!WORKER_URL.includes('xxx')}
 
 async function callAI(prompt,timeout=20000){
 try{
