@@ -1,0 +1,223 @@
+{
+  "difficulties": {
+    "easy": {
+      "name": "简单",
+      "description": "偏轻松的冒险体验，敌人较弱，奖励丰厚",
+      "enemyHpMult": 0.8,
+      "enemyAtkMult": 0.7,
+      "rewardMult": 1.3,
+      "skillDropBonus": 0.10,
+      "skillLifespanMult": 1.3,
+      "bossMultiplier": 2.0,
+      "initialStats": {
+        "hp": 120,
+        "atk": 10,
+        "def": 5,
+        "energy": 60,
+        "critRate": 0.08,
+        "critDamage": 1.6,
+        "luck": 8,
+        "dodgeRate": 0.05
+      }
+    },
+    "normal": {
+      "name": "普通",
+      "description": "均衡的冒险体验，有挑战也有回报",
+      "enemyHpMult": 1.0,
+      "enemyAtkMult": 1.0,
+      "rewardMult": 1.0,
+      "skillDropBonus": 0,
+      "skillLifespanMult": 1.0,
+      "bossMultiplier": 2.5,
+      "initialStats": {
+        "hp": 100,
+        "atk": 10,
+        "def": 5,
+        "energy": 50,
+        "critRate": 0.05,
+        "critDamage": 1.5,
+        "luck": 5,
+        "dodgeRate": 0.03
+      }
+    },
+    "hard": {
+      "name": "困难",
+      "description": "高难度挑战，敌人更强，但奖励也更丰厚",
+      "enemyHpMult": 1.3,
+      "enemyAtkMult": 1.4,
+      "rewardMult": 1.2,
+      "skillDropBonus": -0.05,
+      "skillLifespanMult": 0.8,
+      "bossMultiplier": 3.0,
+      "initialStats": {
+        "hp": 90,
+        "atk": 10,
+        "def": 4,
+        "energy": 50,
+        "critRate": 0.05,
+        "critDamage": 1.5,
+        "luck": 4,
+        "dodgeRate": 0.03
+      }
+    },
+    "hell": {
+      "name": "地狱",
+      "description": "极限挑战！高风险高收益，一念天堂一念地狱",
+      "enemyHpMult": 1.6,
+      "enemyAtkMult": 1.8,
+      "rewardMult": 1.5,
+      "skillDropBonus": -0.10,
+      "skillLifespanMult": 0.6,
+      "bossMultiplier": 4.0,
+      "initialStats": {
+        "hp": 80,
+        "atk": 12,
+        "def": 3,
+        "energy": 45,
+        "critRate": 0.03,
+        "critDamage": 1.4,
+        "luck": 3,
+        "dodgeRate": 0.02
+      }
+    }
+  },
+  "enemyTypes": [
+    { "id": "slime", "name": "史莱姆", "emoji": "🟢", "hpBase": 20, "atkBase": 5, "defBase": 1, "minLevel": 1 },
+    { "id": "goblin", "name": "哥布林", "emoji": "👺", "hpBase": 25, "atkBase": 7, "defBase": 2, "minLevel": 1 },
+    { "id": "wolf", "name": "暗影狼", "emoji": "🐺", "hpBase": 30, "atkBase": 8, "defBase": 2, "minLevel": 2 },
+    { "id": "skeleton", "name": "骷髅战士", "emoji": "💀", "hpBase": 35, "atkBase": 9, "defBase": 4, "minLevel": 3 },
+    { "id": "orc", "name": "兽人武士", "emoji": "👹", "hpBase": 45, "atkBase": 11, "defBase": 5, "minLevel": 4 },
+    { "id": "dark_mage", "name": "暗黑法师", "emoji": "🧙", "hpBase": 30, "atkBase": 15, "defBase": 3, "minLevel": 5 },
+    { "id": "golem", "name": "石像鬼", "emoji": "🗿", "hpBase": 60, "atkBase": 10, "defBase": 8, "minLevel": 6 },
+    { "id": "vampire", "name": "吸血鬼", "emoji": "🧛", "hpBase": 40, "atkBase": 14, "defBase": 5, "minLevel": 7 },
+    { "id": "dragon_whelp", "name": "幼龙", "emoji": "🐉", "hpBase": 55, "atkBase": 16, "defBase": 7, "minLevel": 8 },
+    { "id": "lich", "name": "巫妖", "emoji": "☠️", "hpBase": 50, "atkBase": 18, "defBase": 6, "minLevel": 10 },
+    { "id": "demon", "name": "恶魔领主", "emoji": "😈", "hpBase": 70, "atkBase": 20, "defBase": 10, "minLevel": 12 }
+  ],
+  "bossTypes": [
+    { "id": "boss_troll", "name": "山岭巨魔", "emoji": "🦍", "hpBase": 80, "atkBase": 15, "defBase": 8, "minLevel": 5 },
+    { "id": "boss_hydra", "name": "九头蛇", "emoji": "🐍", "hpBase": 120, "atkBase": 20, "defBase": 10, "minLevel": 10 },
+    { "id": "boss_dragon", "name": "远古巨龙", "emoji": "🐲", "hpBase": 180, "atkBase": 28, "defBase": 14, "minLevel": 15 },
+    { "id": "boss_demon_king", "name": "魔王", "emoji": "👿", "hpBase": 250, "atkBase": 35, "defBase": 18, "minLevel": 20 }
+  ],
+  "fallbackSkills": [
+    {
+      "id": "fireball", "name": "烈焰弹", "category": "damage", "emoji": "🔥",
+      "description": "发射一团灼热的火焰，造成高额伤害",
+      "cooldown": 3, "energyCost": 15, "damage": 15,
+      "lifespan": { "type": "floors", "value": 5 }
+    },
+    {
+      "id": "thunder", "name": "雷霆一击", "category": "damage", "emoji": "⚡",
+      "description": "召唤雷电劈向敌人，造成大量伤害",
+      "cooldown": 4, "energyCost": 20, "damage": 20,
+      "lifespan": { "type": "rounds", "value": 25 }
+    },
+    {
+      "id": "shadow_slash", "name": "暗影斩", "category": "damage", "emoji": "🌑",
+      "description": "化为暗影进行致命一斩",
+      "cooldown": 3, "energyCost": 12, "damage": 14,
+      "lifespan": { "type": "floors", "value": 4 }
+    },
+    {
+      "id": "poison_blade", "name": "毒刃", "category": "damage", "emoji": "☠️",
+      "description": "在武器上涂满剧毒，造成持续伤害",
+      "cooldown": 2, "energyCost": 10, "damage": 8, "dot": 4,
+      "lifespan": { "type": "rounds", "value": 20 }
+    },
+    {
+      "id": "armor_pierce", "name": "穿甲弹", "category": "damage", "emoji": "🎯",
+      "description": "无视敌人防御的穿透攻击",
+      "cooldown": 3, "energyCost": 18, "damage": 12, "piercing": true,
+      "lifespan": { "type": "floors", "value": 4 }
+    },
+    {
+      "id": "meteor", "name": "陨石坠落", "category": "damage", "emoji": "☄️",
+      "description": "召唤天降陨石，造成毁灭性伤害",
+      "cooldown": 5, "energyCost": 35, "damage": 28,
+      "lifespan": { "type": "rounds", "value": 30 }
+    },
+    {
+      "id": "iron_wall", "name": "铁壁", "category": "survival", "emoji": "🛡️",
+      "description": "凝聚全身力量形成铁壁防御",
+      "cooldown": 3, "energyCost": 12, "defBuff": 8, "duration": 2,
+      "lifespan": { "type": "floors", "value": 5 }
+    },
+    {
+      "id": "magic_shield", "name": "魔法护盾", "category": "survival", "emoji": "🔮",
+      "description": "展开魔法护盾，抵消即将到来的伤害",
+      "cooldown": 4, "energyCost": 15, "shield": 20,
+      "lifespan": { "type": "rounds", "value": 25 }
+    },
+    {
+      "id": "thorns", "name": "荆棘甲", "category": "survival", "emoji": "🌿",
+      "description": "身上长出荆棘，反弹部分伤害给攻击者",
+      "cooldown": 3, "energyCost": 10, "reflect": 0.3, "duration": 3,
+      "lifespan": { "type": "floors", "value": 6 }
+    },
+    {
+      "id": "dodge", "name": "闪避步", "category": "survival", "emoji": "💨",
+      "description": "以极快的速度闪避下一次攻击",
+      "cooldown": 2, "energyCost": 8, "evade": true,
+      "lifespan": { "type": "rounds", "value": 18 }
+    },
+    {
+      "id": "parry", "name": "精准格挡", "category": "survival", "emoji": "⚔️",
+      "description": "在关键时刻格挡，减少大量伤害",
+      "cooldown": 3, "energyCost": 10, "block": 0.6,
+      "lifespan": { "type": "floors", "value": 4 }
+    },
+    {
+      "id": "heal", "name": "治愈术", "category": "support", "emoji": "💚",
+      "description": "调动生命能量恢复体力",
+      "cooldown": 3, "energyCost": 15, "healAmount": 25,
+      "lifespan": { "type": "rounds", "value": 20 }
+    },
+    {
+      "id": "war_cry", "name": "战吼", "category": "support", "emoji": "📯",
+      "description": "发出震撼战吼，提升自身攻击力",
+      "cooldown": 4, "energyCost": 12, "atkBuff": 6, "duration": 3,
+      "lifespan": { "type": "floors", "value": 5 }
+    },
+    {
+      "id": "lucky_star", "name": "幸运星", "category": "support", "emoji": "⭐",
+      "description": "召唤幸运之星，提升暴击率",
+      "cooldown": 5, "energyCost": 20, "critBoost": 0.3, "duration": 4,
+      "lifespan": { "type": "rounds", "value": 28 }
+    },
+    {
+      "id": "berserk", "name": "狂暴", "category": "support", "emoji": "😤",
+      "description": "进入狂暴状态，攻击力暴增但防御下降",
+      "cooldown": 5, "energyCost": 25, "atkBuff": 10, "defDebuff": 4, "duration": 3,
+      "lifespan": { "type": "floors", "value": 3 }
+    },
+    {
+      "id": "focus", "name": "聚能", "category": "energy", "emoji": "🌀",
+      "description": "集中精神，快速恢复能量并提升下一次技能效果",
+      "cooldown": 4, "energyCost": 0, "energyGain": 20,
+      "lifespan": { "type": "rounds", "value": 22 }
+    },
+    {
+      "id": "energy_drain", "name": "能量汲取", "category": "energy", "emoji": "🔋",
+      "description": "从敌人身上汲取能量为己用",
+      "cooldown": 3, "energyCost": 5, "energySteal": 15,
+      "lifespan": { "type": "floors", "value": 4 }
+    },
+    {
+      "id": "overcharge", "name": "超频", "category": "energy", "emoji": "💠",
+      "description": "进入超频状态，大幅降低所有技能冷却",
+      "cooldown": 6, "energyCost": 30, "cdReduce": 1, "duration": 3,
+      "lifespan": { "type": "rounds", "value": 18 }
+    }
+  ],
+  "awakeningDirections": [
+    { "id": "flame", "name": "炎", "color": "#DC2626", "affinity": "damage" },
+    { "id": "frost", "name": "霜", "color": "#2563EB", "affinity": "survival" },
+    { "id": "storm", "name": "雷", "color": "#7C3AED", "affinity": "damage" },
+    { "id": "shadow", "name": "影", "color": "#6B21A8", "affinity": "damage" },
+    { "id": "life", "name": "命", "color": "#16A34A", "affinity": "survival" },
+    { "id": "holy", "name": "圣", "color": "#EAB308", "affinity": "support" },
+    { "id": "blood", "name": "血", "color": "#991B1B", "affinity": "damage" },
+    { "id": "void", "name": "虚", "color": "#6B7280", "affinity": "energy" }
+  ]
+}

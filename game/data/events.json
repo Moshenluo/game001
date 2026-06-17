@@ -1,0 +1,381 @@
+{
+  "events": [
+    {
+      "id": "adv_001", "source": "preset", "theme": "adventure", "title": "迷雾森林",
+      "description": "你走进一片浓雾弥漫的森林，空气中弥漫着奇异的花香。远处传来低沉的吟唱声，脚下的落叶发出窸窣的声响。",
+      "choices": [
+        { "label": "循着吟唱声前进", "result": "你发现了一位隐居的老法师，他传授了你一招强力技能。", "effects": { "atk": 3 } },
+        { "label": "在雾中谨慎探索", "result": "你在树林中找到了一些有用的草药，恢复了体力。", "effects": { "heal": 15 } },
+        { "label": "转身离开这片森林", "result": "你安全离开了，但路上捡到了几枚散落的金币。", "effects": { "heal": 5 } }
+      ]
+    },
+    {
+      "id": "adv_002", "source": "preset", "theme": "adventure", "title": "悬崖吊桥",
+      "description": "前方是一道深不见底的峡谷，唯一的通道是一座摇摇欲坠的吊桥。桥下的雾气中隐约闪烁着光芒。",
+      "choices": [
+        { "label": "大胆冲过吊桥", "result": "你飞速冲过吊桥，桥板碎裂但你安全到达！肾上腺素让你的力量暴增。", "effects": { "atk": 4, "damage": 8 } },
+        { "label": "小心翼翼地通过", "result": "你慢慢走过吊桥，在桥中央捡到了一颗发光的宝石。", "effects": { "def": 2, "heal": 10 } },
+        { "label": "寻找其他路线", "result": "你绕了远路，在另一条小路上发现了一个旅者的补给包。", "effects": { "heal": 20 } }
+      ]
+    },
+    {
+      "id": "adv_003", "source": "preset", "theme": "adventure", "title": "流浪剑客",
+      "description": "路口站着一位身穿破旧斗篷的剑客，他手持一柄寒光闪闪的长剑，目光锐利地注视着你。",
+      "choices": [
+        { "label": "向他发起挑战", "result": "经过一番激烈的切磋，你赢得了他的尊重，他教了你一招剑术。", "effects": { "atk": 5, "damage": 10 } },
+        { "label": "邀请他同行一段", "result": "他与你结伴走了一段路，途中分享了战斗经验。", "effects": { "def": 2, "atk": 2 } },
+        { "label": "礼貌地绕开他", "result": "你避开了可能的危险，继续前行。", "effects": {} }
+      ]
+    },
+    {
+      "id": "adv_004", "source": "preset", "theme": "adventure", "title": "神秘洞穴",
+      "description": "山壁上出现了一个漆黑的洞穴，从中传来阵阵冷风。隐约可以听到水滴声和某种生物的低吼。",
+      "choices": [
+        { "label": "点燃火把深入探索", "result": "你在洞穴深处发现了一处矿脉，采集到了珍贵的矿石。", "effects": { "def": 4, "atk": 2 } },
+        { "label": "在洞口谨慎侦查", "result": "你发现洞穴入口藏着一些旅者遗留的物资。", "effects": { "heal": 18 } },
+        { "label": "封锁洞口继续前进", "result": "你用巨石堵住了洞口，防止了可能的追击。安全感让你精神焕发。", "effects": { "heal": 8, "def": 1 } }
+      ]
+    },
+    {
+      "id": "adv_005", "source": "preset", "theme": "adventure", "title": "荒原驿站",
+      "description": "你在荒原中发现了一座破旧的驿站，里面似乎还有一些遗留的物资，但门上刻着奇怪的符文。",
+      "choices": [
+        { "label": "破门而入", "result": "你强行闯入，虽然触发了符文陷阱，但找到了强力的装备。", "effects": { "atk": 5, "damage": 12 } },
+        { "label": "尝试破解符文", "result": "你仔细研究符文，成功解除后安全进入，找到了补给。", "effects": { "heal": 25 } },
+        { "label": "绕过驿站", "result": "你选择不冒险，继续赶路。", "effects": { "heal": 3 } }
+      ]
+    },
+    {
+      "id": "adv_006", "source": "preset", "theme": "adventure", "title": "天空之镜",
+      "description": "你来到一片如镜面般的湖泊前，湖面完美地倒映着天空。你看到湖中心似乎有什么东西在发光。",
+      "choices": [
+        { "label": "涉水前往光源", "result": "你在水中捞到了一柄被遗忘的武器，锋利无比。", "effects": { "atk": 6 } },
+        { "label": "用石子试探湖面", "result": "石子落入湖中泛起涟漪，湖水中浮出一枚护符。", "effects": { "def": 3, "heal": 8 } },
+        { "label": "在湖边休息", "result": "宁静的湖面让你身心放松，体力得到了不错的恢复。", "effects": { "heal": 20 } }
+      ]
+    },
+    {
+      "id": "adv_007", "source": "preset", "theme": "adventure", "title": "风暴前夕",
+      "description": "天边乌云密布，狂风卷起沙尘。你必须在风暴来临前找到避难所，远处隐约有一座高塔。",
+      "choices": [
+        { "label": "冲向高塔避难", "result": "你及时赶到高塔，在塔顶发现了被遗弃的魔法卷轴。", "effects": { "atk": 3, "def": 2 } },
+        { "label": "在岩石后躲避", "result": "你在岩石后熬过了风暴，风暴过后地面留下了稀有的矿石碎片。", "effects": { "def": 3 } },
+        { "label": "迎风前进", "result": "你在风暴中艰难前行，被吹得遍体鳞伤但意志更加坚定。", "effects": { "atk": 4, "damage": 15 } }
+      ]
+    },
+
+    {
+      "id": "run_001", "source": "preset", "theme": "ruins", "title": "坍塌神殿",
+      "description": "一座古老的神殿矗立在你面前，石柱已经断裂大半。祭坛上的火焰似乎从未熄灭，散发着幽蓝的光芒。",
+      "choices": [
+        { "label": "触摸祭坛火焰", "result": "蓝色的火焰包裹了你的全身，你感受到远古力量的注入。", "effects": { "atk": 5, "damage": 10 } },
+        { "label": "搜索神殿侧厅", "result": "你在侧厅的废墟中找到了牧师留下的治疗圣水。", "effects": { "heal": 25 } },
+        { "label": "研读墙壁铭文", "result": "铭文记载了古代防御术，你领悟了其中的精髓。", "effects": { "def": 4 } }
+      ]
+    },
+    {
+      "id": "run_002", "source": "preset", "theme": "ruins", "title": "地下墓穴",
+      "description": "石阶向下延伸，通往一片漆黑的地下墓穴。空气中弥漫着腐朽的气息，墙壁上的火把架已经锈蚀。",
+      "choices": [
+        { "label": "深入墓穴探索", "result": "你在最深处发现了一具骑士的骸骨，他身旁放着一柄完好的剑。", "effects": { "atk": 6, "damage": 8 } },
+        { "label": "只探索入口区域", "result": "你在入口发现了一些陪葬品，其中有治疗药膏。", "effects": { "heal": 15, "def": 1 } },
+        { "label": "在入口祈祷后离开", "result": "你的虔诚似乎得到了回应，一股温暖的力量包围了你。", "effects": { "heal": 12, "def": 2 } }
+      ]
+    },
+    {
+      "id": "run_003", "source": "preset", "theme": "ruins", "title": "古代图书馆",
+      "description": "这座半坍塌的图书馆里，书架依然整齐。尘封的书籍中蕴含着各种古老的知识，有些书页还在微微发光。",
+      "choices": [
+        { "label": "翻阅发光的书籍", "result": "书中记载了战斗秘技，你的攻击能力得到了提升。", "effects": { "atk": 4 } },
+        { "label": "搜索防御类书籍", "result": "你找到了古代护甲设计图，学会了加固防具的方法。", "effects": { "def": 4 } },
+        { "label": "收集所有能带的书", "result": "你带了一些书上路，在休息时慢慢研读，收获颇丰。", "effects": { "atk": 2, "def": 2, "heal": 5 } }
+      ]
+    },
+    {
+      "id": "run_004", "source": "preset", "theme": "ruins", "title": "被封印的宝箱",
+      "description": "遗迹中央的台座上放着一只华丽的宝箱，上面缠绕着发光的锁链。宝箱散发着诱人的金色光芒。",
+      "choices": [
+        { "label": "用蛮力破坏锁链", "result": "锁链断裂的同时触发了保护机关，但宝箱内的宝物非常丰厚。", "effects": { "atk": 7, "damage": 15 } },
+        { "label": "尝试解开锁链的机关", "result": "你耐心地解开了锁链，安全地获得了宝箱中的宝物。", "effects": { "atk": 3, "def": 3, "heal": 10 } },
+        { "label": "放弃宝箱继续前进", "result": "你明智地避开了可能的陷阱。", "effects": { "heal": 5 } }
+      ]
+    },
+    {
+      "id": "run_005", "source": "preset", "theme": "ruins", "title": "古代竞技场",
+      "description": "你走进了一座古老的圆形竞技场，看台上满是灰尘。场地中央立着一尊战神雕像，手持金盾和长矛。",
+      "choices": [
+        { "label": "向战神雕像祈求力量", "result": "雕像的眼中闪过红光，你感到力量涌入体内。", "effects": { "atk": 5 } },
+        { "label": "取走战神之盾", "result": "盾牌在你手中化为能量，融入你的护甲。", "effects": { "def": 5 } },
+        { "label": "在竞技场练习战斗", "result": "你在安静的竞技场中训练了一番，技术有所提升。", "effects": { "atk": 2, "def": 2 } }
+      ]
+    },
+    {
+      "id": "run_006", "source": "preset", "theme": "ruins", "title": "时间钟楼",
+      "description": "一座歪斜的钟楼仍在运转，巨大的齿轮发出沉闷的声响。钟楼顶端的水晶球散发着诡异的光芒。",
+      "choices": [
+        { "label": "攀爬到钟楼顶端", "result": "你成功到达顶端，触碰水晶球后获得了时间的祝福。", "effects": { "atk": 3, "def": 3, "heal": 15 } },
+        { "label": "研究齿轮机关", "result": "你从齿轮结构中获得了灵感，改进了战斗技巧。", "effects": { "atk": 4, "def": 1 } },
+        { "label": "在钟楼下休息", "result": "规律的钟声让你进入了深度冥想，体力恢复良好。", "effects": { "heal": 22 } }
+      ]
+    },
+
+    {
+      "id": "mer_001", "source": "preset", "theme": "merchant", "title": "旅行商人",
+      "description": "一位戴着宽檐帽的商人拦住了你的去路，他的马车上堆满了各种稀奇古怪的物品，脸上挂着精明的笑容。",
+      "choices": [
+        { "label": "购买力量药剂", "result": "你花了些钱买了一瓶力量药剂，喝下后感觉力量充盈。", "effects": { "atk": 4 } },
+        { "label": "购买防护装备", "result": "你选了一件轻便的护甲，防御力得到了提升。", "effects": { "def": 3, "heal": 5 } },
+        { "label": "和他讨价还价", "result": "你的口才打动了他，他以半价卖给了你一套组合装备。", "effects": { "atk": 2, "def": 2, "heal": 8 } }
+      ]
+    },
+    {
+      "id": "mer_002", "source": "preset", "theme": "merchant", "title": "黑市赌局",
+      "description": "暗巷中有人摆了一个赌局，庄家摇着骰子，旁边围了一圈看热闹的人。赌注看起来相当诱人。",
+      "choices": [
+        { "label": "豪赌一把", "result": "手气不错！你赢得了一份珍贵的战利品。", "effects": { "atk": 6, "def": 2 } },
+        { "label": "小赌怡情", "result": "你小赢了一把，赚到了些有用的东西。", "effects": { "heal": 15, "atk": 1 } },
+        { "label": "不参与赌博", "result": "你明智地走开了，保全了自己的资源。", "effects": { "heal": 5 } }
+      ]
+    },
+    {
+      "id": "mer_003", "source": "preset", "theme": "merchant", "title": "炼金术士",
+      "description": "路边搭建着一个简陋的炼金工坊，一位头发花白的老人正在调配各种药剂。空气中弥漫着刺鼻的化学味道。",
+      "choices": [
+        { "label": "购买攻击强化药剂", "result": "红色的药剂灼热入喉，你的攻击力明显提升。", "effects": { "atk": 5 } },
+        { "label": "购买生命恢复药水", "result": "绿色的药水味道虽苦，但恢复效果显著。", "effects": { "heal": 30 } },
+        { "label": "请求定制混合药剂", "result": "老人为你调配了一瓶综合药剂，各项能力都有小幅提升。", "effects": { "atk": 2, "def": 2, "heal": 10 } }
+      ]
+    },
+    {
+      "id": "mer_004", "source": "preset", "theme": "merchant", "title": "走私者的小摊",
+      "description": "在偏僻的角落，一个裹着头巾的人正在兜售来路不明的物品。他的眼神闪烁，但货物看起来确实不错。",
+      "choices": [
+        { "label": "购买可疑的武器", "result": "这把武器虽然来路不明，但确实锋利异常。", "effects": { "atk": 5 } },
+        { "label": "购买神秘药瓶", "result": "你打开药瓶，里面是上等的恢复药剂。", "effects": { "heal": 22 } },
+        { "label": "举报给守卫", "result": "守卫奖励了你的正义行为，给了你一些补给品。", "effects": { "heal": 10, "def": 1 } }
+      ]
+    },
+    {
+      "id": "mer_005", "source": "preset", "theme": "merchant", "title": "矮人铁匠",
+      "description": "叮叮当当的锤击声引导你来到一位矮人铁匠面前。他的肌肉如同岩石，眼中闪着对工艺的热情。",
+      "choices": [
+        { "label": "请他强化你的武器", "result": "矮人用秘术重锻了你的武器，锋利程度大幅提升。", "effects": { "atk": 6 } },
+        { "label": "请他加固你的护甲", "result": "他在你的护甲上添加了额外的金属板，防御力大增。", "effects": { "def": 5 } },
+        { "label": "和他交流锻造知识", "result": "他教了你一些基础的锻造技巧，你自己也能维护装备了。", "effects": { "atk": 2, "def": 2 } }
+      ]
+    },
+
+    {
+      "id": "cur_001", "source": "preset", "theme": "curse", "title": "血之契约",
+      "description": "一纸泛黄的契约飘到你面前，上面用鲜血写着古老的文字。契约承诺给予强大的力量，但代价似乎不菲。",
+      "choices": [
+        { "label": "签下血之契约", "result": "契约化为火焰融入你的身体，你获得了强大力量但也承受了反噬。", "effects": { "atk": 8, "damage": 20 } },
+        { "label": "尝试修改契约条款", "result": "你巧妙地在契约中加入了对自己有利的条款。", "effects": { "atk": 4, "damage": 8 } },
+        { "label": "烧毁契约", "result": "你用火焰烧毁了契约，灰烬中飘出了被囚禁的灵魂碎片，化为治疗能量。", "effects": { "heal": 18 } }
+      ]
+    },
+    {
+      "id": "cur_002", "source": "preset", "theme": "curse", "title": "影之低语",
+      "description": "你的影子突然开始独立行动，它用沙哑的声音向你耳语，提议进行一笔交易。",
+      "choices": [
+        { "label": "接受影子的交易", "result": "影子赐予你暗影之力，但吞噬了你一部分生命力。", "effects": { "atk": 6, "damage": 15 } },
+        { "label": "与影子谈判", "result": "你与影子达成了折中协议，获得了适度的力量。", "effects": { "atk": 3, "def": 1, "damage": 5 } },
+        { "label": "用光驱散影子", "result": "你集中精神释放出光芒，影子痛苦地消散，留下了一些暗能量结晶。", "effects": { "heal": 10, "def": 2 } }
+      ]
+    },
+    {
+      "id": "cur_003", "source": "preset", "theme": "curse", "title": "时间扭曲",
+      "description": "你突然陷入了时间的漩涡，过去和未来的影像交错闪现。你看到了自己受伤的画面，也看到了胜利的场景。",
+      "choices": [
+        { "label": "尝试抓住未来影像", "result": "你从未来的自己那里获得了战斗经验，但时间撕裂造成了伤害。", "effects": { "atk": 5, "def": 3, "damage": 12 } },
+        { "label": "稳定时间线", "result": "你成功稳定了时间，过程中获得了少量时间碎片能量。", "effects": { "heal": 12, "atk": 2 } },
+        { "label": "任由时间流逝", "result": "你顺其自然地度过了时间扭曲，毫发无损。", "effects": { "heal": 8 } }
+      ]
+    },
+    {
+      "id": "cur_004", "source": "preset", "theme": "curse", "title": "亡灵诅咒",
+      "description": "一具骷髅从地下爬出，它空洞的眼眶中燃烧着紫色的火焰。它伸出骨手指向你，一股寒意袭来。",
+      "choices": [
+        { "label": "吸收亡灵之力", "result": "你主动吸收骷髅的暗能量，力量暴增但身体受到侵蚀。", "effects": { "atk": 7, "damage": 18 } },
+        { "label": "净化亡灵", "result": "你用正能量净化了骷髅，它在消散前留下了祝福。", "effects": { "heal": 15, "def": 2 } },
+        { "label": "与亡灵交换情报", "result": "骷髅告诉了你前方的危险信息，随后安静地回归尘土。", "effects": { "def": 3, "heal": 5 } }
+      ]
+    },
+    {
+      "id": "cur_005", "source": "preset", "theme": "curse", "title": "毒雾沼泽",
+      "description": "你误入了一片毒雾弥漫的沼泽，空气中弥漫着刺鼻的硫磺味。脚下的泥潭不断冒泡，散发着诡异绿光。",
+      "choices": [
+        { "label": "收集沼泽毒液", "result": "你将毒液涂在武器上，虽然伤到了手但武器变得更具威胁。", "effects": { "atk": 5, "damage": 10 } },
+        { "label": "快速穿越沼泽", "result": "你飞速穿越了沼泽，只受到了轻微的毒气影响。", "effects": { "damage": 8, "heal": 5 } },
+        { "label": "寻找解毒草药", "result": "你在沼泽边缘找到了解毒草，制成了简易的解毒剂。", "effects": { "heal": 18 } }
+      ]
+    },
+    {
+      "id": "cur_006", "source": "preset", "theme": "curse", "title": "魔眼窥视",
+      "description": "你感到背后有一双眼睛在盯着你。转身一看，墙壁上浮现出一只巨大的血红魔眼，瞳孔中倒映着你的身影。",
+      "choices": [
+        { "label": "与魔眼对视", "result": "你在对视中获得了魔眼的力量，但精神力被消耗了不少。", "effects": { "atk": 6, "damage": 14 } },
+        { "label": "闭眼抵抗", "result": "你闭上眼睛用精神力抵抗，魔眼最终消散了。", "effects": { "def": 3, "heal": 5 } },
+        { "label": "攻击魔眼", "result": "你向魔眼发起攻击，它碎裂后释放出了封印的能量。", "effects": { "atk": 3, "def": 2, "heal": 8 } }
+      ]
+    },
+
+    {
+      "id": "bls_001", "source": "preset", "theme": "blessing", "title": "星辰之力",
+      "description": "夜空中一颗流星划过，坠落在你面前。陨石散发着温暖的金色光芒，你感受到了来自星辰的祝福。",
+      "choices": [
+        { "label": "吸收星辰之力", "result": "金色的能量涌入你的全身，你感觉自己变得更强了。", "effects": { "atk": 4, "def": 2, "heal": 10 } },
+        { "label": "将星辰之力注入武器", "result": "你的武器闪烁着星光，变得更加锋利。", "effects": { "atk": 6 } },
+        { "label": "将星辰之力化为护盾", "result": "星光在你周身形成一层保护罩。", "effects": { "def": 5, "heal": 8 } }
+      ]
+    },
+    {
+      "id": "bls_002", "source": "preset", "theme": "blessing", "title": "大地守护",
+      "description": "你脚下的大地开始微微震动，一株金色的树苗破土而出。它散发着生命的气息，枝叶向你伸来。",
+      "choices": [
+        { "label": "接受大地的拥抱", "result": "金色的树叶包裹了你，伤口愈合，体力恢复。", "effects": { "heal": 35 } },
+        { "label": "取走一片金叶", "result": "金叶化为护符融入你的装备，增强了防御。", "effects": { "def": 5 } },
+        { "label": "种下更多种子", "result": "你的善举得到了大地的回报，更多的金色植物生长出来。", "effects": { "heal": 20, "atk": 2, "def": 1 } }
+      ]
+    },
+    {
+      "id": "bls_003", "source": "preset", "theme": "blessing", "title": "生命之泉",
+      "description": "你发现了一处隐秘的泉水，水面散发着柔和的蓝光。据说这是古代精灵留下的生命之泉。",
+      "choices": [
+        { "label": "饮用泉水", "result": "清甜的泉水入腹，你感到全身充满了活力。", "effects": { "heal": 40 } },
+        { "label": "用泉水淬炼武器", "result": "泉水的魔力强化了你的武器。", "effects": { "atk": 4, "heal": 10 } },
+        { "label": "在泉水中沐浴", "result": "泉水洗去了你身上的疲惫和伤痕。", "effects": { "heal": 25, "def": 2 } }
+      ]
+    },
+    {
+      "id": "bls_004", "source": "preset", "theme": "blessing", "title": "神圣光辉",
+      "description": "天空中突然降下一道金色光柱，笼罩了你全身。你感到一股温暖而强大的力量在体内涌动。",
+      "choices": [
+        { "label": "全力吸收光辉", "result": "神圣的能量让你的各项能力都得到了提升。", "effects": { "atk": 3, "def": 3, "heal": 15 } },
+        { "label": "将光辉凝聚为武器之力", "result": "你的武器被圣光附魔，攻击附带神圣伤害。", "effects": { "atk": 6, "heal": 5 } },
+        { "label": "将光辉化为防护", "result": "圣光在你周围形成了一层神圣屏障。", "effects": { "def": 6, "heal": 5 } }
+      ]
+    },
+    {
+      "id": "bls_005", "source": "preset", "theme": "blessing", "title": "风之精灵",
+      "description": "一阵轻柔的微风围绕着你旋转，渐渐凝聚成一个透明的精灵形态。它用悦耳的声音向你问候。",
+      "choices": [
+        { "label": "请求风之力量", "result": "精灵赋予你风的速度和锐利，攻击力大增。", "effects": { "atk": 5, "def": 1 } },
+        { "label": "请求风的庇护", "result": "风在你周围形成旋风护盾，可以偏转攻击。", "effects": { "def": 5, "heal": 5 } },
+        { "label": "与精灵成为朋友", "result": "精灵很高兴，给了你一份综合的礼物。", "effects": { "atk": 2, "def": 2, "heal": 12 } }
+      ]
+    },
+
+    {
+      "id": "trp_001", "source": "preset", "theme": "trap", "title": "地刺陷阱",
+      "description": "你脚下的石板突然下沉，四周墙壁中射出了尖锐的地刺！你必须迅速做出反应。",
+      "choices": [
+        { "label": "向前翻滚躲避", "result": "你成功翻滚避开了大部分地刺，只受了轻伤。", "effects": { "damage": 8, "atk": 1 } },
+        { "label": "举起护盾防御", "result": "你挡住了大部分攻击，护盾也变得更加坚韧。", "effects": { "damage": 5, "def": 2 } },
+        { "label": "原地跳起", "result": "你跳起避开了地刺，落地时还发现了一个隐藏的宝箱。", "effects": { "damage": 3, "heal": 10 } }
+      ]
+    },
+    {
+      "id": "trp_002", "source": "preset", "theme": "trap", "title": "毒气房间",
+      "description": "你进入房间后，门突然关闭，墙壁上的小孔开始释放绿色的毒气。你必须在中毒太深之前找到出路。",
+      "choices": [
+        { "label": "暴力破门", "result": "你用尽全力撞开了门，虽然受了些毒气伤害但成功逃脱。", "effects": { "damage": 15, "atk": 2 } },
+        { "label": "寻找通风口", "result": "你找到了隐藏的通风口，减少了毒气吸入。", "effects": { "damage": 6, "heal": 5 } },
+        { "label": "用布捂住口鼻等待", "result": "你耐心等待毒气消散，虽然时间较长但伤害最小。", "effects": { "damage": 4, "def": 1 } }
+      ]
+    },
+    {
+      "id": "trp_003", "source": "preset", "theme": "trap", "title": "落石通道",
+      "description": "你走进一条狭窄的通道，头顶的岩石开始松动。碎石不断掉落，你必须快速做出决定。",
+      "choices": [
+        { "label": "全力冲刺通过", "result": "你飞速冲过通道，只被几块小石头砸到。", "effects": { "damage": 7, "atk": 2 } },
+        { "label": "撑起防护屏障", "result": "你用护盾挡住了落石，安全通过。", "effects": { "damage": 3, "def": 2 } },
+        { "label": "退回原路绕行", "result": "你及时退回，找到了另一条安全的路。", "effects": { "damage": 2, "heal": 5 } }
+      ]
+    },
+    {
+      "id": "trp_004", "source": "preset", "theme": "trap", "title": "魔法禁制",
+      "description": "你不小心触发了地面上隐藏的魔法阵，紫色的电弧开始在四周跳跃。魔法禁制正在蓄力准备释放。",
+      "choices": [
+        { "label": "尝试吸收魔法能量", "result": "你冒着巨大风险吸收了部分能量，有得有失。", "effects": { "atk": 7, "damage": 18 } },
+        { "label": "用防御姿态硬抗", "result": "你举起防御承受了魔法攻击，虽然受伤但防御得到锻炼。", "effects": { "damage": 12, "def": 3 } },
+        { "label": "寻找禁制核心并破坏", "result": "你眼尖找到了魔法阵的核心，及时将其破坏。", "effects": { "damage": 5, "atk": 2, "def": 1 } }
+      ]
+    },
+    {
+      "id": "trp_005", "source": "preset", "theme": "trap", "title": "流沙陷阱",
+      "description": "你脚下的沙地突然变得松软，你开始缓缓下沉。这是沙漠中致命的流沙陷阱！",
+      "choices": [
+        { "label": "用力挣扎脱身", "result": "你拼命挣扎终于脱身，虽然筋疲力尽但锻炼到了力量。", "effects": { "damage": 10, "atk": 3 } },
+        { "label": "平躺增大受力面积", "result": "你冷静地平躺在流沙上，慢慢爬出了危险区域。", "effects": { "damage": 4, "def": 1 } },
+        { "label": "用绳索勾住岩石", "result": "你用随身的绳索勾住了远处的岩石，借力脱困。", "effects": { "damage": 2, "heal": 8 } }
+      ]
+    },
+    {
+      "id": "trp_006", "source": "preset", "theme": "trap", "title": "镜像迷宫",
+      "description": "你走进了一间满是镜子的房间，镜中的倒影似乎有着自己的意识。你分不清哪个出口是真的。",
+      "choices": [
+        { "label": "打碎所有镜子", "result": "你暴力地打碎了所有镜子，在碎片中发现了隐藏的宝物。", "effects": { "damage": 8, "atk": 4 } },
+        { "label": "闭眼用感觉走", "result": "你闭上眼睛依靠直觉前进，成功找到了出口。", "effects": { "heal": 5, "def": 2 } },
+        { "label": "仔细观察镜中差异", "result": "你发现真实出口的特征，安全离开并获得了洞察力。", "effects": { "atk": 2, "def": 2, "heal": 5 } }
+      ]
+    }
+  ],
+  "milestoneEvents": [
+    {
+      "id": "ms_001", "source": "preset", "theme": "ruins", "title": "试炼之门",
+      "description": "你来到一扇巨大的石门前，门上镌刻着远古的试炼符文。石门缓缓开启，一股强大的压迫感扑面而来。守门精英正在等待挑战者。",
+      "milestoneFloor": 5,
+      "guaranteedSkillReward": true,
+      "choices": [
+        { "label": "正面迎战守门者", "result": "你与守门精英展开了激烈的战斗，最终将其击败，获得了试炼认可。", "effects": { "atk": 4, "def": 2, "heal": 10 } },
+        { "label": "寻找石门上的弱点", "result": "你仔细研究符文找到了破绽，以更小的代价通过了试炼。", "effects": { "def": 3, "heal": 15 } },
+        { "label": "以觉醒之力强行突破", "result": "你释放觉醒体的全部力量，震撼了守门者，获得了额外的奖励。", "effects": { "atk": 6, "damage": 12 } }
+      ]
+    },
+    {
+      "id": "ms_002", "source": "preset", "theme": "ruins", "title": "远古遗迹",
+      "description": "穿过层层迷雾后，一座被藤蔓覆盖的远古遗迹出现在你面前。遗迹的入口散发着神秘的金色光芒，似乎在召唤有缘人进入探索。",
+      "milestoneFloor": 10,
+      "guaranteedSkillReward": true,
+      "choices": [
+        { "label": "深入遗迹核心区域", "result": "你在遗迹核心发现了远古文明留下的宝藏，获得了丰厚的奖励。", "effects": { "atk": 5, "def": 3, "heal": 15 } },
+        { "label": "解读遗迹中的壁画", "result": "壁画揭示了远古战士的战斗秘技，你从中领悟了新的战斗方式。", "effects": { "atk": 7, "heal": 8 } },
+        { "label": "激活遗迹的守护阵法", "result": "守护阵法被激活，远古能量涌入你的身体，全面强化了你的能力。", "effects": { "atk": 3, "def": 5, "heal": 20 } }
+      ]
+    },
+    {
+      "id": "ms_003", "source": "preset", "theme": "adventure", "title": "觉醒试炼",
+      "description": "你的觉醒体突然产生了强烈的共鸣，前方的空间开始扭曲。一道裂隙打开，通向一个专为觉醒者准备的试炼场。只有通过试炼，觉醒之力才能更进一步。",
+      "milestoneFloor": 15,
+      "guaranteedSkillReward": true,
+      "choices": [
+        { "label": "接受觉醒之力的考验", "result": "你在试炼中与觉醒体的意志融为一体，被动效果得到了增强。", "effects": { "atk": 6, "def": 4, "heal": 12 } },
+        { "label": "挑战觉醒体的暗影面", "result": "你击败了自己觉醒体的暗面投影，获得了更深层的力量理解。", "effects": { "atk": 8, "damage": 15 } },
+        { "label": "冥想感悟觉醒真谛", "result": "你在深度冥想中理解了觉醒的本质，力量以温和但持久的方式增长。", "effects": { "def": 6, "heal": 25 } }
+      ]
+    },
+    {
+      "id": "ms_004", "source": "preset", "theme": "curse", "title": "深渊裂隙",
+      "description": "大地突然裂开，一道通往深渊的裂隙出现在你脚下。黑暗的能量从中涌出，一头深渊Boss正在裂隙深处等待。只有击败它才能封印裂隙，阻止深渊的入侵。",
+      "milestoneFloor": 20,
+      "guaranteedSkillReward": true,
+      "choices": [
+        { "label": "纵身跃入裂隙迎战", "result": "你在深渊中与Boss展开了殊死搏斗，最终将其封印，获得了深渊的宝藏。", "effects": { "atk": 8, "def": 4, "heal": 15 } },
+        { "label": "在裂隙边缘利用地形优势", "result": "你巧妙地利用裂隙的地形与Boss周旋，以更小的代价取得了胜利。", "effects": { "def": 6, "heal": 20 } },
+        { "label": "以觉醒之力封印裂隙", "result": "你释放觉醒体的全部能量封印了深渊裂隙，强大的能量反馈让你实力大增。", "effects": { "atk": 10, "damage": 18 } }
+      ]
+    },
+    {
+      "id": "ms_005", "source": "preset", "theme": "adventure", "title": "轮回之塔",
+      "description": "一座螺旋上升的高塔矗立在你面前，塔身散发着轮回之光。这是传说中的轮回之塔——每攀登一层，难度递增，但奖励也愈发丰厚。塔的守门人向你发出挑战。",
+      "milestoneFloor": 25,
+      "guaranteedSkillReward": true,
+      "choices": [
+        { "label": "全力攀登挑战更高层", "result": "你一路攀登到力所能及的最高层，获得了与难度匹配的丰厚奖励。", "effects": { "atk": 7, "def": 5, "heal": 15 } },
+        { "label": "稳扎稳打逐层推进", "result": "你谨慎地逐层推进，在每一层都获取了经验和小奖励，积少成多。", "effects": { "atk": 4, "def": 4, "heal": 25 } },
+        { "label": "寻找塔中的隐藏通道", "result": "你发现了一条通往塔顶的秘密通道，在那里找到了传说中的宝藏。", "effects": { "atk": 9, "def": 3, "damage": 10 } }
+      ]
+    }
+  ]
+}

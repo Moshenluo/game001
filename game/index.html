@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>命运裂隙 - Rift of Fate | AI Roguelike</title>
+<style>
+:root{--bg:#0a0e17;--bg2:#131a2b;--bgc:#1a2340;--bgch:#222e50;--t1:#e8eaf0;--t2:#8892a8;--t3:#5a6478;--gold:#f0c040;--goldd:#a08020;--red:#e04050;--redd:#802030;--grn:#40c070;--grnd:#208040;--blu:#4080e0;--blud:#204080;--pur:#a050e0;--purd:#603080;--org:#e08030;--bdr:#2a3555;--shd:rgba(0,0,0,.5)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+.scr{display:none;min-height:100vh;padding:20px;max-width:920px;margin:0 auto;flex-direction:column;align-items:center;justify-content:center}
+.scr.on{display:flex}
+.t-logo{font-size:3em;font-weight:bold;color:var(--gold);text-shadow:0 0 30px rgba(240,192,64,.3);margin-bottom:8px;letter-spacing:6px}
+.t-sub{font-size:1.1em;color:var(--t2);margin-bottom:40px;letter-spacing:2px}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:600px;margin-bottom:30px}
+.dc{background:var(--bgc);border:2px solid var(--bdr);border-radius:12px;padding:20px;cursor:pointer;transition:all .3s;text-align:center}
+.dc:hover{transform:translateY(-4px);box-shadow:0 8px 24px var(--shd)}
+.dc.e{border-color:var(--grn)}.dc.e:hover{background:rgba(64,192,112,.1)}.dc.n{border-color:var(--blu)}.dc.n:hover{background:rgba(64,128,224,.1)}.dc.h{border-color:var(--org)}.dc.h:hover{background:rgba(224,128,48,.1)}.dc.x{border-color:var(--red)}.dc.x:hover{background:rgba(224,64,80,.1)}
+.dc h3{font-size:1.3em;margin-bottom:6px}.dc.e h3{color:var(--grn)}.dc.n h3{color:var(--blu)}.dc.h h3{color:var(--org)}.dc.x h3{color:var(--red)}.dc p{font-size:.85em;color:var(--t2)}
+.gear{position:fixed;top:16px;right:16px;font-size:1.5em;cursor:pointer;color:var(--t3);z-index:50;transition:color .2s}.gear:hover{color:var(--gold)}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:999;display:none;align-items:center;justify-content:center}.modal-bg.on{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}
+.modal h3{color:var(--gold);margin-bottom:16px;font-size:1.2em}
+.modal label{display:block;color:var(--t2);font-size:.85em;margin-bottom:4px;margin-top:12px}
+.modal input{width:100%;background:var(--bgc);border:1px solid var(--bdr);border-radius:6px;padding:8px 12px;color:var(--t1);font-size:.9em}
+.modal .btn-row{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.btn-sm{padding:8px 20px;border:none;border-radius:8px;cursor:pointer;font-size:.9em;font-weight:bold;transition:all .2s}
+.btn-ok{background:var(--gold);color:#111}.btn-ok:hover{background:#ffd060}.btn-no{background:var(--bgc);color:var(--t2);border:1px solid var(--bdr)}.btn-no:hover{background:var(--bgch)}
+.awk-wrap{display:flex;flex-direction:column;align-items:center;gap:20px}
+.awk-circle{width:220px;height:220px;border-radius:50%;border:3px solid var(--gold);position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .5s}
+.awk-circle:hover{box-shadow:0 0 40px rgba(240,192,64,.3);transform:scale(1.03)}
+.awk-inner{width:160px;height:160px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(circle,var(--bg2),var(--bg))}
+.awk-inner .txt{color:var(--gold);font-size:1.1em;margin-top:6px}.awk-inner .sub{color:var(--t3);font-size:.8em}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(240,192,64,.2)}50%{box-shadow:0 0 60px rgba(240,192,64,.6)}}
+.awk-circle.spinning{animation:glow 1s infinite;pointer-events:none}.awk-circle.spinning::before{content:'';position:absolute;width:240px;height:240px;border-radius:50%;border:2px dashed var(--gold);animation:spin 2s linear infinite;opacity:.6}
+.awk-card{background:var(--bg2);border:2px solid var(--gold);border-radius:16px;padding:28px;max-width:400px;width:100%;text-align:center;animation:fadeIn .6s}
+.awk-card .emoji{font-size:4em;margin-bottom:8px}.awk-card .name{font-size:1.6em;color:var(--gold);font-weight:bold}.awk-card .title{font-size:1em;color:var(--t2);margin-bottom:12px}
+.awk-card .passive{background:var(--bgc);border-radius:8px;padding:12px;margin:12px 0;text-align:left;font-size:.9em;line-height:1.6}.awk-card .passive .pn{color:var(--org);font-weight:bold}
+.awk-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;text-align:left;font-size:.85em;margin:12px 0}.awk-card .stats .sl{color:var(--t3)}.awk-card .stats .sv{color:var(--t1);font-weight:bold}
+.btn-big{background:linear-gradient(135deg,var(--goldd),var(--gold));color:#111;border:none;border-radius:10px;padding:14px 40px;font-size:1.1em;font-weight:bold;cursor:pointer;margin-top:18px;transition:all .3s}.btn-big:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(240,192,64,.3)}
+#gameScr{justify-content:flex-start;padding-top:10px;overflow-y:auto}
+.ghdr{width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bdr);margin-bottom:10px}
+.ghdr .li{font-size:1.1em;color:var(--gold)}.ghdr .ec{color:var(--t2);font-size:.9em}
+.pbar{width:100%;background:var(--bg2);border-radius:10px;padding:14px 18px;margin-bottom:10px;border:1px solid var(--bdr)}
+.pstats{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.pstats .nm{font-weight:bold;color:var(--gold);font-size:1.05em}.pstats .lv{background:var(--bgc);padding:2px 10px;border-radius:8px;font-size:.85em;color:var(--t2)}
+.srow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.85em;margin-bottom:4px}
+.si .sl{color:var(--t3);margin-right:3px}.si .sv{font-weight:bold}
+.sv.hp{color:var(--grn)}.sv.atk{color:var(--red)}.sv.def{color:var(--blu)}.sv.en{color:var(--pur)}.sv.cr{color:var(--org)}.sv.lk{color:var(--gold)}
+.bar-w{width:100%;height:8px;background:#1a1a2e;border-radius:4px;overflow:hidden;margin-top:4px}
+.bar-hp{height:100%;border-radius:4px;transition:width .6s,background .3s;background:linear-gradient(90deg,var(--grn),#60d060)}.bar-hp.mid{background:linear-gradient(90deg,var(--gold),#e0c060)}.bar-hp.low{background:linear-gradient(90deg,var(--red),#e06060)}
+.bar-en{height:100%;border-radius:4px;transition:width .6s;background:linear-gradient(90deg,#6060e0,var(--pur))}
+.skbar{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.skt{background:var(--bgc);border:1px solid var(--bdr);border-radius:6px;padding:3px 8px;font-size:.75em;color:var(--t2);cursor:default;position:relative}.skt .life{font-size:.65em;color:var(--org);margin-left:4px}.skt.cd{opacity:.5}.skt.empty{border-style:dashed;opacity:.3}
+.skt:hover .sktip{display:block}.sktip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:10px;width:200px;z-index:20;font-size:1.1em;line-height:1.5;text-align:left}
+.ep{display:flex;gap:8px;margin-bottom:12px}.edot{width:12px;height:12px;border-radius:50%;background:var(--bdr);transition:background .3s}.edot.done{background:var(--grn)}.edot.cur{background:var(--gold);box-shadow:0 0 8px rgba(240,192,64,.5)}.edot.boss{border:2px solid var(--red)}
+.bag-btn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:6px 14px;color:var(--t1);cursor:pointer;font-size:.85em;margin-bottom:8px;transition:all .2s}.bag-btn:hover{background:var(--bgch);border-color:var(--gold)}
+.earea{width:100%;flex:1;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding-bottom:20px}
+.ecard{width:100%;background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:24px;margin-bottom:16px}
+.etag{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:12px;font-size:.8em;margin-bottom:10px}.etag .ai-badge{background:var(--pur);color:#fff;font-size:.7em;padding:1px 6px;border-radius:4px;font-weight:bold;animation:pulse 2s infinite}.etag .pre-badge{background:var(--t3);color:#fff;font-size:.7em;padding:1px 6px;border-radius:4px}
+.etitle{font-size:1.4em;color:var(--gold);margin-bottom:12px}.edesc{font-size:1em;color:var(--t1);line-height:1.7;margin-bottom:18px;min-height:50px}
+.echc{display:flex;flex-direction:column;gap:10px}
+.echbtn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:14px 18px;cursor:pointer;transition:all .2s;text-align:left;color:var(--t1);font-size:.95em}.echbtn:hover{background:var(--bgch);border-color:var(--gold);transform:translateX(4px)}.echbtn .cn{color:var(--gold);font-weight:bold;margin-right:8px}
+.eres{background:var(--bgc);border:1px solid var(--bdr);border-radius:10px;padding:18px;margin-top:10px;text-align:center;animation:fadeIn .5s}.eres .rt{font-size:1em;margin-bottom:12px;line-height:1.6}.eres .rf{font-size:.9em;color:var(--t2)}.rf .pos{color:var(--grn)}.rf .neg{color:var(--red)}
+.barea{width:100%;display:flex;flex-direction:column;gap:14px}
+.bent{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.be{flex:1;background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:16px;text-align:center}.be .bem{font-size:3em;margin-bottom:6px}.be .ben{font-weight:bold;font-size:1.05em;margin-bottom:8px}.be.pl .ben{color:var(--gold)}.be.en .ben{color:var(--red)}
+.bvs{font-size:1.5em;color:var(--red);font-weight:bold;align-self:center;flex-shrink:0}
+.blog{background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:14px;max-height:240px;overflow-y:auto;font-size:.85em;line-height:1.7}
+.blog::-webkit-scrollbar{width:6px}.blog::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+.lp{color:var(--grn)}.le{color:var(--red)}.ls{color:var(--t3)}.lc{color:var(--gold);font-weight:bold}.lk{color:var(--pur)}.ld{color:var(--blu)}.lo{color:var(--org)}.lcyan{color:#40c0c0}
+.bres{text-align:center;padding:16px;font-size:1.2em;border-radius:10px;margin-top:10px}.bres.w{background:rgba(64,192,112,.1);color:var(--grn);border:1px solid var(--grnd)}.bres.l{background:rgba(224,64,80,.1);color:var(--red);border:1px solid var(--redd)}
+.cd-bar{width:100%;height:6px;background:#1a1a2e;border-radius:3px;overflow:hidden;margin:8px 0}.cd-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .1s linear}
+.ba-wrap{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.ba-btn{flex:1;min-width:100px;padding:14px 8px;background:var(--bgc);border:2px solid var(--bdr);border-radius:10px;color:var(--t1);cursor:pointer;text-align:center;transition:all .2s;font-size:.95em}
+.ba-btn:hover{border-color:var(--gold);background:var(--bgch);transform:translateY(-2px)}
+.ba-btn .ba-icon{font-size:1.5em;display:block;margin-bottom:4px}.ba-btn .ba-sub{font-size:.7em;color:var(--t3);display:block}
+.ba-sub-wrap{margin-top:10px;animation:fadeIn .3s}
+.ba-sub-btn{display:block;width:100%;padding:10px 14px;margin-bottom:6px;background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;color:var(--t1);cursor:pointer;text-align:left;transition:all .2s;font-size:.9em}
+.ba-sub-btn:hover{border-color:var(--gold);background:var(--bgch)}
+.bag-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+.bag-slot{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.bag-slot:hover{border-color:var(--gold);background:var(--bgch)}.bag-slot.empty{opacity:.3;cursor:default;border-style:dashed}.bag-slot .bi{font-size:1.5em}.bag-slot .bn{font-size:.7em;color:var(--t2);margin-top:2px}
+.bag-detail{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-top:10px;text-align:center;animation:fadeIn .3s}
+.item-drop{background:var(--bgc);border:1px solid var(--gold);border-radius:8px;padding:12px;margin-top:8px;text-align:center;animation:fadeIn .4s}
+.go-t{font-size:2.5em;color:var(--red);margin-bottom:10px;text-shadow:0 0 30px rgba(224,64,80,.3)}
+.go-box{background:var(--bg2);border-radius:12px;padding:24px 32px;margin:20px 0;text-align:left;min-width:320px;border:1px solid var(--bdr)}
+.go-r{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}.go-r:last-child{border-bottom:none}.go-r .label{color:var(--t2)}.go-r .value{color:var(--gold);font-weight:bold}
+.loading{display:flex;align-items:center;gap:8px;color:var(--t2);font-size:.9em}
+@keyframes ldots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}.loading::after{content:'';animation:ldots 1.5s infinite}
+.xp-wrap{width:100%;height:4px;background:#1a1a2e;border-radius:2px;overflow:hidden;margin-top:4px}.xp-bar{height:100%;border-radius:2px;transition:width .6s;background:linear-gradient(90deg,var(--gold),#ffe080)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}.shake{animation:shake .4s}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.pulse{animation:pulse .6s}
+.fi{animation:fadeIn .5s}
+.typing::after{content:'|';animation:blink .8s infinite;color:var(--gold)}@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+.trans{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;font-size:1.8em;color:var(--gold);opacity:0;pointer-events:none;transition:opacity .4s}.trans.on{opacity:1;pointer-events:all}
+.th-adventure{background:rgba(64,192,112,.15);color:var(--grn)}.th-ruins{background:rgba(160,80,224,.15);color:var(--pur)}.th-merchant{background:rgba(240,192,64,.15);color:var(--gold)}.th-curse{background:rgba(224,64,80,.15);color:var(--red)}.th-blessing{background:rgba(64,128,224,.15);color:var(--blu)}.th-trap{background:rgba(224,128,48,.15);color:var(--org)}.th-battle{background:rgba(224,64,80,.15);color:var(--red)}.th-milestone{background:rgba(240,192,64,.2);color:var(--gold)}.th-tomb{background:rgba(100,80,120,.15);color:#a090b0}.th-duel{background:rgba(200,60,60,.15);color:#e06060}.th-mystery{background:rgba(80,180,200,.15);color:#60c0d0}.th-disaster{background:rgba(180,100,40,.15);color:#c08040}.th-treasure{background:rgba(220,180,40,.2);color:var(--gold)}.th-stranger{background:rgba(120,160,120,.15);color:#80b080}.th-gamble{background:rgba(200,120,200,.15);color:#c080c0}
+.skawk-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:20px 0}
+.skawk-card{background:var(--bgc);border:2px solid var(--bdr);border-radius:12px;padding:20px;width:220px;cursor:pointer;transition:all .3s;text-align:center}.skawk-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 8px 30px rgba(240,192,64,.2)}
+.skawk-card .sk-emoji{font-size:2.5em;margin-bottom:8px}.skawk-card .sk-name{color:var(--gold);font-size:1.1em;font-weight:bold;margin-bottom:6px}.skawk-card .sk-desc{font-size:.8em;color:var(--t2);margin-bottom:8px;line-height:1.5}
+.skawk-card .sk-info{font-size:.75em;color:var(--t3);line-height:1.6}
+@media(max-width:600px){.dg{grid-template-columns:1fr}.bent{flex-direction:column}.t-logo{font-size:2em}.bag-grid{grid-template-columns:repeat(4,1fr)}.ba-btn{min-width:70px;padding:10px 4px;font-size:.85em}.reg-grid{grid-template-columns:1fr!important}}
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:640px;margin:16px 0}
+.reg-card{background:var(--bgc);border:2px solid var(--bdr);border-radius:12px;padding:16px;cursor:pointer;transition:all .3s;text-align:left}
+.reg-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px var(--shd)}
+.reg-card .rg-icon{font-size:1.8em;margin-bottom:6px}
+.reg-card .rg-name{font-size:1.1em;font-weight:bold;margin-bottom:4px}
+.reg-card .rg-desc{font-size:.8em;color:var(--t2);line-height:1.5;margin-bottom:6px}
+.reg-card .rg-tag{display:inline-block;font-size:.7em;padding:2px 8px;border-radius:6px;margin-right:4px;margin-top:2px}
+.reg-card.rg-wild{border-color:#40a060}.reg-card.rg-wild:hover{background:rgba(64,160,96,.08)}.reg-card.rg-wild .rg-name{color:#60c080}
+.reg-card.rg-town{border-color:var(--gold)}.reg-card.rg-town:hover{background:rgba(240,192,64,.06)}.reg-card.rg-town .rg-name{color:var(--gold)}
+.reg-card.rg-ruin{border-color:var(--pur)}.reg-card.rg-ruin:hover{background:rgba(160,80,224,.06)}.reg-card.rg-ruin .rg-name{color:var(--pur)}
+.reg-card.rg-road{border-color:var(--blu)}.reg-card.rg-road:hover{background:rgba(64,128,224,.06)}.reg-card.rg-road .rg-name{color:var(--blu)}
+.reg-card.rg-dark{border-color:var(--red)}.reg-card.rg-dark:hover{background:rgba(224,64,80,.06)}.reg-card.rg-dark .rg-name{color:var(--red)}
+.reg-hint{font-size:.8em;color:var(--t2);text-align:center;margin:8px 0;padding:6px 12px;background:var(--bgc);border-radius:8px;border:1px solid var(--bdr)}
+.region-badge{display:inline-block;font-size:.75em;padding:2px 8px;border-radius:6px;margin-left:8px}
+.age-warn{animation:pulse 1.5s infinite;color:var(--red)!important}
+.bt-glow{animation:glow 2s infinite}
+#btCards .reg-card{cursor:pointer;transition:all .3s}
+#btCards .reg-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px var(--shd)}
+/* Status Effects */
+.sfx-container{border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);background:rgba(0,0,0,.2);margin:0 -24px;padding:6px 0}
+.sfx-header{display:flex;align-items:center;gap:6px;padding:2px 10px 4px;font-size:.72em;color:var(--t3);border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:4px}
+.sfx-header .sfx-title{font-weight:bold;letter-spacing:1px;color:var(--t2)}
+.sfx-row{display:flex;gap:4px;flex-wrap:wrap;padding:3px 10px;min-height:22px;align-items:center}
+.sfx-row.sfx-player{border-left:3px solid var(--grn);margin-left:6px;padding-left:8px}
+.sfx-row.sfx-enemy{border-left:3px solid var(--red);margin-left:6px;padding-left:8px}
+.sfx-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:6px;font-size:.72em;font-weight:bold;animation:fadeIn .3s;white-space:nowrap}
+.sfx-buff{background:rgba(64,192,112,.15);color:var(--grn);border:1px solid rgba(64,192,112,.3)}
+.sfx-debuff{background:rgba(224,64,80,.12);color:var(--red);border:1px solid rgba(224,64,80,.25)}
+.sfx-special{background:rgba(240,192,64,.12);color:var(--gold);border:1px solid rgba(240,192,64,.25)}
+.sfx-dot{background:rgba(160,80,224,.12);color:var(--pur);border:1px solid rgba(160,80,224,.25)}
+.sfx-row .sfx-label{font-size:.68em;color:var(--t3);margin-right:4px;flex-shrink:0;font-weight:bold;min-width:32px}
+.sfx-empty{font-size:.65em;color:var(--t3);font-style:italic;opacity:.6}
+</style>
+</head>
+<body>
+<div id="trans" class="trans"></div>
+<span class="gear" onclick="toggleSettings()">⚙️</span>
+<div class="modal-bg" id="settingsModal"><div class="modal">
+<h3>⚙️ API 设置</h3>
+<label>API 地址</label><input id="cfgUrl" value="https://api.deepseek.com/chat/completions">
+<label>API Key</label><input id="cfgKey" value="sk-7cf3f67e1ae145c28bf5f0bd8c9dc604" type="password">
+<label>模型</label><input id="cfgModel" value="deepseek-chat">
+<label>温度 (0-1)</label><input id="cfgTemp" value="0.85" type="number" step="0.05" min="0" max="2">
+<div class="btn-row"><button class="btn-sm btn-no" onclick="toggleSettings()">取消</button><button class="btn-sm btn-ok" onclick="saveSettings()">保存</button></div>
+</div></div>
+<!-- Title -->
+<div id="titleScr" class="scr on">
+<div class="t-logo">命 运 裂 隙</div>
+<div class="t-sub">Rift of Fate — AI Roguelike</div>
+<p style="color:var(--t3);margin-bottom:30px;text-align:center;max-width:500px;line-height:1.6">选择难度，觉醒你的命运。AI 实时生成独一无二的觉醒体、技能与事件，每局都是全新的冒险。</p>
+<div class="dg">
+<div class="dc e" onclick="startGame('easy')"><h3>🌿 简单</h3><p>轻松体验<br>敌人较弱，奖励丰厚</p></div>
+<div class="dc n" onclick="startGame('normal')"><h3>⚔️ 普通</h3><p>均衡体验<br>有挑战也有回报</p></div>
+<div class="dc h" onclick="startGame('hard')"><h3>🔥 困难</h3><p>高难挑战<br>敌人更强，奖励更丰</p></div>
+<div class="dc x" onclick="startGame('hell')"><h3>💀 地狱</h3><p>极限挑战<br>高风险高收益</p></div>
+</div>
+<p style="color:var(--t3);font-size:.75em">DeepSeek AI 实时驱动 · 觉醒系统 · 限时技能 · 背包收集 · 互动战斗</p>
+</div>
+<!-- Awakening -->
+<div id="awkScr" class="scr"><div class="awk-wrap" id="awkWrap">
+<div style="color:var(--gold);font-size:1.4em;margin-bottom:10px">觉 醒</div>
+<div style="color:var(--t2);margin-bottom:20px">点击法阵，觉醒你的命运</div>
+<div class="awk-circle" id="awkCircle" onclick="doAwaken()"><div class="awk-inner"><span style="font-size:2.5em">✦</span><div class="txt">点击觉醒</div><div class="sub">AI 将为你创造独特命运</div></div></div>
+</div></div>
+<!-- Game -->
+<div id="gameScr" class="scr">
+<div class="ghdr">
+<div id="uiAge" style="color:var(--gold);font-size:.95em">🕐 <span id="uiAgeY">16</span>岁<span id="uiAgeM">0</span>月 / 寿至<span id="uiLifespan">51</span>岁</div>
+<div class="ec">📅 第 <span id="uiMonth">1</span> 月 | 事件 <span id="uiEvt">1</span>/5</div>
+<div style="color:var(--gold);font-size:.9em">💰 <span id="uiGold">0</span></div>
+<div id="uiBTBadge" style="display:none;background:rgba(224,64,80,.2);color:var(--red);padding:3px 10px;border-radius:8px;font-size:.8em;border:1px solid var(--redd);cursor:pointer" onclick="showBreakthroughScreen()">⚡ 突破!</div>
+<div id="uiDiff" style="padding:3px 12px;border-radius:8px;font-size:.85em"></div>
+<div id="uiRegion" style="padding:3px 12px;border-radius:8px;font-size:.85em;display:none"></div>
+</div>
+<div class="pbar">
+<div class="pstats"><span class="nm" id="uiName">冒险者</span><span class="lv" id="uiLvBox">Lv.<span id="uiLv">1</span> <span id="uiTitle" style="color:var(--org);font-size:.85em">初觉者</span> | 怪物Lv.<span id="uiMLv">1</span></span></div>
+<div class="srow">
+<span class="si"><span class="sl">生命</span><span class="sv hp" id="uiHP">100/100</span></span>
+<span class="si"><span class="sl">攻击</span><span class="sv atk" id="uiATK">10</span></span>
+<span class="si"><span class="sl">防御</span><span class="sv def" id="uiDEF">5</span></span>
+<span class="si"><span class="sl">能量</span><span class="sv en" id="uiEN">50/50</span></span>
+<span class="si"><span class="sl">暴击</span><span class="sv cr" id="uiCR">5%/×1.5</span></span>
+<span class="si"><span class="sl">闪避</span><span class="sv" id="uiDG">3%</span></span>
+<span class="si"><span class="sl">幸运</span><span class="sv lk" id="uiLK">5</span></span>
+</div>
+<div class="bar-w"><div class="bar-hp" id="barHP" style="width:100%"></div></div>
+<div class="bar-w" style="margin-top:3px"><div class="bar-en" id="barEN" style="width:100%"></div></div>
+<div class="xp-wrap"><div class="xp-bar" id="barXP" style="width:0%"></div></div>
+<div class="skbar" id="skBar"></div>
+</div>
+<button class="bag-btn" onclick="openBag()">🎒 背包 (<span id="bagCount">0</span>/<span id="bagMax">20</span>)</button>
+<div class="ep" id="evtProg"></div>
+<div class="earea" id="evtArea"></div>
+</div>
+<!-- Skill Awakening -->
+<div id="skAwkScr" class="scr">
+<div style="text-align:center">
+<div style="font-size:2em;color:var(--gold);margin-bottom:8px">✦ 技能觉醒 ✦</div>
+<div style="color:var(--t2);margin-bottom:10px" id="skAwkSub">等级关口！选择一个新技能</div>
+<div class="skawk-cards" id="skAwkCards"></div>
+</div>
+</div>
+<!-- Game Over -->
+<div id="goScr" class="scr">
+<div class="go-t">冒险结束</div>
+<p style="color:var(--t2);margin-bottom:10px">你的旅途在裂隙中终结...</p>
+<div class="go-box" id="goBox"></div>
+<button class="btn-big" onclick="location.reload()">再次挑战</button>
+</div>
+<!-- Region Picker -->
+<div id="regScr" class="scr">
+<div style="text-align:center">
+<div style="font-size:1.8em;color:var(--gold);margin-bottom:8px">选择方向</div>
+<div style="color:var(--t2);margin-bottom:6px" id="regSub">裂隙初开，选择你的第一个方向</div>
+<div id="regHint" class="reg-hint" style="display:none"></div>
+<div class="reg-grid" id="regGrid"></div>
+</div>
+</div>
+<!-- Breakthrough Screen -->
+<div id="btScr" class="scr">
+<div style="text-align:center">
+<div style="font-size:2em;color:var(--gold);margin-bottom:8px">⚡ 突破试炼 ⚡</div>
+<div style="font-size:1.2em;color:var(--org);margin-bottom:6px" id="btTitle">突破任务</div>
+<div style="color:var(--t2);margin-bottom:16px" id="btDesc">选择难度并击败强敌完成突破</div>
+<div class="reg-grid" id="btCards" style="max-width:700px"></div>
+<button class="btn-sm btn-no" style="margin-top:16px" onclick="showScr('gameScr')">暂不突破 — 继续冒险，稍后再来</button>
+</div>
+</div>
+<!-- Backpack Modal -->
+<div class="modal-bg" id="bagModal"><div class="modal" style="max-width:560px">
+<h3>🎒 背包 (<span id="bagModalCount">0</span>/20)</h3>
+<div class="bag-grid" id="bagGrid"></div>
+<div id="bagDetail"></div>
+<div class="btn-row" style="margin-top:12px"><button class="btn-sm btn-no" onclick="closeBag()">关闭</button></div>
+</div></div>
+
+<script>
+// ===== CONFIG =====
+let CFG={url:'https://api.deepseek.com/chat/completions',key:'sk-7cf3f67e1ae145c28bf5f0bd8c9dc604',model:'deepseek-chat',temp:0.85};
+function toggleSettings(){document.getElementById('settingsModal').classList.toggle('on')}
+function saveSettings(){CFG.url=document.getElementById('cfgUrl').value;CFG.key=document.getElementById('cfgKey').value;CFG.model=document.getElementById('cfgModel').value;CFG.temp=parseFloat(document.getElementById('cfgTemp').value)||0.85;toggleSettings()}
+
+// ===== UTILITY =====
+const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')}
+async function showTrans(t,d=800){const o=$('trans');o.textContent=t;o.classList.add('on');await sleep(d);o.classList.remove('on');await sleep(300)}
+
+// ===== PRESET DATA =====
+const DIR_COLORS={flame:'#e04030',frost:'#40a0e0',storm:'#c080f0',shadow:'#8030a0',life:'#30b060',holy:'#f0e080',blood:'#a02020',void:'#a0a0b0'};
+const DIR_NAMES={flame:'炎',frost:'霜',storm:'雷',shadow:'影',life:'命',holy:'圣',blood:'血',void:'虚'};
+const DIRS=['flame','frost','storm','shadow','life','holy','blood','void'];
+const DIR_DESC={flame:'爆发输出，灼烧',frost:'控制减速，护盾',storm:'连锁打击，高频',shadow:'暴击暗杀，诡秘',life:'生命续航，回复',holy:'净化增益，均衡',blood:'吸血狂战，高风险',void:'能量增幅，技能流'};
+const PRESET_AWK={
+flame:[
+{name:'灰烬行者',title:'不灭之焰',emoji:'🔥',passiveType:'positive',passiveName:'不灭余烬',passiveDesc:'HP归零时不死，以1HP存活+3回合ATK+50%+免疫(每战限1次)',mechanics:{positive:{specialMechanic:'immortal_once',atkMult:0.5,dur:3}},stats:{hp:85,atk:10,def:4,energy:48,critRate:0.06,critDamage:1.5,dodgeRate:0.03,luck:4},affinity:'survival',narrative:'坚韧不拔，浴火重生'},
+{name:'烈焰君主',title:'灼热王座',emoji:'👑',passiveType:'dual_edge',passiveName:'焚天之怒',passiveDesc:'攻击附加ATK×5%灼烧(3回合)，但自身每回合受2%maxHP灼烧',mechanics:{positive:{dotPct:0.05,dotDur:3},negative:{selfBurnPct:0.02}},stats:{hp:90,atk:13,def:3,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'霸道炽热，焚尽一切'},
+{name:'熔岩铸师',title:'大地之锤',emoji:'🔨',passiveType:'none',passiveName:'无',passiveDesc:'无特殊能力，天生体魄超群',mechanics:{},stats:{hp:125,atk:14,def:7,energy:58,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:7},affinity:'mixed',narrative:'朴实刚健，以力服人'}
+],frost:[
+{name:'永冻之王',title:'绝对零度',emoji:'❄️',passiveType:'dual_edge',passiveName:'冰封领域',passiveDesc:'受击15%冻结敌人1回合，但DEF-10%',mechanics:{positive:{freezeChance:0.15},negative:{defMult:-0.1}},stats:{hp:95,atk:10,def:5,energy:52,critRate:0.06,critDamage:1.6,dodgeRate:0.04,luck:5},affinity:'survival',narrative:'冰冷威严，万物冻结'},
+{name:'冰棱裁决者',title:'寒霜法庭',emoji:'⚖️',passiveType:'positive',passiveName:'冰甲裁决',passiveDesc:'每战斗开始获得maxHP×10%护盾',mechanics:{positive:{shieldPct:0.1}},stats:{hp:85,atk:10,def:5,energy:50,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:4},affinity:'survival',narrative:'公正冷酷，裁决一切'},
+{name:'霜语幽灵',title:'无声寒息',emoji:'👻',passiveType:'none',passiveName:'无',passiveDesc:'无特殊能力，天赋异禀',mechanics:{},stats:{hp:110,atk:12,def:6,energy:55,critRate:0.07,critDamage:1.6,dodgeRate:0.05,luck:6},affinity:'mixed',narrative:'幽灵般寂静'}
+],storm:[
+{name:'雷帝',title:'万雷之主',emoji:'⚡',passiveType:'dual_edge',passiveName:'雷霆之躯',passiveDesc:'每3次攻击触发雷击(ATK×50%无视防御)，但受击10%被麻痹',mechanics:{positive:{chainCount:3,chainDmg:0.5},negative:{paralyzeChance:0.1}},stats:{hp:88,atk:12,def:4,energy:50,critRate:0.10,critDamage:2.0,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'雷霆万钧，天罚降临'},
+{name:'风暴之眼',title:'暴风中心',emoji:'🌪️',passiveType:'positive',passiveName:'暴风护体',passiveDesc:'闪避率+8%，闪避后下次攻击必暴',mechanics:{positive:{dodgeBonus:0.08,critAfterDodge:true}},stats:{hp:82,atk:11,def:4,energy:48,critRate:0.08,critDamage:1.8,dodgeRate:0.08,luck:5},affinity:'damage',narrative:'如暴风般不可预测'},
+{name:'紫电狂徒',title:'连锁闪电',emoji:'💜',passiveType:'none',passiveName:'无',passiveDesc:'纯粹的力量与速度',mechanics:{},stats:{hp:115,atk:13,def:6,energy:56,critRate:0.06,critDamage:1.5,dodgeRate:0.04,luck:7},affinity:'mixed',narrative:'狂野不羁，电光火石'}
+],shadow:[
+{name:'暗影君王',title:'暗影统帅',emoji:'👤',passiveType:'dual_edge',passiveName:'暗影统御',passiveDesc:'击杀召唤分身(3回合ATK×20%额外伤害)，但每分身DEF-10%',mechanics:{positive:{summonDur:3,summonDmg:0.2},negative:{defPerSummon:-0.1}},stats:{hp:95,atk:11,def:5,energy:50,critRate:0.10,critDamage:1.7,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'王者气质，统帅暗影军团'},
+{name:'影之镰刀',title:'灵魂收割',emoji:'🌙',passiveType:'dual_edge',passiveName:'灵魂收割',passiveDesc:'暴击时回复伤害30%HP，非暴击受3%maxHP惩罚',mechanics:{positive:{critHealPct:0.3},negative:{missSelfPct:0.03}},stats:{hp:85,atk:13,def:3,energy:45,critRate:0.22,critDamage:2.3,dodgeRate:0.03,luck:4},affinity:'damage',narrative:'冷酷收割，每一击都是赌注'},
+{name:'死神契约',title:'向死而生',emoji:'💀',passiveType:'dual_edge',passiveName:'濒死狂舞',passiveDesc:'HP<50%时ATK+40%暴击+25%，HP>70%时ATK-20%能量回复减半',mechanics:{positive:{lowHpAtk:0.4,lowHpCrit:0.25,lowThresh:0.5},negative:{highHpAtk:-0.2,highHpEnRegen:-0.5,highThresh:0.7}},stats:{hp:100,atk:10,def:4,energy:55,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:6},affinity:'mixed',narrative:'疯狂绝望，向死而生'}
+],life:[
+{name:'万木之灵',title:'生命之源',emoji:'🌳',passiveType:'positive',passiveName:'万物生长',passiveDesc:'每回合回复3%maxHP',mechanics:{positive:{hpRegenPct:0.03}},stats:{hp:90,atk:9,def:5,energy:52,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:6},affinity:'survival',narrative:'温暖慈爱，万物生长'},
+{name:'生命编织者',title:'命运织线',emoji:'🧬',passiveType:'dual_edge',passiveName:'生命编织',passiveDesc:'治疗效果+50%，但受伤+10%',mechanics:{positive:{healBoost:0.5},negative:{damageTaken:0.1}},stats:{hp:95,atk:10,def:4,energy:50,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:5},affinity:'support',narrative:'精密编织命运'},
+{name:'翠灵祭司',title:'大地祝福',emoji:'🍀',passiveType:'none',passiveName:'无',passiveDesc:'天生幸运儿',mechanics:{},stats:{hp:110,atk:11,def:6,energy:55,critRate:0.06,critDamage:1.5,dodgeRate:0.04,luck:10},affinity:'mixed',narrative:'祥和自然'}
+],holy:[
+{name:'光辉圣者',title:'神圣审判',emoji:'✨',passiveType:'dual_edge',passiveName:'圣光裁决',passiveDesc:'对HP>70%敌人伤害+30%，自身HP<30%伤害-20%',mechanics:{positive:{highEnemyDmg:0.3},negative:{lowSelfDmg:-0.2}},stats:{hp:92,atk:11,def:5,energy:50,critRate:0.06,critDamage:1.6,dodgeRate:0.03,luck:5},affinity:'support',narrative:'庄严神圣，审判邪恶'},
+{name:'黎明使者',title:'破晓之光',emoji:'🌅',passiveType:'positive',passiveName:'黎明祝福',passiveDesc:'每场前3回合ATK+15%',mechanics:{positive:{earlyAtk:0.15,earlyDur:3}},stats:{hp:85,atk:10,def:4,energy:48,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:5},affinity:'support',narrative:'希望之光，驱散黑暗'},
+{name:'破晓之盾',title:'不动壁垒',emoji:'🛡️',passiveType:'none',passiveName:'无',passiveDesc:'坚如磐石',mechanics:{},stats:{hp:120,atk:10,def:8,energy:55,critRate:0.04,critDamage:1.4,dodgeRate:0.04,luck:6},affinity:'survival',narrative:'坚不可摧'}
+],blood:[
+{name:'血月领主',title:'猩红之月',emoji:'🩸',passiveType:'dual_edge',passiveName:'血之渴望',passiveDesc:'伤害15%转为HP，但每回合流失1%maxHP',mechanics:{positive:{lifestealPct:0.15},negative:{hpLossPct:0.01}},stats:{hp:95,atk:13,def:4,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'嗜血残暴，以血为食'},
+{name:'猩红收割者',title:'血色审判',emoji:'⚰️',passiveType:'dual_edge',passiveName:'死亡标记',passiveDesc:'击杀后ATK+20%持续3层，但满血时ATK-15%',mechanics:{positive:{killAtkBuff:0.2,killDur:3},negative:{fullHpAtk:-0.15}},stats:{hp:88,atk:12,def:4,energy:48,critRate:0.10,critDamage:2.0,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'死亡使者，收割灵魂'},
+{name:'血契亡魂',title:'不死血奴',emoji:'💉',passiveType:'none',passiveName:'无',passiveDesc:'不死的躯体',mechanics:{},stats:{hp:120,atk:12,def:6,energy:54,critRate:0.06,critDamage:1.5,dodgeRate:0.03,luck:6},affinity:'mixed',narrative:'不死不灭'}
+],void:[
+{name:'星辰织者',title:'星河之手',emoji:'🌌',passiveType:'dual_edge',passiveName:'星辰之力',passiveDesc:'能量上限+30%技能伤害+15%，但普攻-25%',mechanics:{positive:{energyMax:0.3,skillDmg:0.15},negative:{normDmg:-0.25}},stats:{hp:85,atk:9,def:4,energy:65,critRate:0.06,critDamage:1.6,dodgeRate:0.03,luck:7},affinity:'energy',narrative:'神秘深邃，操纵星辰'},
+{name:'虚空漫步者',title:'维度行者',emoji:'🕳️',passiveType:'positive',passiveName:'维度跃迁',passiveDesc:'每场15%概率闪避所有攻击',mechanics:{positive:{fullEvade:0.15}},stats:{hp:88,atk:10,def:4,energy:55,critRate:0.05,critDamage:1.5,dodgeRate:0.06,luck:6},affinity:'energy',narrative:'超脱维度'},
+{name:'命运赌徒',title:'运气之王',emoji:'🎲',passiveType:'dual_edge',passiveName:'命运骰子',passiveDesc:'所有随机效果×2，负面效果也×2',mechanics:{positive:{allRandomMult:2},negative:{allNegMult:2}},stats:{hp:90,atk:11,def:4,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:10},affinity:'mixed',narrative:'赌徒心态，一切皆赌'}
+]};
+
+const PRESET_EVENTS=[
+// === adventure ===
+{theme:"adventure",title:"迷雾森林",description:"浓雾弥漫的森林中，远处传来低沉的吟唱声，脚下落叶窸窣作响。",choices:[{label:"循着吟唱声前进",result:"你发现了一位隐居的老法师，他传授了你一招强力技能。",effects:{atk:3}},{label:"在雾中谨慎探索",result:"你在树林中找到了有用的草药，恢复了体力。",effects:{heal:15}},{label:"转身离开森林",result:"你安全离开了，路上捡到了些补给。",effects:{heal:5,item:'hpPot'}}]},
+{theme:"adventure",title:"悬崖吊桥",description:"前方是深不见底的峡谷，唯一的通道是一座摇摇欲坠的吊桥。",choices:[{label:"大胆冲过吊桥",result:"你飞速冲过吊桥，肾上腺素让力量暴增！",effects:{atk:4,damage:8}},{label:"小心翼翼地通过",result:"你慢慢走过吊桥，在桥中央捡到了一颗宝石。",effects:{def:2,heal:10,item:'gemStone'}},{label:"寻找其他路线",result:"你绕了远路，在另一条小路上发现了补给包。",effects:{heal:20}}]},
+{theme:"adventure",title:"流浪剑客",description:"路口站着一位身穿破旧斗篷的剑客，手持寒光长剑，目光锐利。",choices:[{label:"向他发起挑战",result:"激烈切磋后你赢得了尊重，他教了你一招剑术。",effects:{atk:5,damage:10}},{label:"邀请他同行一段",result:"他分享了战斗经验和旅途见闻。",effects:{def:2,atk:2}},{label:"礼貌地绕开",result:"你避开了可能的危险继续前行。",effects:{}}]},
+{theme:"adventure",title:"地下暗河",description:"你发现了一条地下暗河的入口，水声轰鸣，隐约能看到河对岸有光。",choices:[{label:"游泳渡河",result:"冰冷的河水让你几乎冻僵，但对岸发现了珍贵矿石。",effects:{damage:12,item:'gemStone',atk:2}},{label:"沿河岸探索",result:"你在河岸的洞穴中找到了一些有用的物资。",effects:{heal:10,item:'hpPot'}},{label:"原路返回",result:"你决定不冒险，保存体力继续前进。",effects:{heal:5}}]},
+// === ruins ===
+{theme:"ruins",title:"坍塌神殿",description:"古老的神殿矗立面前，祭坛上的蓝色火焰从未熄灭，散发幽蓝光芒。",choices:[{label:"触摸祭坛火焰",result:"蓝色火焰包裹全身，远古力量注入体内。",effects:{atk:5,damage:10}},{label:"搜索神殿侧厅",result:"在废墟中找到了牧师留下的治疗圣水。",effects:{heal:25,item:'hpPot'}},{label:"研读墙壁铭文",result:"铭文记载了古代防御术，你领悟了精髓。",effects:{def:4}}]},
+{theme:"ruins",title:"古代图书馆",description:"半坍塌的图书馆里，尘封的书籍中蕴含古老知识，有些书页还在微微发光。",choices:[{label:"翻阅发光的书籍",result:"书中记载了战斗秘技，攻击能力提升。",effects:{atk:4}},{label:"搜索防御类书籍",result:"找到了古代护甲设计图。",effects:{def:4}},{label:"收集所有能带的书",result:"带了一些书上路慢慢研读。",effects:{atk:2,def:2,heal:5}}]},
+{theme:"ruins",title:"废弃的炼金工坊",description:"一间布满蜘蛛网的炼金工坊，架子上摆满了瓶瓶罐罐，有些还在冒泡。",choices:[{label:"搜索有价值的药剂",result:"你找到了一些还能用的药剂！",effects:{item:'hpPotL',item2:'atkPot'}},{label:"研究炼金配方",result:"你学会了一种简易强化配方。",effects:{atk:3,def:1}},{label:"小心离开不碰任何东西",result:"有些瓶子看起来很不稳定...你明智地离开了。",effects:{heal:5}}]},
+// === tomb ===
+{theme:"tomb",title:"无名剑圣之墓",description:"你发现了一座被藤蔓覆盖的古墓，石碑上刻着一位传奇剑圣的名号。墓门半开，里面隐约传来金属碰撞声。",choices:[{label:"进入墓中探索",result:"你在墓中遭遇了守护机关，但最终找到了剑圣遗留的武器心得。",effects:{atk:6,damage:15,item:'skullTrophy'}},{label:"在墓前祭拜",result:"你恭敬地祭拜，恍惚间似乎得到了剑圣的指点。",effects:{atk:3,heal:10}},{label:"只做简单搜索",result:"你在墓外找到了一些供品和钱币。",effects:{heal:8,item:'hpPot'}}]},
+{theme:"tomb",title:"将军的地下陵墓",description:"一座宏伟的地下陵墓，石壁上刻满了战争壁画。棺椁前的石台上放着将军的遗物。",choices:[{label:"打开棺椁",result:"棺中涌出黑色毒气，但你在里面发现了将军的战甲碎片。",effects:{damage:18,def:5,item:'gemStone'}},{label:"研究壁画学习战术",result:"壁画中的阵法让你领悟了防御之道。",effects:{def:4,heal:5}},{label:"取走石台上的遗物",result:"你拿走了一把古剑和一面盾牌。",effects:{atk:3,def:2}}]},
+{theme:"tomb",title:"法师塔的废墟",description:"曾经辉煌的大法师之塔已成废墟，但残余的魔法阵仍在闪烁。地下室似乎藏着法师的研究资料。",choices:[{label:"深入地下室",result:"你触发了残存的魔法陷阱，但也找到了法师的能量水晶。",effects:{damage:12,item:'enCrystal',atk:3}},{label:"收集残破的魔法书",result:"你找到了几页有用的咒语。",effects:{atk:2,item:'magicEss'}},{label:"在废墟中休息",result:"残存的魔法意外地治愈了你的伤口。",effects:{heal:20}}]},
+{theme:"tomb",title:"远古英雄的墓室",description:"一座被封印千年的墓室出现在你面前。石棺旁摆放着英雄生前的战甲和圣物，散发着微弱的金光。",choices:[{label:"开启石棺",result:"石棺中的英雄遗骸已化为尘土，但他的圣物依然散发着力量。你获得了一件远古圣物。",effects:{damage:15,item:'phoenixFeather',atk:3}},{label:"只取走祭台上的供品",result:"你恭敬地取走了祭台上的物品，没有惊扰亡者。",effects:{item:'chainMail',heal:10}},{label:"在墓前默哀后离开",result:"你向远古英雄致敬，离开时感觉身上多了一层祝福。",effects:{heal:15,def:2,luck:1}}]},
+// === duel ===
+{theme:"duel",title:"路遇劫匪",description:"三个蒙面人从树丛中跳出，手持利刃拦住了你的去路。为首者冷笑着说：留下财物还是留下命？",choices:[{label:"拔剑迎战",result:"你以一敌三，虽然受了伤但最终将他们击退，缴获了他们的赃款。",effects:{atk:3,damage:12,item:'hpPot',gold:20}},{label:"只和首领单挑",result:"你提议单挑来决定胜负，经过一番苦战你赢了。",effects:{atk:4,damage:8,gold:10}},{label:"交出一些财物",result:"你丢出一些金币趁他们抢夺时溜走。",effects:{damage:5,heal:5,goldCost:15}}]},
+{theme:"duel",title:"武斗大会",description:"城镇正在举办武斗大会，胜者可以获得丰厚的奖品。擂台上已经有人叫嚣着挑战所有路人。",choices:[{label:"参加武斗大会",result:"你过五关斩六将，虽然最后惜败但获得了不错的名次奖励。",effects:{atk:4,damage:15,item:'berserk'}},{label:"只挑战一场",result:"你赢了一场比赛就退出了，拿到了小奖品。",effects:{atk:2,heal:10,item:'hpPot'}},{label:"在场边观战学习",result:"你观察了各种战斗风格，颇有收获。",effects:{def:2,atk:1}}]},
+{theme:"duel",title:"复仇的赏金猎人",description:"一个赏金猎人找到了你，声称你头上的悬赏金已经足够他退休了。他不会轻易放弃。",choices:[{label:"正面对决",result:"一场惊心动魄的决斗，你险胜对手，获得了他的装备。",effects:{atk:5,damage:18,item:'atkPot',item2:'defPot'}},{label:"用计谋脱身",result:"你设了个圈套让猎人中计，虽然有些卑鄙但有效。",effects:{atk:2,def:2,damage:5}},{label:"说服他放弃",result:"你说服他悬赏金并不值得冒生命危险，他勉强同意了。",effects:{heal:10}}]},
+// === mystery ===
+{theme:"mystery",title:"时间裂缝",description:"空气中突然出现了一道扭曲的裂缝，你透过裂缝看到了另一个世界的自己——那个你似乎走了完全不同的道路。",choices:[{label:"伸手触摸裂缝",result:"两个世界的能量交汇，你感到力量在暴走，身体忽强忽弱。",effects:{atk:6,def:-2,damage:8}},{label:"观察另一个自己",result:"你从另一个自己的战斗方式中学到了东西。",effects:{def:3,atk:2}},{label:"远离裂缝",result:"裂缝很快消失了，但留下了几块奇异的结晶。",effects:{item:'magicEss',heal:5}}]},
+{theme:"mystery",title:"预言石碑",description:"路边矗立着一块古老的石碑，上面的文字似乎在描述你未来的命运。文字在月光下若隐若现。",choices:[{label:"仔细研读预言",result:"预言描述了一场即将到来的危机，你提前做好了心理准备。",effects:{def:4,luck:2}},{label:"尝试破译隐藏文字",result:"你发现石碑背面刻着一段咒语，念出后身体产生了奇异的变化。",effects:{atk:3,item:'awkShard'}},{label:"无视预言继续前行",result:"有些事不知道反而更好。",effects:{heal:10}}]},
+{theme:"mystery",title:"幽灵商队",description:"月色朦胧中，一支透明的商队从你面前飘过。领头的幽灵商人向你招手，他展示的货物闪烁着诡异的光。",choices:[{label:"和幽灵交易",result:"你用生命力换取了一件诡异的宝物。",effects:{damage:15,item:'berserk',atk:3}},{label:"只是看看不买",result:"你从幽灵的商品中获得了一些灵感。",effects:{def:2,heal:5}},{label:"攻击幽灵商队",result:"你挥剑斩向幽灵，剑刃穿过虚空...但你捡到了一些散落的灵质。",effects:{item:'magicEss',damage:5}}]},
+// === merchant ===
+{theme:"merchant",title:"旅行商人",description:"一位戴着宽檐帽的商人拦住了去路，马车上堆满稀奇古怪的物品。他笑眯眯地报出了价格。",choices:[{label:"购买力量药剂（15💰）",result:"喝下后感觉力量充盈。",effects:{atk:4,goldCost:15}},{label:"购买防护装备（12💰）",result:"选了一件轻便护甲。",effects:{def:3,heal:5,goldCost:12}},{label:"购买回复药水（8💰）",result:"商人的药水看起来不错。",effects:{heal:15,item:'hpPot',goldCost:8}}]},
+{theme:"merchant",title:"黑市赌局",description:"暗巷中有人摆了赌局，庄家摇着骰子，旁边围了一圈看热闹的人。入场需要交一些金币。",choices:[{label:"豪赌一把（20💰）",result:"手气不错！赢得了一份珍贵战利品和丰厚奖金。",effects:{atk:6,def:2,gold:40,goldCost:20}},{label:"小赌怡情（8💰）",result:"小赢了一把，赚了点零花钱。",effects:{heal:15,atk:1,gold:15,goldCost:8}},{label:"不参与赌博",result:"你明智地走开了。",effects:{heal:5}}]},
+{theme:"merchant",title:"神秘的药剂师",description:"一位穿着长袍的药剂师在路边支了个摊，上面摆满了五颜六色的瓶瓶罐罐。她声称可以用物易物。",choices:[{label:"用生命换攻击药剂",result:"你献出了一些血液，换来了一瓶强力的攻击秘药。",effects:{damage:10,atk:5,item:'atkPot'}},{label:"交换治疗药剂",result:"你用自己的材料换了几瓶治疗药水。",effects:{item:'hpPot',item2:'hpPot',heal:10}},{label:"只是聊聊天",result:"药剂师分享了一些有趣的药剂知识。",effects:{heal:8,def:1}}]},
+// === curse ===
+{theme:"curse",title:"血之契约",description:"一纸泛黄的契约飘到面前，用鲜血写着古老文字，承诺给予力量但代价不菲。",choices:[{label:"签下血之契约",result:"契约化为火焰融入身体，获得了力量但也承受了反噬。",effects:{atk:8,damage:20}},{label:"尝试修改契约",result:"你巧妙地加入了有利条款。",effects:{atk:4,damage:8}},{label:"烧毁契约",result:"灰烬中飘出灵魂碎片，化为治疗能量。",effects:{heal:18}}]},
+{theme:"curse",title:"诅咒之泉",description:"一潭漆黑的泉水散发着不祥的气息。传说饮用诅咒之泉可以获得超越常人的力量，但副作用同样可怕。",choices:[{label:"饮下诅咒之水",result:"黑暗的力量涌入全身，你变强了但也更脆弱了。",effects:{atk:7,damage:12,def:-2}},{label:"用瓶子装一些带走",result:"也许以后会有用途。",effects:{item:'berserk'}},{label:"净化泉水",result:"你释放出光芒净化了泉水，净化后的水反而有治愈效果。",effects:{heal:25,def:2}}]},
+// === blessing ===
+{theme:"blessing",title:"星辰之力",description:"夜空中一颗流星划过，坠落在面前，散发温暖的金色光芒。",choices:[{label:"吸收星辰之力",result:"金色能量涌入全身，变得更强了。",effects:{atk:4,def:2,heal:10}},{label:"将力量注入武器",result:"武器闪烁着星光。",effects:{atk:6}},{label:"化为护盾",result:"星光在周身形成保护罩。",effects:{def:5,heal:8}}]},
+{theme:"blessing",title:"精灵的祝福",description:"一只受伤的小精灵跌落在你面前，它用恳求的眼神看着你。帮助它或许会带来好运。",choices:[{label:"治愈小精灵",result:"精灵恢复后欢快地飞舞，在你身上施加了祝福。",effects:{heal:15,luck:3,def:2}},{label:"收留小精灵",result:"精灵跟着你走了一段路，不断给你带来好运。",effects:{luck:2,item:'hpPot',heal:10}},{label:"帮它指路",result:"你帮精灵指明了回家的方向，它留下一颗发光的种子作为谢礼。",effects:{item:'magicEss'}}]},
+// === trap ===
+{theme:"trap",title:"地刺陷阱",description:"脚下石板突然下沉，四周墙壁射出尖锐地刺！必须迅速反应。",choices:[{label:"向前翻滚躲避",result:"成功避开大部分地刺，只受了轻伤。",effects:{damage:8,atk:1}},{label:"举起护盾防御",result:"挡住了大部分攻击。",effects:{damage:5,def:2}},{label:"原地跳起",result:"跳起避开地刺，落地时发现了宝箱。",effects:{damage:3,heal:10,item:'atkPot'}}]},
+{theme:"trap",title:"毒气房间",description:"房间门突然关闭，墙壁小孔开始释放绿色毒气。",choices:[{label:"暴力破门",result:"你用尽全力撞开了门。",effects:{damage:15,atk:2}},{label:"寻找通风口",result:"你找到了隐藏的通风口。",effects:{damage:6,heal:5}},{label:"用布捂住口鼻等待",result:"耐心等待毒气消散。",effects:{damage:4,def:1}}]},
+// === treasure ===
+{theme:"treasure",title:"隐秘宝箱",description:"在一面看似普通的墙壁后面，你发现了一个布满灰尘的宝箱。锁已经锈蚀，但箱内似乎有东西在发光。",choices:[{label:"直接打开宝箱",result:"宝箱中触发了一个小机关，但里面的宝物和金币值得这点代价。",effects:{damage:8,item:'hpPotL',item2:'gemStone',gold:30}},{label:"仔细检查后打开",result:"你小心地拆除了机关，安全地取出了宝物。",effects:{item:'hpPot',atk:2,def:1,gold:15}},{label:"把整个宝箱带走",result:"宝箱太重了，你只带走了一些散落的小物件和钱币。",effects:{item:'ironOre',item2:'ironOre',heal:5,gold:10}}]},
+{theme:"treasure",title:"沉船的宝藏",description:"河岸边搁浅着一艘古老的沉船，船舱中似乎还保存着当年的货物。",choices:[{label:"深入船舱搜索",result:"你在即将坍塌的船舱中找到了珍贵的货物。",effects:{damage:10,item:'gemStone',item2:'ancientCoin'}},{label:"只在甲板搜索",result:"甲板上散落着一些有用的补给品。",effects:{item:'hpPot',heal:10}},{label:"拆船板当柴烧",result:"你在船板中发现了一些藏在夹层里的东西。",effects:{item:'magicEss',heal:5}}]},
+{theme:"treasure",title:"铸剑师的遗产",description:"你偶然发现了一座废弃的锻造坊，炉火早已熄灭，但工具架上的武器依然闪烁着寒光。",choices:[{label:"挑选一把武器",result:"你从架上取下了一把精良的长剑，握在手中感觉力量充盈。",effects:{item:'steelSword',atk:2}},{label:"搜索锻造材料",result:"你找到了一些稀有的锻造材料和一件皮甲。",effects:{item:'leatherArmor',item2:'ironOre',def:2}},{label:"只带走工具",result:"锻造工具虽重但价值不菲。",effects:{item:'ironSword',heal:5}}]},
+// === stranger ===
+{theme:"stranger",title:"受伤的旅者",description:"路边躺着一个身受重伤的旅者，他紧紧攥着一个包裹，看到你后露出了警惕的目光。",choices:[{label:"救治旅者",result:"旅者感激涕零，将包裹中的一些物资分给了你。",effects:{heal:10,item:'hpPot',def:2}},{label:"询问发生了什么",result:"旅者讲述了前方的危险，你做好了准备。",effects:{def:3,atk:2}},{label:"趁他不注意拿走包裹",result:"包裹里有一些值钱的物品，但你感到些许愧疚。",effects:{item:'gemStone',atk:2,damage:3}}]},
+{theme:"stranger",title:"疯狂的学者",description:"一位头发凌乱的学者拦住你，兴奋地展示他的最新发明——一台可以强化人体的机器。他需要一个测试对象。",choices:[{label:"自愿当测试对象",result:"机器嗡嗡作响后，你感到身体产生了变化...大部分是好的。",effects:{atk:5,def:3,damage:12}},{label:"帮他改进机器",result:"你提出了一些建议，学者给了你一份报酬。",effects:{atk:2,def:2,item:'magicEss'}},{label:"婉拒离开",result:"你不想冒这个险。",effects:{heal:5}}]},
+{theme:"stranger",title:"失忆的老战士",description:"一位白发苍苍的老战士坐在路边，他忘记了自己的名字，但身体上的伤疤诉说着曾经的辉煌战绩。",choices:[{label:"帮他恢复记忆",result:"在你们的对话中，他逐渐回忆起了战斗技巧并传授给你。",effects:{atk:4,def:3}},{label:"给他食物和水",result:"老战士感激地给你讲了一些战场的生存经验。",effects:{def:4,heal:10}},{label:"和他切磋一番",result:"虽然年老但经验丰富，你在交手中受益匪浅。",effects:{atk:3,damage:5,def:2}}]},
+// === gamble ===
+{theme:"gamble",title:"命运之轮",description:"一个神秘的转盘出现在面前，上面刻着各种符文。转盘旁站着一个蒙面人，他示意你可以转动转盘。",choices:[{label:"大力转动转盘",result:"指针停在了金色区域！你获得了意外的奖赏。",effects:{atk:5,luck:3,item:'enCrystal'}},{label:"轻轻一转",result:"指针停在了蓝色区域，还算不错。",effects:{heal:15,def:2}},{label:"拒绝转动",result:"蒙面人笑了笑消失了，地上留下了一些钱币。",effects:{heal:8}}]},
+{theme:"gamble",title:"骰子恶魔",description:"一个长着犄角的小恶魔出现在面前，它手里摇着两颗骰子，提议和你玩一个游戏：掷出的点数决定你的命运。",choices:[{label:"和恶魔玩",result:"你掷出了高点数！恶魔不情愿地交出了它的宝物。",effects:{atk:6,item:'berserk',damage:5}},{label:"只赌小的",result:"你赢了个小彩头。",effects:{heal:12,atk:1}},{label:"拒绝并攻击恶魔",result:"恶魔尖叫着逃跑了，留下了些硫磺结晶。",effects:{item:'magicEss',damage:3}}]},
+// === disaster ===
+{theme:"disaster",title:"山洪暴发",description:"暴雨倾盆而下，山洪从高处汹涌而来。你只有几秒钟做出反应！",choices:[{label:"向高处奔跑",result:"你拼命跑上了高坡，虽然筋疲力尽但安全了。",effects:{damage:8,atk:2}},{label:"抱住大树",result:"大树在洪水中摇摇欲坠但最终挺住了。",effects:{damage:12,def:2}},{label:"跳入水中顺流而下",result:"你被洪水冲了很远，在下游发现了一些被冲刷出来的宝物。",effects:{damage:18,item:'gemStone',atk:3}}]},
+{theme:"disaster",title:"陨石坠落",description:"天空中一道火光划过，一颗小型陨石朝着你的方向坠落！冲击波即将袭来。",choices:[{label:"全力奔跑躲避",result:"你勉强跑出了冲击范围，但被碎石击中受了些伤。",effects:{damage:10,def:2}},{label:"躲入最近的掩体",result:"掩体挡住了大部分冲击，你发现陨石碎片中有稀有矿石。",effects:{damage:5,item:'ironOre',item2:'gemStone'}},{label:"用技能抵挡冲击",result:"你释放能量形成护盾，成功挡住了冲击波。",effects:{damage:3,atk:3}}]}
+];
+
+const PRESET_SKILLS=[
+{name:'烈焰弹',cat:'damage',emoji:'🔥',desc:'发射灼热火焰造成高额伤害',cd:3,cost:15,dmg:15},{name:'雷霆一击',cat:'damage',emoji:'⚡',desc:'召唤雷电劈向敌人',cd:4,cost:20,dmg:20},
+{name:'暗影斩',cat:'damage',emoji:'🌑',desc:'化为暗影进行致命一斩',cd:3,cost:12,dmg:14},{name:'穿甲弹',cat:'damage',emoji:'🎯',desc:'无视防御的穿透攻击',cd:3,cost:15,dmg:12,piercing:true},
+{name:'陨石坠落',cat:'damage',emoji:'☄️',desc:'天降陨石毁灭性伤害',cd:5,cost:35,dmg:28},{name:'铁壁',cat:'survival',emoji:'🛡️',desc:'凝聚力量形成铁壁防御',cd:3,cost:12,defBuff:8,dur:2},
+{name:'魔法护盾',cat:'survival',emoji:'🔮',desc:'展开护盾抵消伤害',cd:4,cost:15,shield:20},{name:'荆棘甲',cat:'survival',emoji:'🌿',desc:'反弹部分伤害',cd:3,cost:12,reflect:0.3,dur:3},
+{name:'闪避步',cat:'survival',emoji:'💨',desc:'极速闪避下一次攻击',cd:2,cost:8,evade:true},{name:'治愈术',cat:'survival',emoji:'💚',desc:'调动生命能量恢复体力',cd:3,cost:15,healAmt:25},
+{name:'战吼',cat:'support',emoji:'📯',desc:'震撼战吼提升攻击力',cd:4,cost:15,atkBuff:6,dur:3},{name:'吸血斩',cat:'support',emoji:'🩸',desc:'攻击时吸取敌人生命力',cd:3,cost:12,steal:0.3,dmg:10},
+{name:'幸运星',cat:'support',emoji:'⭐',desc:'提升暴击率',cd:5,cost:20,critBoost:0.3,dur:4},{name:'回春术',cat:'survival',emoji:'🌸',desc:'持续恢复生命值',cd:4,cost:15,hot:8,dur:3},
+{name:'聚能',cat:'energy',emoji:'🌀',desc:'回复大量能量',cd:3,cost:0,energyGain:25}
+];
+
+const ITEMS={
+hpPot:{name:'生命药剂',emoji:'🧪',type:'consumable',rarity:'common',desc:'回复30%最大生命',effect:{healPct:0.3}},
+hpPotL:{name:'大生命药剂',emoji:'🧪',type:'consumable',rarity:'rare',desc:'回复50%最大生命',effect:{healPct:0.5}},
+atkPot:{name:'攻击药剂',emoji:'⚗️',type:'consumable',rarity:'common',desc:'下一场战斗攻击+5',effect:{tempAtk:5}},
+defPot:{name:'铁壁药剂',emoji:'🧴',type:'consumable',rarity:'common',desc:'下一场战斗防御+5',effect:{tempDef:5}},
+enCrystal:{name:'聚能水晶',emoji:'💎',type:'consumable',rarity:'rare',desc:'立即恢复50%能量',effect:{enPct:0.5}},
+berserk:{name:'狂暴秘药',emoji:'🍷',type:'consumable',rarity:'epic',desc:'下场战斗暴击率+20%暴击伤害+0.5',effect:{tempCrit:0.2,tempCd:0.5}},
+antidote:{name:'解毒药水',emoji:'🫧',type:'consumable',rarity:'common',desc:'清除中毒效果并回复15%生命',effect:{healPct:0.15}},
+bomb:{name:'爆裂炸弹',emoji:'💣',type:'consumable',rarity:'rare',desc:'下场战斗开始时对敌人造成40伤害',effect:{battleDmg:40}},
+rope:{name:'绳索',emoji:'🪢',type:'consumable',rarity:'common',desc:'逃离某些危险场景',effect:{utility:true}},
+tent:{name:'旅行帐篷',emoji:'⛺',type:'consumable',rarity:'common',desc:'回复20%生命并获得临时防御+3',effect:{healPct:0.2,tempDef:3}},
+ironOre:{name:'铁矿石',emoji:'🪨',type:'material',rarity:'common',desc:'普通的矿石材料'},
+monsterMat:{name:'怪物素材',emoji:'🦴',type:'material',rarity:'common',desc:'从怪物身上获取的材料'},
+magicEss:{name:'魔法精华',emoji:'✨',type:'material',rarity:'rare',desc:'蕴含魔力的精华'},
+gemStone:{name:'宝石',emoji:'💎',type:'material',rarity:'rare',desc:'闪闪发光的宝石，价值不菲'},
+ancientCoin:{name:'古币',emoji:'🪙',type:'material',rarity:'rare',desc:'古代文明的货币，或许有人愿意高价收购'},
+mystKey:{name:'神秘钥匙',emoji:'🔑',type:'special',rarity:'epic',desc:'似乎能打开某扇隐藏的门...'},
+awkShard:{name:'觉醒碎片',emoji:'💠',type:'special',rarity:'epic',desc:'蕴含觉醒之力的碎片'},
+treasMap:{name:'藏宝图',emoji:'🗺️',type:'special',rarity:'epic',desc:'标记了隐秘宝藏的位置。前往古代遗迹时自动消耗，宝藏概率翻倍！'},
+ruinGuide:{name:'遗迹指南',emoji:'📜',type:'special',rarity:'rare',desc:'前人留下的探索手册。前往遗迹时自动消耗，降低陷阱伤害。'},
+skullTrophy:{name:'骷髅战利品',emoji:'💀',type:'special',rarity:'rare',desc:'强敌的头骨，证明你的实力'},
+// === Equipment (passive bonuses while in bag) ===
+ironSword:{name:'铁剑',emoji:'🗡️',type:'equipment',rarity:'common',desc:'一把坚固的铁剑',stats:{atk:3}},
+steelSword:{name:'精钢长剑',emoji:'⚔️',type:'equipment',rarity:'rare',desc:'精心锻造的长剑，锋利无比',stats:{atk:6}},
+flameBlade:{name:'炎刃',emoji:'🔥',type:'equipment',rarity:'epic',desc:'燃烧的魔剑，攻击附带灼烧',stats:{atk:8,critRate:0.05}},
+frostEdge:{name:'霜寒之刃',emoji:'❄️',type:'equipment',rarity:'epic',desc:'永冻之刃，攻击有概率冻结',stats:{atk:5,dodgeRate:0.03}},
+shadowDagger:{name:'暗影匕首',emoji:'🗡️',type:'equipment',rarity:'rare',desc:'暗杀者的匕首，暴击率大幅提升',stats:{atk:3,critRate:0.1,critDamage:0.3}},
+leatherArmor:{name:'皮甲',emoji:'🦺',type:'equipment',rarity:'common',desc:'轻便的皮革护甲',stats:{def:3,maxHp:10}},
+chainMail:{name:'锁子甲',emoji:'🛡️',type:'equipment',rarity:'rare',desc:'精密的锁链甲胄',stats:{def:6,maxHp:20}},
+dragonPlate:{name:'龙鳞铠甲',emoji:'🐉',type:'equipment',rarity:'epic',desc:'用龙鳞锻造的铠甲，防御极高',stats:{def:10,maxHp:40,dodgeRate:0.02}},
+ironRing:{name:'力量戒指',emoji:'💍',type:'equipment',rarity:'common',desc:'增强佩戴者力量的戒指',stats:{atk:2,def:1}},
+energyOrb:{name:'能量宝珠',emoji:'🔮',type:'equipment',rarity:'rare',desc:'蕴含魔力的宝珠，提升能量上限',stats:{maxEn:15,atk:2}},
+luckyCharm:{name:'幸运护符',emoji:'🍀',type:'equipment',rarity:'rare',desc:'传说中能带来好运的护符',stats:{luck:5,critRate:0.03}},
+// === Relics (passive bonuses, rarer and more unique) ===
+bloodAmulet:{name:'血之护符',emoji:'🩸',type:'relic',rarity:'epic',desc:'古老的血族遗物，攻击附带吸血效果',stats:{atk:4,lifesteal:0.1}},
+thunderCrown:{name:'雷霆王冠',emoji:'👑',type:'relic',rarity:'epic',desc:'雷帝的遗物，每3次攻击触发雷击',stats:{atk:3,critDamage:0.4,chainCount:3}},
+phoenixFeather:{name:'凤凰之羽',emoji:'🪶',type:'relic',rarity:'epic',desc:'不死鸟的羽毛，每回合回复少量生命',stats:{hpRegen:3,def:2}},
+voidEye:{name:'虚空之眼',emoji:'👁️',type:'relic',rarity:'epic',desc:'凝视深渊的眼球，大幅提升暴击',stats:{critRate:0.15,critDamage:0.5,atk:2}},
+ancientTome:{name:'远古法典',emoji:'📕',type:'relic',rarity:'epic',desc:'记载失落魔法的典籍',stats:{maxEn:20,atk:4,def:2}},
+boneRing:{name:'骸骨指环',emoji:'💀',type:'relic',rarity:'rare',desc:'亡灵法师的指环，击杀回复生命',stats:{atk:3,killHeal:8}},
+starPendant:{name:'星辰坠饰',emoji:'⭐',type:'relic',rarity:'rare',desc:'星光凝聚的坠饰，幸运与暴击',stats:{luck:4,critRate:0.06,critDamage:0.2}},
+guardianShield:{name:'守护者之盾',emoji:'🛡️',type:'relic',rarity:'rare',desc:'不朽守护者的遗物，大幅提升防御和闪避',stats:{def:5,dodgeRate:0.05,maxHp:15}}
+};
+
+const ENEMIES=[
+{name:'史莱姆',emoji:'🟢',hp:20,atk:5,def:1,min:1},{name:'哥布林',emoji:'👺',hp:25,atk:7,def:2,min:1},
+{name:'暗影狼',emoji:'🐺',hp:30,atk:8,def:2,min:2},{name:'骷髅战士',emoji:'💀',hp:35,atk:9,def:4,min:3},
+{name:'兽人武士',emoji:'👹',hp:45,atk:11,def:5,min:4},{name:'暗黑法师',emoji:'🧙',hp:30,atk:15,def:3,min:5},
+{name:'石像鬼',emoji:'🗿',hp:60,atk:10,def:8,min:6},{name:'吸血鬼',emoji:'🧛',hp:40,atk:14,def:5,min:7},
+{name:'幼龙',emoji:'🐉',hp:55,atk:16,def:7,min:8},{name:'巫妖',emoji:'☠️',hp:50,atk:18,def:6,min:10},
+{name:'恶魔领主',emoji:'😈',hp:70,atk:20,def:10,min:12}
+];
+const BOSSES=[
+{name:'山岭巨魔',emoji:'🦍',hp:80,atk:15,def:8,min:5},{name:'九头蛇',emoji:'🐍',hp:120,atk:20,def:10,min:10},
+{name:'远古巨龙',emoji:'🐲',hp:180,atk:28,def:14,min:15},{name:'魔王',emoji:'👿',hp:250,atk:35,def:18,min:20}
+];
+
+const DIFF={
+easy:{name:'简单',color:'var(--grn)',eHp:.8,eAtk:.7,reward:1.3,heal:1.3,dropB:10,skillLife:1.3,boss:2,init:{hp:120,atk:10,def:5,en:60,cr:.08,cd:1.6,dg:.05,lk:8}},
+normal:{name:'普通',color:'var(--blu)',eHp:1,eAtk:1,reward:1,heal:1,dropB:0,skillLife:1,boss:2.5,init:{hp:100,atk:10,def:5,en:50,cr:.05,cd:1.5,dg:.03,lk:5}},
+hard:{name:'困难',color:'var(--org)',eHp:1.3,eAtk:1.4,reward:1.2,heal:.85,dropB:-5,skillLife:.8,boss:3,init:{hp:90,atk:10,def:4,en:50,cr:.05,cd:1.5,dg:.03,lk:4}},
+hell:{name:'地狱',color:'var(--red)',eHp:1.6,eAtk:1.8,reward:1.5,heal:.7,dropB:-10,skillLife:.6,boss:4,init:{hp:80,atk:12,def:3,en:45,cr:.03,cd:1.4,dg:.02,lk:3}}
+};
+const THEME_CN={adventure:'冒险',ruins:'遗迹',merchant:'商人',curse:'诅咒',blessing:'祝福',trap:'陷阱',battle:'战斗',milestone:'里程碑',tomb:'古墓',duel:'对决',mystery:'奇闻',disaster:'天灾',treasure:'宝藏',stranger:'路人',gamble:'赌局'};
+const CAT_CN={damage:'伤害',survival:'生存',support:'辅助',energy:'能量'};
+const CAT_CLR={damage:'var(--red)',survival:'var(--blu)',support:'var(--grn)',energy:'var(--pur)'};
+const RARITY_CLR={common:'var(--t2)',rare:'var(--blu)',epic:'var(--pur)'};
+const RARITY_CN={common:'普通',rare:'稀有',epic:'史诗'};
+const TYPE_CN={consumable:'消耗品',material:'材料',special:'特殊',equipment:'装备',relic:'圣物'};
+
+// === Age/Lifespan System (12 months = 1 year) ===
+const DIR_LIFESPAN={shadow:35,flame:38,storm:38,blood:38,frost:40,void:40,holy:50,life:50};
+const DIR_LIFESPAN_BONUS={shadow:3,flame:3,storm:3,blood:3,frost:4,void:4,holy:5,life:5};
+const START_AGE=16;
+// === Breakthrough System ===
+const STAR_RANGES={1:[1,10],2:[11,20],3:[21,30],4:[31,40],5:[41,50],6:[51,60],7:[61,70],8:[71,80],9:[81,90],10:[91,100]};
+const MONSTER_TIERS=[{name:'初级',mult:1.0,color:'#8ab4f8'},{name:'中级',mult:1.3,color:'#f0c040'},{name:'高级',mult:1.6,color:'#e04050'}];
+function getMonsterStarTier(monsterLv){
+const star=Math.max(1,Math.min(10,Math.ceil(monsterLv/10)));
+const withinStar=((monsterLv-1)%10);
+const tierIdx=withinStar<3?0:withinStar<7?1:2;
+return{star,tier:MONSTER_TIERS[tierIdx],tierIdx};
+}
+function tierStatLabel(star,tierIdx){return star+'星'+MONSTER_TIERS[tierIdx].name}
+// Region level requirements
+const REGION_MIN_LV={wild:1,town:1,road:1,ruins:10,abyss:25};
+// Dangerous map flag: maps with dangerous=true can spawn monsters 2-4 stars above normal
+const REGION_DANGER={wild:0,town:0,road:0.05,ruins:0.15,abyss:0.25};
+const BT_DIFFICULTIES=[
+{name:'简单',icon:'🟢',stars:2,color:'var(--blu)',reward:'基础技能',rewardType:'basic'},
+{name:'中等',icon:'🟡',stars:3,color:'var(--org)',reward:'优质技能',rewardType:'good'},
+{name:'困难',icon:'🟠',stars:4,color:'var(--pur)',reward:'精英级技能',rewardType:'elite'},
+{name:'挑战',icon:'🔴',stars:5,color:'var(--gold)',reward:'传说级技能(AI定制)',rewardType:'legendary'}
+];
+const BT_TIER_DIFFS={1:[0,1],2:[0,1,2],3:[0,1,2,3],4:[0,1,2,3],5:[1,2,3],6:[1,2,3],7:[1,2,3],8:[2,3],9:[2,3]};
+const MONSTER_SKILLS=[
+{name:'狂暴突袭',emoji:'💢',desc:'暴怒一击,伤害+50%',mult:1.5,type:'damage'},
+{name:'毒液喷射',emoji:'☠️',desc:'喷射毒液,附加3回合持续伤害',dot:true,dotTurns:3,dotPct:0.08,type:'dot'},
+{name:'冰霜吐息',emoji:'❄️',desc:'冰冻攻击,有30%概率冻结1回合',freeze:0.3,type:'cc'},
+{name:'暗影步',emoji:'👤',desc:'闪入暗影,下次攻击伤害翻倍',nextMult:2.0,type:'buff'},
+{name:'战吼',emoji:'📯',desc:'咆哮提升攻击3回合',atkBuff:0.3,dur:3,type:'buff'},
+{name:'吸血之触',emoji:'🩸',desc:'攻击吸取30%伤害为生命',lifesteal:0.3,type:'drain'},
+{name:'雷霆一击',emoji:'⚡',desc:'召唤雷电,造成1.8倍伤害',mult:1.8,type:'damage'},
+{name:'铁壁',emoji:'🛡️',desc:'强化防御3回合',defBuff:0.5,dur:3,type:'buff'},
+{name:'治愈之光',emoji:'💚',desc:'恢复15%最大生命',healPct:0.15,type:'heal'},
+{name:'死亡凝视',emoji:'💀',desc:'恐惧凝视,15%概率秒杀',instantKill:0.15,type:'special'},
+{name:'火焰风暴',emoji:'🔥',desc:'释放火焰风暴,伤害+80%',mult:1.8,type:'damage'},
+{name:'灵魂抽取',emoji:'👻',desc:'抽取灵魂,伤害并降低攻击',mult:1.2,atkDebuff:0.2,type:'debuff'}
+];
+
+// === Level Titles ===
+const LEVEL_TITLES=[
+{min:1,max:9,name:'初觉者',icon:'🌱'},
+{min:10,max:19,name:'裂隙行者',icon:'⚔️'},
+{min:20,max:29,name:'命运触者',icon:'🔮'},
+{min:30,max:39,name:'星痕武者',icon:'⭐'},
+{min:40,max:49,name:'深渊行者',icon:'🕳️'},
+{min:50,max:59,name:'天命之人',icon:'👑'},
+{min:60,max:69,name:'裂隙领主',icon:'🏰'},
+{min:70,max:79,name:'圣域贤者',icon:'✨'},
+{min:80,max:89,name:'神话之躯',icon:'🐉'},
+{min:90,max:99,name:'永恒觉醒',icon:'💫'},
+{min:100,max:100,name:'命运之主',icon:'🌟'}
+];
+function getTitle(level){
+for(let i=LEVEL_TITLES.length-1;i>=0;i--){if(level>=LEVEL_TITLES[i].min)return LEVEL_TITLES[i]}
+return LEVEL_TITLES[0];
+}
+
+// === Tutorial Maps (First Month Preset) ===
+const TUTORIAL_MAPS=[
+{name:'觉醒试炼场',icon:'🌅',type:'wild',desc:'裂隙入口处的安全区域，适合新手熟悉战斗和事件。怪物较弱，事件温和。',battleRate:0.25,evtWeights:{adventure:5,stranger:4,blessing:3,merchant:2,treasure:1},monsterHint:'温顺的试炼生物',cls:'rg-wild'},
+{name:'裂隙驿站',icon:'🏕️',type:'town',desc:'裂隙中的补给站，旅者和商人的聚集地。可以交易、休息、听故事。',battleRate:0.10,evtWeights:{merchant:5,stranger:5,blessing:3,gamble:2},monsterHint:'偶尔出没的小毛贼',cls:'rg-town'},
+{name:'初心古道',icon:'🛤️',type:'road',desc:'一条平缓的石板路，通往裂隙的各个方向。适合初次探索。',battleRate:0.20,evtWeights:{adventure:4,stranger:3,mystery:2,blessing:2,treasure:1},monsterHint:'路边的野生小动物',cls:'rg-road'}
+];
+
+const REGIONS={
+wild:{name:'野兽森林',icon:'🌲',cls:'rg-wild',desc:'古老茂密的森林，野兽出没，战斗频繁。适合磨练战斗技巧。',
+battleRate:0.55,evtWeights:{adventure:3,stranger:2,trap:2,disaster:2,treasure:1},
+monsters:['wolf','bear','spider','boar','treant','serpent','goblinScout','forestSpirit']},
+town:{name:'集市城镇',icon:'🏘️',cls:'rg-town',desc:'繁华的贸易重镇，商贾云集。必定遇到交易机会，NPC事件丰富。',
+battleRate:0.12,evtWeights:{merchant:5,stranger:4,gamble:3,mystery:2,blessing:2},
+monsters:['thief','bandit','corruptGuard','rat','slumDog']},
+ruins:{name:'古代遗迹',icon:'🏛️',cls:'rg-ruin',desc:'失落文明的废墟，暗藏宝藏与机关。高风险高回报的探险圣地。',
+battleRate:0.35,evtWeights:{tomb:5,treasure:5,ruins:4,trap:4,mystery:3},
+monsters:['skeleton','golem','mummy','phantom','cursedKnight','ancientGuard','sandWorm']},
+road:{name:'十字路口',icon:'🔀',cls:'rg-road',desc:'四通八达的旷野，命运交汇之地。各类事件均衡出现，充满未知。',
+battleRate:0.30,evtWeights:{},
+monsters:['bandit','wanderer','wildDog','scavenger','mercenary']},
+abyss:{name:'暗影深渊',icon:'🕳️',cls:'rg-dark',desc:'裂隙最深处的黑暗领域，强敌环伺。极高风险，但也有最珍贵的奖励。',
+battleRate:0.50,evtWeights:{curse:4,mystery:4,disaster:3,duel:3,battle:3},
+monsters:['demon','shadowBeast','wraith','darkMage','abyssalFiend','voidWalker','doomKnight']}
+};
+
+// === World Map: Fixed Locations ===
+const WORLD_LOCATIONS=[
+{id:'awaken_village',name:'觉醒村',icon:'🏘️',type:'town',x:50,y:85,minLv:1,desc:'裂隙中的起始村落，安全的补给站。新手冒险者的家园。',battleRate:0.08,evtWeights:{merchant:4,stranger:4,blessing:3,gamble:1},monsterHint:'偶尔的小毛贼',cls:'rg-town',fixed:true},
+{id:'beast_forest',name:'猎兽林',icon:'🌲',type:'wild',x:25,y:70,minLv:1,desc:'茂密的原始森林，野兽横行。适合磨练初期战斗技巧。',battleRate:0.55,evtWeights:{adventure:4,stranger:2,trap:2,treasure:1},monsterHint:'灰狼、巨熊、毒蛛',cls:'rg-wild',fixed:true},
+{id:'crossroad',name:'十字路口',icon:'🔀',type:'road',x:50,y:65,minLv:5,desc:'四通八达的旷野驿站，命运在此交汇。各类事件均衡出现。',battleRate:0.30,evtWeights:{adventure:3,stranger:3,mystery:2,blessing:2},monsterHint:'流浪者和野狗',cls:'rg-road',fixed:true},
+{id:'market_town',name:'贸易重镇',icon:'🏪',type:'town',x:75,y:60,minLv:8,desc:'繁华的商业中心，商人云集。交易、赌博、情报集散地。',battleRate:0.10,evtWeights:{merchant:5,stranger:4,gamble:3,mystery:1},monsterHint:'小偷和强盗',cls:'rg-town',fixed:true},
+{id:'miner_canyon',name:'矿工峡谷',icon:'⛏️',type:'wild',x:15,y:50,minLv:12,desc:'深邃的峡谷矿区，富含矿石但也有危险生物。战斗频率高。',battleRate:0.50,evtWeights:{adventure:3,trap:3,treasure:2,mystery:1},monsterHint:'石像鬼、穴居兽',cls:'rg-wild',fixed:true},
+{id:'temple',name:'圣光神殿',icon:'⛪',type:'town',x:80,y:40,minLv:18,desc:'古老的神殿，祝福与治愈之地。偶有守护者考验来者。',battleRate:0.15,evtWeights:{blessing:5,stranger:3,mystery:3,merchant:2},monsterHint:'神殿守卫',cls:'rg-town',fixed:true},
+{id:'shadow_woods',name:'暗影密林',icon:'🌑',type:'wild',x:30,y:35,minLv:22,desc:'被暗影笼罩的森林，精英怪物栖息地。高风险高回报。',battleRate:0.60,evtWeights:{adventure:3,trap:3,curse:2,treasure:2},monsterHint:'暗影兽、吸血鬼',cls:'rg-wild',fixed:true},
+{id:'dragon_valley',name:'龙眠山谷',icon:'🐉',type:'wild',x:60,y:20,minLv:35,desc:'传说中巨龙的栖息地。极强怪物出没，但宝藏丰厚。',battleRate:0.65,evtWeights:{adventure:4,treasure:3,trap:2,disaster:2},monsterHint:'幼龙、龙裔',cls:'rg-wild',fixed:true},
+{id:'abyss_rift',name:'深渊裂隙',icon:'🕳️',type:'abyss',x:45,y:10,minLv:50,desc:'世界最深处的黑暗领域。只有最强者才能在此生存。',battleRate:0.70,evtWeights:{curse:4,mystery:4,disaster:3,duel:3},monsterHint:'深渊恶魔、虚空行者',cls:'rg-dark',fixed:true},
+{id:'fate_tower',name:'命运之塔',icon:'🗼',type:'abyss',x:50,y:5,minLv:70,desc:'裂隙尽头的神秘高塔。命运的终点，只有永恒觉醒者方可进入。',battleRate:0.75,evtWeights:{mystery:5,curse:3,disaster:3,treasure:3},monsterHint:'命运守卫、混沌之王',cls:'rg-dark',fixed:true}
+];
+
+// Expanded region-themed enemy pool
+const REGION_ENEMIES={
+wolf:{name:'灰狼',emoji:'🐺',hp:28,atk:9,def:2,min:1},
+bear:{name:'巨熊',emoji:'🐻',hp:50,atk:13,def:5,min:3},
+spider:{name:'毒蛛',emoji:'🕷️',hp:22,atk:11,def:1,min:1},
+boar:{name:'獠牙野猪',emoji:'🐗',hp:35,atk:10,def:4,min:2},
+treant:{name:'树人',emoji:'🌳',hp:60,atk:8,def:9,min:4},
+serpent:{name:'毒蛇',emoji:'🐍',hp:20,atk:14,def:1,min:2},
+goblinScout:{name:'哥布林斥候',emoji:'👺',hp:24,atk:8,def:2,min:1},
+forestSpirit:{name:'林间精灵',emoji:'🧚',hp:30,atk:12,def:3,min:3},
+thief:{name:'盗贼',emoji:'🗡️',hp:25,atk:10,def:2,min:1},
+bandit:{name:'土匪',emoji:'🏴',hp:30,atk:9,def:3,min:1},
+corruptGuard:{name:'腐败守卫',emoji:'🛡️',hp:45,atk:11,def:7,min:3},
+rat:{name:'巨鼠',emoji:'🐀',hp:18,atk:7,def:1,min:1},
+slumDog:{name:'疯狗',emoji:'🐕',hp:22,atk:8,def:1,min:1},
+skeleton:{name:'骷髅兵',emoji:'💀',hp:32,atk:9,def:4,min:1},
+golem:{name:'石像鬼',emoji:'🗿',hp:65,atk:10,def:10,min:4},
+mummy:{name:'木乃伊',emoji:'🧟',hp:40,atk:12,def:5,min:3},
+phantom:{name:'怨灵',emoji:'👻',hp:28,atk:15,def:2,min:3},
+cursedKnight:{name:'诅咒骑士',emoji:'⚔️',hp:55,atk:14,def:8,min:5},
+ancientGuard:{name:'远古守卫',emoji:'🏛️',hp:70,atk:13,def:9,min:6},
+sandWorm:{name:'沙虫',emoji:'🪱',hp:45,atk:16,def:3,min:4},
+wanderer:{name:'流浪者',emoji:'🚶',hp:30,atk:9,def:3,min:1},
+wildDog:{name:'野狗群',emoji:'🐕‍🦺',hp:26,atk:8,def:2,min:1},
+scavenger:{name:'拾荒者',emoji:'🧹',hp:28,atk:7,def:3,min:1},
+mercenary:{name:'雇佣兵',emoji:'💂',hp:40,atk:12,def:5,min:3},
+demon:{name:'恶魔',emoji:'😈',hp:55,atk:18,def:6,min:5},
+shadowBeast:{name:'暗影兽',emoji:'🐾',hp:40,atk:16,def:4,min:4},
+wraith:{name:'幽灵',emoji:'👤',hp:35,atk:17,def:3,min:4},
+darkMage:{name:'暗黑法师',emoji:'🧙',hp:30,atk:20,def:3,min:5},
+abyssalFiend:{name:'深渊魔物',emoji:'👹',hp:65,atk:19,def:8,min:7},
+voidWalker:{name:'虚空行者',emoji:'🕳️',hp:50,atk:15,def:6,min:6},
+doomKnight:{name:'末日骑士',emoji:'🖤',hp:75,atk:22,def:10,min:8}
+};
+
+// Region-themed boss pool
+const REGION_BOSSES={
+wild:{name:'森林之王·巨狼芬里尔',emoji:'🐺',hp:130,atk:22,def:9,min:5},
+town:{name:'黑帮教父',emoji:'🎭',hp:100,atk:18,def:12,min:5},
+ruins:{name:'法老亡灵',emoji:'⚰️',hp:160,atk:24,def:11,min:5},
+road:{name:'流浪剑圣',emoji:'⚔️',hp:120,atk:26,def:8,min:5},
+abyss:{name:'深渊领主',emoji:'👿',hp:200,atk:30,def:14,min:5}
+};
+
+// ===== GAME STATE =====
+let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null};
+
+// ===== AI API =====
+async function callAI(prompt,timeout=20000){
+try{
+const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
+console.log('[AI] Calling:',CFG.url,'model:',CFG.model);
+const res=await fetch(CFG.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CFG.key},
+body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:2000}),signal:ctrl.signal});
+clearTimeout(timer);
+if(!res.ok){throw new Error('API HTTP '+res.status)}
+const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
+console.log('[AI] Raw:',text.substring(0,300));
+let jsonStr=null;const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
+if(!jsonStr){let d=0,s=-1,e=-1;for(let i=0;i<text.length;i++){if(text[i]==='{'){if(d===0)s=i;d++}else if(text[i]==='}'){d--;if(d===0&&s>=0){e=i+1;break}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
+if(!jsonStr)throw new Error('No JSON');const parsed=JSON.parse(jsonStr);console.log('[AI] OK:',parsed.name||'');return parsed;
+}catch(e){console.error('[AI] FAIL:',e.message);return null}
+}
+
+// Text-based AI call (for narrative, not JSON)
+async function callAIText(prompt,timeout=15000){
+try{
+const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
+const res=await fetch(CFG.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CFG.key},
+body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是游戏叙事作家，用中文写出富有诗意和沉浸感的文字。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:500}),signal:ctrl.signal});
+clearTimeout(timer);
+if(!res.ok)throw new Error('API HTTP '+res.status);
+const data=await res.json();return data.choices?.[0]?.message?.content||'';
+}catch(e){console.error('[AI Text] FAIL:',e.message);return ''}
+}
+
+// ===== AWAKENING =====
+async function doAwaken(){
+const c=$('awkCircle');c.classList.add('spinning');
+const wrap=$('awkWrap');
+const st=document.createElement('div');st.style.cssText='color:var(--pur);font-size:1em;margin-top:16px';st.className='loading';st.innerHTML='✦ AI 正在创造你的觉醒命运...';wrap.appendChild(st);
+const dir=pick(DIRS),dirCN=DIR_NAMES[dir],dirDesc=DIR_DESC[dir];
+const prompt=`你是Roguelike游戏《命运裂隙》的觉醒系统。在「${dirCN}」方向内创造一个完全独特的觉醒体。
+【方向】${dirCN}(${dir}) 特征:${dirDesc} 【难度】${G.dc.name}
+规则:1.名字3-6字有创意 2.被动从dual_edge(双刃)/positive(纯正面)/none(无被动高属性)中选一 3.被动机制有创意 4.emoji代表核心特征
+请只输出JSON:{"name":"","title":"","direction":"${dir}","emoji":"","description":"2-3句","passiveType":"","passiveName":"","passiveDescription":"","passiveMechanics":{"positive":{},"negative":{}},"initialStats":{"hp":${R(80,120)},"atk":${R(8,14)},"def":${R(2,7)},"energy":${R(42,60)},"critRate":${(R(3,22)/100).toFixed(2)},"critDamage":${(R(130,260)/100).toFixed(2)},"dodgeRate":${(R(1,7)/100).toFixed(2)},"luck":${R(3,9)}},"skillAffinity":"damage|survival|support|energy|mixed","narrativeStyle":"叙事风格"}`;
+let awk=await callAI(prompt,20000),isAI=true;
+if(!awk||!awk.name){st.innerHTML='✦ 重新尝试...';await sleep(500);awk=await callAI(prompt,20000)}
+if(!awk||!awk.name){isAI=false;const t=pick(PRESET_AWK[dir]);awk={name:t.name,title:t.title,direction:dir,emoji:t.emoji,description:'',passiveType:t.passiveType,passiveName:t.passiveName,passiveDescription:t.passiveDesc,passiveMechanics:t.mechanics,initialStats:{...t.stats},skillAffinity:t.affinity,narrativeStyle:t.narrative,_preset:true}}
+const s=awk.initialStats||{};s.hp=cl(Math.round(s.hp||90),70,130);s.atk=cl(Math.round(s.atk||10),7,15);s.def=cl(Math.round(s.def||5),2,8);s.energy=cl(Math.round(s.energy||50),40,65);
+s.critRate=cl(parseFloat(s.critRate)||.05,.03,.25);s.critDamage=cl(parseFloat(s.critDamage)||1.5,1.3,2.8);s.dodgeRate=cl(parseFloat(s.dodgeRate)||.03,.01,.1);s.luck=cl(Math.round(s.luck||5),3,10);
+awk.initialStats=s;awk.direction=dir;awk.emoji=awk.emoji||'✦';awk.passiveType=['dual_edge','positive','none'].includes(awk.passiveType)?awk.passiveType:'none';
+awk.passiveName=awk.passiveName||'无';awk.passiveDescription=awk.passiveDescription||'无特殊能力';
+awk.skillAffinity=['damage','survival','support','energy','mixed'].includes(awk.skillAffinity)?awk.skillAffinity:'mixed';
+awk.narrativeStyle=awk.narrativeStyle||'通用冒险';awk._isAI=isAI;G.awk=awk;
+if(st.parentNode)st.parentNode.removeChild(st);
+// Start background AI map generation while player views awakening card
+generateAIMaps();
+await sleep(1500);showAwkCard(awk);
+}
+
+function showAwkCard(a){
+const wrap=$('awkWrap'),ptL={dual_edge:'⚔️ 双刃被动',positive:'✨ 纯正面',none:'💪 无被动(高属性)'}[a.passiveType]||'无',clr=DIR_COLORS[a.direction]||'#f0c040';
+const aiT=a._isAI?'<span style="background:var(--pur);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px;animation:pulse 2s infinite">AI 生成</span>':'<span style="background:var(--t3);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px">预设模板</span>';
+const pw=!a._isAI?'<div style="background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:8px;margin:10px 0;font-size:.8em;color:var(--red)">⚠️ AI生成失败，使用了预设模板。检查API设置(⚙️)</div>':'';
+wrap.innerHTML=`${pw}<div class="awk-card" style="border-color:${clr}"><div style="display:flex;justify-content:center;margin-bottom:6px">${aiT}</div>
+<div class="emoji">${a.emoji}</div><div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
+<div style="color:var(--t2);font-size:.85em;margin:8px 0">${a.description||''}</div>
+<div class="passive"><span class="pn">${ptL}: ${a.passiveName}</span><br>${a.passiveDescription}</div>
+<div class="stats">
+<div><span class="sl">生命 </span><span class="sv">${a.initialStats.hp}</span></div>
+<div><span class="sl">攻击 </span><span class="sv">${a.initialStats.atk}</span></div>
+<div><span class="sl">防御 </span><span class="sv">${a.initialStats.def}</span></div>
+<div><span class="sl">能量 </span><span class="sv">${a.initialStats.energy}</span></div>
+<div><span class="sl">暴击率 </span><span class="sv">${(a.initialStats.critRate*100).toFixed(0)}%</span></div>
+<div><span class="sl">暴击伤害 </span><span class="sv">×${a.initialStats.critDamage.toFixed(1)}</span></div>
+<div><span class="sl">闪避率 </span><span class="sv">${(a.initialStats.dodgeRate*100).toFixed(0)}%</span></div>
+<div><span class="sl">幸运 </span><span class="sv">${a.initialStats.luck}</span></div>
+</div><button class="btn-big" onclick="confirmAwk()">确认觉醒，进入裂隙</button></div>`;
+}
+
+async function confirmAwk(){
+const a=G.awk,s=a.initialStats;
+const dir=a.direction;
+G.p={hp:s.hp,maxHp:s.hp,atk:s.atk,def:s.def,en:s.energy,maxEn:s.energy,cr:s.critRate,cd:s.critDamage,dg:s.dodgeRate,lk:s.luck,skills:[],baseHp:s.hp,xp:0,level:1};
+G.currentAgeMonth=START_AGE*12;
+G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
+G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
+_preloadedEvent=null;_preloadPromise=null;_preloadedMonsters={};
+G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
+G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.aiMaps=[];G.currentMapData=null;G.deathNarrative='';
+await showTrans('踏入命运裂隙...',1200);showRegionPicker();
+}
+
+// ===== AGE, LEVEL & LIFESPAN =====
+function getAgeYears(){return Math.floor(G.currentAgeMonth/12)}
+function getAgeMonths(){return G.currentAgeMonth%12}
+function getLifespanYears(){return Math.floor(G.lifespanMonths/12)}
+function isAlive(){return G.currentAgeMonth<G.lifespanMonths}
+function xpNeeded(){return 30+G.p.level*20}
+function getNextBtLevel(){return(G.breakthroughTier+1)*10}
+function needsBreakthrough(){return G.breakthroughPending}
+
+function gainXP(amt){
+G.p.xp+=amt;let leveled=false;
+// Cap at next breakthrough level (player can choose when to breakthrough)
+const nextBtLv=(G.breakthroughTier+1)*10;
+const cap=G.breakthroughPending?nextBtLv:100;
+while(G.p.xp>=xpNeeded()&&G.p.level<cap&&G.p.level<100){
+G.p.xp-=xpNeeded();G.p.level++;
+G.p.maxHp+=8;G.p.atk+=2;G.p.def+=1;G.p.maxEn+=3;
+G.p.cr=Math.min(.8,G.p.cr+.005);G.p.cd+=.02;G.p.dg+=.003;G.p.lk=Math.min(30,G.p.lk+1);
+G.p.hp=G.p.maxHp;G.p.baseHp=G.p.maxHp;leveled=true;
+}
+// Trigger breakthrough notification (optional - player can choose when)
+if(G.p.level>=nextBtLv&&G.p.level<100&&!G.breakthroughPending){
+G.breakthroughPending=true;
+}
+return leveled;
+}
+
+function getMonLv(){return Math.max(1,Math.floor(G.currentAgeMonth/12-START_AGE)+R(-1,2))}
+
+// === Star-Rated Monster Generator ===
+function genStarMonster(stars){
+const lvRange=STAR_RANGES[stars]||[1,10];
+const lv=R(lvRange[0],lvRange[1]);
+const baseHp=15+stars*12+R(0,8);
+const baseAtk=4+stars*3+R(0,2);
+const baseDef=1+stars*1.5+R(0,2);
+const names=['炎魔','冰龙','雷霆巨人','暗影领主','血月魔','圣光守卫','虚空吞噬者','命运编织者','末日骑士','深渊巨兽','裂界者','星陨兽','冥界判官','天罚使者','混沌之王'];
+const emojis=['🐉','👹','⚡','👤','🩸','✨','🕳️','🎭','🖤','👿','💀','☄️','⚰️','⚔️','🌀'];
+const idx=R(0,names.length-1);
+const numSkills=stars>=5?R(2,3):stars>=3?R(1,2):stars>=2?R(0,1):0;
+const skills=[];
+const usedIdx=new Set();
+for(let i=0;i<numSkills;i++){let si;do{si=R(0,MONSTER_SKILLS.length-1)}while(usedIdx.has(si));usedIdx.add(si);skills.push({...MONSTER_SKILLS[si]})}
+const dc=G.dc;const sc=1+(lv-1)*0.08;
+return{name:(stars>=5?'⭐':'★'.repeat(Math.min(stars,3)))+(names[idx]+'·'+['暴虐','噬魂','裂天','焚世','冰封','碎骨','噬心','灭世','狂怒','深渊'][R(0,9)]),
+emoji:emojis[idx],stars,lv,hp:Math.floor(baseHp*sc*dc.eHp),maxHp:Math.floor(baseHp*sc*dc.eHp),
+atk:Math.floor(baseAtk*sc*dc.eAtk),def:Math.floor(baseDef*sc),isBoss:stars>=4,isElite:stars>=2&&stars<4,skills,isBreakthrough:true};
+}
+
+// === Breakthrough System ===
+function showBreakthroughScreen(){
+if(!G.breakthroughPending)return;
+showScr('btScr');
+const tier=G.breakthroughTier+1;
+const targetLv=tier*10;
+const diffIdxs=BT_TIER_DIFFS[tier]||[0,1];
+$('btTitle').textContent=`突破任务 — Lv.${targetLv}`;
+$('btDesc').textContent=`选择挑战难度并击败强敌完成突破。难度越高，奖励越丰厚！`;
+const cardsDiv=$('btCards');cardsDiv.innerHTML='';
+diffIdxs.forEach(di=>{
+const diff=BT_DIFFICULTIES[di];
+const preview=genStarMonster(diff.stars);
+const card=document.createElement('div');card.className='reg-card';
+card.style.borderColor=diff.color;
+card.innerHTML=`<div style="font-size:1.3em;margin-bottom:4px">${diff.icon}</div>
+<div style="font-weight:bold;font-size:1.1em;color:${diff.color}">${diff.name}</div>
+<div style="color:var(--t2);font-size:.85em;margin:6px 0">${preview.emoji} ${preview.name}</div>
+<div style="font-size:.8em;color:var(--t3)">Lv.${preview.lv} | HP:${preview.hp} | ATK:${preview.atk} | DEF:${preview.def}</div>
+${preview.skills.length?'<div style="font-size:.8em;color:var(--org);margin-top:4px">技能: '+preview.skills.map(s=>s.emoji+s.name).join(', ')+'</div>':'<div style="font-size:.8em;color:var(--t3);margin-top:4px">无特殊技能</div>'}
+<div style="color:var(--grn);font-size:.85em;margin-top:6px">奖励: ${diff.reward} + 寿命延长</div>`;
+card.onclick=()=>{G._btMonster=preview;G._btStars=diff.stars;startBreakthroughFight(diff.stars,preview)};
+cardsDiv.appendChild(card);
+});
+}
+
+async function startBreakthroughFight(stars,monster){
+const m=monster||G._btMonster||genStarMonster(stars);
+G._btMonster=m;G._btStars=stars;
+const diff=BT_DIFFICULTIES.find(d=>d.stars===stars)||BT_DIFFICULTIES[0];
+await showTrans(`${diff.icon} ${diff.name}突破挑战 — ${m.name}`);
+showScr('gameScr');
+startBattle(false,true);
+}
+
+async function completeBreakthrough(stars){
+// Award skill FIRST (before clearing breakthroughPending, since checkSkillAwaken checks it)
+const diff=BT_DIFFICULTIES.find(d=>d.stars===stars)||BT_DIFFICULTIES[0];
+const skillQuality=diff.rewardType;
+G._btSkillQuality=skillQuality;G._btStarRating=stars;
+// Add lifespan bonus
+const dir=G.awk?G.awk.direction:'frost';
+const bonusYears=DIR_LIFESPAN_BONUS[dir]||3;
+G.lifespanMonths+=bonusYears*12;
+G.breakthroughTier++;
+await showTrans(`✦ 突破成功! Lv.${G.p.level} → 继续成长 ✦`);
+// Trigger skill awakening (breakthroughPending must still be true here)
+await checkSkillAwaken();
+// NOW clear breakthrough pending
+G.breakthroughPending=false;
+// Check if more XP can now be applied
+const overflow=gainXP(0);
+updateUI();
+// Show continue UI after skill selection
+const area=$('evtArea');
+const res=document.createElement('div');res.className='bres w fi';res.style.borderColor='var(--gold)';
+res.innerHTML=`<div style="font-size:1.2em;color:var(--gold);margin-bottom:6px">⚡ 突破完成!</div>
+<div style="font-size:.9em;color:var(--t2)">寿命延长 +${bonusYears}年 | 已解锁 Lv.${(G.breakthroughTier+1)*10} 成长上限</div>`;
+const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续冒险';btn.style.marginTop='10px';
+btn.onclick=function(){advanceEvt()};res.appendChild(btn);
+area.appendChild(res);
+setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'center'}),200);
+}
+
+// ===== UI UPDATE =====
+function updateUI(){
+const p=G.p;if(!p)return;
+// Age display
+$('uiAgeY').textContent=getAgeYears();$('uiAgeM').textContent=getAgeMonths();
+$('uiLifespan').textContent=getLifespanYears();
+$('uiMonth').textContent=G.month;
+$('uiEvt').textContent=Math.min(G.evtIdx+1,5);
+$('uiName').textContent=G.awk?G.awk.emoji+' '+G.awk.name:'冒险者';
+$('uiLv').textContent=p.level;
+const titleInfo=getTitle(p.level);
+$('uiTitle').textContent=titleInfo.icon+' '+titleInfo.name;
+$('uiMLv').textContent=getMonLv();
+// Breakthrough badge
+const btBadge=$('uiBTBadge');
+if(G.breakthroughPending){btBadge.style.display='inline-block';btBadge.textContent=`⚡ 突破就绪 Lv.${getNextBtLevel()}`;btBadge.title='点击选择突破试炼'}
+else{btBadge.style.display='none'}
+// Compute bag bonuses from equipment/relics
+const bb=getBagBonuses();
+const effMaxHp=p.maxHp+bb.maxHp;const effMaxEn=p.maxEn+bb.maxEn;
+$('uiHP').textContent=`${Math.max(0,Math.floor(p.hp))}/${effMaxHp}`;
+const totalAtk=Math.floor(p.atk+bb.atk);const totalDef=Math.floor(p.def+bb.def);
+$('uiATK').innerHTML=totalAtk+(bb.atk?`<span style="color:var(--org);font-size:.75em">(+${bb.atk})</span>`:'');
+$('uiDEF').innerHTML=totalDef+(bb.def?`<span style="color:var(--org);font-size:.75em">(+${bb.def})</span>`:'');
+$('uiEN').innerHTML=`${Math.floor(p.en)}/${effMaxEn}`+(bb.maxEn?`<span style="color:var(--org);font-size:.75em">(+${bb.maxEn})</span>`:'');
+const totalCR=p.cr+bb.critRate;const totalCD=p.cd+bb.critDamage;
+$('uiCR').innerHTML=`${(totalCR*100).toFixed(1)}%/×${totalCD.toFixed(2)}`+(bb.critDamage?`<span style="color:var(--org);font-size:.75em">(+${bb.critDamage.toFixed(1)})</span>`:'');
+const totalDG=p.dg+bb.dodgeRate;
+$('uiDG').textContent=(totalDG*100).toFixed(1)+'%';
+const totalLK=p.lk+bb.luck;
+$('uiLK').innerHTML=totalLK+(bb.luck?`<span style="color:var(--org);font-size:.75em">(+${bb.luck})</span>`:'');
+const hpP=cl(p.hp/effMaxHp*100,0,100),hb=$('barHP');hb.style.width=hpP+'%';hb.className='bar-hp'+(hpP<25?' low':hpP<50?' mid':'');
+$('barEN').style.width=cl(p.en/effMaxEn*100,0,100)+'%';
+$('barXP').style.width=cl(p.xp/xpNeeded()*100,0,100)+'%';
+// Bag bonus summary
+const bonusParts=[];
+if(bb.atk)bonusParts.push(`攻击+${bb.atk}`);if(bb.def)bonusParts.push(`防御+${bb.def}`);if(bb.maxHp)bonusParts.push(`生命+${bb.maxHp}`);
+if(bb.critRate)bonusParts.push(`暴击+${(bb.critRate*100).toFixed(0)}%`);if(bb.luck)bonusParts.push(`幸运+${bb.luck}`);
+if(bb.dodgeRate)bonusParts.push(`闪避+${(bb.dodgeRate*100).toFixed(0)}%`);
+if(bb.critDamage)bonusParts.push(`暴伤+${bb.critDamage.toFixed(1)}`);if(bb.maxEn)bonusParts.push(`能量+${bb.maxEn}`);
+if(bb.lifesteal)bonusParts.push(`吸血${(bb.lifesteal*100).toFixed(0)}%`);if(bb.hpRegen)bonusParts.push(`回复${bb.hpRegen}/回合`);
+if(bb.killHeal)bonusParts.push(`击杀+${bb.killHeal}`);if(bb.chainCount)bonusParts.push(`雷击/${bb.chainCount}击`);
+if(bonusParts.length){let bonusEl=document.getElementById('bagBonusLine');
+if(!bonusEl){bonusEl=document.createElement('div');bonusEl.id='bagBonusLine';bonusEl.style.cssText='font-size:.75em;color:var(--org);margin-top:4px';$('skBar').parentNode.insertBefore(bonusEl,$('skBar'))}
+bonusEl.textContent='🎒 装备加成: '+bonusParts.join(' | ')}
+else{const bonusEl=document.getElementById('bagBonusLine');if(bonusEl)bonusEl.remove()}
+$('bagCount').textContent=G.bag.length;$('bagMax').textContent=G.bagMax;
+$('uiGold').textContent=G.gold;
+const sb=$('skBar');sb.innerHTML='';
+p.skills.forEach(sk=>{const cd=G.skCD[sk.id]||0;
+const t=document.createElement('span');t.className='skt'+(cd>0?' cd':'');
+t.innerHTML=`${sk.emoji}${sk.name}<div class="sktip"><b>${sk.emoji} ${sk.name}</b><br>${sk.desc}<br>CD:${sk.cd}回合 | 能量:${sk.cost||0}<br>分类:${CAT_CN[sk.cat]||sk.cat}<br>永久技能</div>`;sb.appendChild(t)});
+for(let i=p.skills.length;i<G.maxSlot;i++){const e=document.createElement('span');e.className='skt empty';e.textContent='空';sb.appendChild(e)}
+const ep=$('evtProg');ep.innerHTML='';
+for(let i=0;i<5;i++){const d=document.createElement('div');d.className='edot';if(i<G.evtIdx)d.classList.add('done');if(i===G.evtIdx)d.classList.add('cur');if(i===4&&G.isBoss)d.classList.add('boss');ep.appendChild(d)}
+}
+
+// ===== MONTH SYSTEM =====
+function startMonth(){
+G.evtIdx=0;G.isBoss=(G.month%5===0);
+showScr('gameScr');
+const db=$('uiDiff');db.textContent=G.dc.name;
+db.style.background=G.dc.color.includes('grn')?'rgba(64,192,112,.2)':G.dc.color.includes('blu')?'rgba(64,128,224,.2)':G.dc.color.includes('org')?'rgba(224,128,48,.2)':'rgba(224,64,80,.2)';
+db.style.color=G.dc.color;
+// Show region/map badge
+const regEl=$('uiRegion');
+if(G.currentMapData){regEl.textContent=G.currentMapData.icon+' '+G.currentMapData.name;regEl.style.display='inline-block';
+regEl.style.background=G.currentMapData.cls==='rg-wild'?'rgba(64,160,96,.15)':G.currentMapData.cls==='rg-town'?'rgba(240,192,64,.12)':G.currentMapData.cls==='rg-ruin'?'rgba(160,80,224,.12)':G.currentMapData.cls==='rg-dark'?'rgba(224,64,80,.12)':'rgba(64,128,224,.12)';
+regEl.style.color=G.currentMapData.cls==='rg-wild'?'#60c080':G.currentMapData.cls==='rg-town'?'var(--gold)':G.currentMapData.cls==='rg-ruin'?'var(--pur)':G.currentMapData.cls==='rg-dark'?'var(--red)':'var(--blu)'}
+else if(G.region&&REGIONS[G.region]){const rg=REGIONS[G.region];regEl.textContent=rg.icon+' '+rg.name;regEl.style.display='inline-block';
+regEl.style.background=rg.cls==='rg-wild'?'rgba(64,160,96,.15)':rg.cls==='rg-town'?'rgba(240,192,64,.12)':rg.cls==='rg-ruin'?'rgba(160,80,224,.12)':rg.cls==='rg-dark'?'rgba(224,64,80,.12)':'rgba(64,128,224,.12)';
+regEl.style.color=rg.cls==='rg-wild'?'#60c080':rg.cls==='rg-town'?'var(--gold)':rg.cls==='rg-ruin'?'var(--pur)':rg.cls==='rg-dark'?'var(--red)':'var(--blu)'}
+else{regEl.style.display='none'}
+updateUI();nextEvent();
+}
+
+async function nextEvent(){
+updateUI();
+if(G.evtIdx>=5){monthComplete();return}
+if(!isAlive()){gameOver('lifespan');return}
+if(G.evtIdx===4&&G.isBoss){startBattle(true);return}
+// Region-modified battle rate
+const reg=G.currentMapData||G.region?REGIONS[G.region]:null;
+const battleRate=G.currentMapData?G.currentMapData.battleRate:(reg?reg.battleRate:0.35);
+if(Math.random()<battleRate){startBattle(false);return}
+// NPC encounter chance (8%)
+if(Math.random()<0.08){startNPCBattle();return}
+await triggerEvent();
+}
+
+// ===== AI EVENT =====
+async function triggerEvent(){
+G.evts++;const area=$('evtArea');
+// Check preloaded event cache first
+if(_preloadedEvent){
+const evt=_preloadedEvent;_preloadedEvent=null;
+G.aiEvts++;
+normalizePreloadedEvent(evt);
+area.innerHTML='<div class="loading" style="padding:40px;text-align:center">⚡ 事件已就绪!</div>';
+await sleep(300);
+renderEvent(evt,true);
+preloadNextEvent();
+return;
+}
+area.innerHTML='<div class="loading" style="padding:40px;text-align:center">AI 正在编织命运...</div>';
+const p=G.p,isMile=G.isBoss&&G.evtIdx===4;
+const luckH=p.lk>=15?'幸运值较高，偏向积极':p.lk>=8?'幸运值一般':'幸运值较低，增加风险';
+const rhythm=['前期铺垫','探索展开','中期转折','压力升级','高潮对决'][G.evtIdx]||'随机';
+// Randomly pick a broad event category, weighted by region
+const allCategories=['古墓探险','高手对决','意外遭遇','集市交易','自然奇观','神秘事件','生死抉择','旅途插曲','强敌拦路','隐藏宝藏','路人求助','赌局博弈','天灾降临','奇异空间','激战','遗迹探索'];
+const catToTheme={'古墓探险':'tomb','高手对决':'duel','意外遭遇':'stranger','集市交易':'merchant','自然奇观':'blessing','神秘事件':'mystery','生死抉择':'curse','旅途插曲':'adventure','强敌拦路':'battle','隐藏宝藏':'treasure','路人求助':'stranger','赌局博弈':'gamble','天灾降临':'disaster','奇异空间':'mystery','激战':'battle','遗迹探索':'ruins'};
+const reg=G.region?REGIONS[G.region]:null;
+let pickCat;
+if(reg&&reg.evtWeights&&Object.keys(reg.evtWeights).length>0){
+// Build weighted pool from region
+const pool=[];const wMap=reg.evtWeights;
+const themeToCat={};allCategories.forEach(c=>{const t=catToTheme[c];if(!themeToCat[t])themeToCat[t]=[];themeToCat[t].push(c)});
+Object.entries(wMap).forEach(([theme,w])=>{const cats=themeToCat[theme]||[];cats.forEach(c=>{for(let i=0;i<w;i++)pool.push(c)})});
+// Add some random categories for variety
+allCategories.forEach(c=>pool.push(c));
+pickCat=pick(pool);
+}else{pickCat=pick(allCategories)}
+const bagItems=G.bag.filter(i=>i.type!=='material').map(i=>i.name).join(',')||'无';
+const prompt=`你是《命运裂隙》的冒险叙事者。请生成一个【${pickCat}】类型的随机事件。
+
+【重要】事件类型必须多样！不要总围绕玩家的觉醒能力展开。这次的主题是「${pickCat}」，请围绕这个类型创造有趣的场景。
+${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' — 请让事件与当前地区环境相符。':''}
+
+以下是一些事件灵感参考（随机选取，不要每次都一样）：
+- 古墓探险: 发现前人墓穴、探索遗迹、触发古代机关
+- 高手对决: 路遇强敌挑战、武斗大会、赏金猎人追杀
+- 意外遭遇: 偶遇旅者、受伤的路人、疯狂的发明家
+- 集市交易: 行脚商人、黑市赌局、以物易物
+- 自然奇观: 流星雨、极光、生命之泉、雷暴
+- 神秘事件: 时间裂缝、幽灵出没、预言石碑、异维度
+- 生死抉择: 诅咒与祝福、牺牲与收获、道德困境
+- 旅途插曲: 温泉休息、美食诱惑、迷路、遇到动物
+- 天灾降临: 洪水、地震、暴风雪、陨石坠落
+- 赌局博弈: 骰子游戏、命运转盘、扑克对决
+
+【第${G.month}月】【第${G.evtIdx+1}/5事件】【节奏:${rhythm}】【难度】${G.dc.name}
+【玩家】Lv.${p.level} HP:${Math.floor(p.hp)}/${p.maxHp} 攻击:${Math.floor(p.atk)} 防御:${Math.floor(p.def)} 幸运:${p.lk}
+【背包物品】${bagItems}
+【已遭遇】${G.themes.slice(-6).join(',')||'无'}（避免重复！）
+
+要求：
+1. 事件要有创意和沉浸感，不要千篇一律
+2. 三个选项代表不同风险: A高风险高收益，B中等，C低风险低收益
+3. heal/damage在5-30之间，atk/def在1-5之间，luck在1-3之间
+4. effects中可加item给予物品，item2给第二个物品。可用的item id:
+   消耗品: hpPot(生命药剂),hpPotL(大生命药剂),atkPot(攻击药剂),defPot(铁壁药剂),enCrystal(聚能水晶),berserk(狂暴秘药),antidote(解毒药水),bomb(炸弹),rope(绳索),tent(帐篷)
+   材料: ironOre(铁矿石),monsterMat(怪物素材),magicEss(魔法精华),gemStone(宝石),ancientCoin(古币)
+   特殊: treasMap(藏宝图,去遗迹时宝藏翻倍),skullTrophy(骷髅战利品),ruinGuide(遗迹指南,去遗迹时降低陷阱伤害)
+   装备(放入背包自动加属性): ironSword(铁剑+3攻),steelSword(精钢长剑+6攻),shadowDagger(暗影匕首+3攻+暴击),leatherArmor(皮甲+3防+10血),chainMail(锁子甲+6防+20血),ironRing(力量戒指+2攻+1防),energyOrb(能量宝珠+15能量+2攻),luckyCharm(幸运护符+5幸运+暴击)
+   圣物(稀有强力被动): bloodAmulet(血之护符+4攻+吸血),phoenixFeather(凤凰之羽+回复+2防),boneRing(骸骨指环+3攻+击杀回血),starPendant(星辰坠饰+4幸运+暴击),guardianShield(守护者之盾+5防+闪避+15血)
+   适当给予装备/圣物作为珍贵奖励，但不要每个事件都给
+5. effects中可加loseItem:true表示该选项会随机失去一个背包物品
+6. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
+7. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
+8. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
+
+只输出JSON:{"theme":"adventure|ruins|merchant|curse|blessing|trap|tomb|duel|mystery|disaster|treasure|stranger|gamble","title":"3-6字标题","description":"2-3句沉浸式叙事，营造场景氛围","choices":[{"label":"选项描述","result":"结果描述","effects":{}},{"label":"","result":"","effects":{}},{"label":"","result":"","effects":{}}]}`;
+let evt=await callAI(prompt,20000),isAI=true;
+if(!evt||!evt.title||!evt.choices||!evt.choices.length){evt=pick(PRESET_EVENTS);isAI=false;G.preEvts++;console.warn('[Event] AI fail, preset:',evt.title)}else{G.aiEvts++}
+if(isAI&&evt.theme&&!G.themes.includes(evt.theme))G.themes.push(evt.theme);
+(evt.choices||[]).forEach(ch=>{const ef=ch.effects||{};
+if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
+if(ef.damage)ef.damage=cl(Math.round(ef.damage),0,Math.floor(p.maxHp*.5));
+if(ef.atk)ef.atk=cl(Math.round(ef.atk),0,3+Math.floor(G.month*.5));
+if(ef.def)ef.def=cl(Math.round(ef.def),0,2+Math.floor(G.month*.3));
+if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
+if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold))});
+renderEvent(evt,isAI);
+// Start preloading next event while player reads this one
+preloadNextEvent();
+}
+
+function renderEvent(evt,isAI){
+const area=$('evtArea');area.innerHTML='';
+const card=document.createElement('div');card.className='ecard fi';
+const badge=isAI?(evt._preloaded?'<span class="ai-badge" style="background:var(--grn)">⚡预载</span>':'<span class="ai-badge">AI</span>'):'<span class="pre-badge">预设</span>';
+card.innerHTML=`<span class="etag th-${evt.theme||'adventure'}">${THEME_CN[evt.theme]||'冒险'} ${badge}</span>
+<div class="etitle">${evt.title}</div><div class="edesc" id="eDesc"></div><div class="echc" id="eChc" style="display:none"></div>`;
+area.appendChild(card);
+typeText(evt.description||'...',$('eDesc'),()=>{
+const cd=$('eChc');cd.style.display='flex';
+(evt.choices||[]).forEach((ch,i)=>{const b=document.createElement('div');b.className='echbtn fi';
+const reqItem=ch.effects?.requireItem;
+const hasItem=!reqItem||G.bag.some(bi=>bi.id===reqItem);
+const goldCost=ch.effects?.goldCost;
+const hasGold=!goldCost||G.gold>=goldCost;
+const canChoose=hasItem&&hasGold;
+const reqLabel=reqItem&&ITEMS[reqItem]?` <span style="color:var(--org);font-size:.8em">[需要: ${ITEMS[reqItem].emoji}${ITEMS[reqItem].name}]</span>`:'';
+const goldLabel=goldCost?` <span style="color:var(--gold);font-size:.8em">[${goldCost}💰]</span>`:'';
+b.innerHTML=`<span class="cn">${['A','B','C'][i]}.</span> ${ch.label}${reqLabel}${goldLabel}`;
+if(!canChoose){b.style.opacity='.4';b.style.cursor='not-allowed';
+b.innerHTML+=!hasItem?` <span style="color:var(--red);font-size:.75em">(缺少物品)</span>`:` <span style="color:var(--red);font-size:.75em">(金币不足)</span>`;
+b.onclick=()=>{}}else{b.onclick=()=>selectChoice(ch)}
+cd.appendChild(b)})});
+}
+
+function typeText(t,el,cb){el.textContent='';el.classList.add('typing');let i=0;const tm=setInterval(()=>{if(i<t.length){el.textContent+=t[i];i++}else{clearInterval(tm);el.classList.remove('typing');if(cb)cb()}},25)}
+
+function selectChoice(ch){
+try{
+document.querySelectorAll('.echbtn').forEach(b=>b.style.pointerEvents='none');
+// Start preloading next event while player reads results
+preloadNextEvent();
+const ef=ch.effects||{},dc=G.dc;let texts=[];
+const _evtBB=getBagBonuses();const _evtMaxHp=G.p.maxHp+_evtBB.maxHp;const _evtMaxEn=G.p.maxEn+_evtBB.maxEn;
+if(ef.heal){let h=Math.floor(Number(ef.heal)*dc.reward*dc.heal)||0;if(G.p.hp>G.p.baseHp*1.5)h=Math.floor(h*.5);G.p.hp=Math.min(_evtMaxHp,G.p.hp+h);G.healing+=h;if(h)texts.push(`<span class="pos">+${h} 生命</span>`)}
+if(ef.atk){let a=Math.floor(Number(ef.atk)*dc.reward)||0;G.p.atk+=a;if(a)texts.push(`<span class="pos">+${a} 攻击</span>`)}
+if(ef.def){let d=Math.floor(Number(ef.def)*dc.reward)||0;G.p.def+=d;if(d)texts.push(`<span class="pos">+${d} 防御</span>`)}
+if(ef.energy){let e=Math.floor(Number(ef.energy)*dc.reward)||0;G.p.en=Math.min(_evtMaxEn,G.p.en+e);if(e)texts.push(`<span class="pos">+${e} 能量</span>`)}
+if(ef.luck){let l=Math.floor(Number(ef.luck))||0;G.p.lk=Math.min(30,G.p.lk+l);if(l)texts.push(`<span class="pos">+${l} 幸运</span>`)}
+if(ef.critRate){G.p.cr=Math.min(.8,G.p.cr+Number(ef.critRate));texts.push(`<span class="pos">暴击+${(Number(ef.critRate)*100).toFixed(1)}%</span>`)}
+if(ef.gold){let g=Math.floor(Number(ef.gold));G.gold+=g;G.totalGold+=g;if(g)texts.push(`<span class="pos">+${g}💰</span>`)}
+if(ef.goldCost){let gc=Math.floor(Number(ef.goldCost));if(G.gold>=gc){G.gold-=gc;texts.push(`<span style="color:var(--org)">-${gc}💰</span>`)}else{texts.push(`<span class="neg">金币不足</span>`)}}
+if(ef.damage){let d=Math.floor(Number(ef.damage)*(2-dc.heal))||0;const mx=Math.floor(G.p.maxHp*(dc.name==='简单'?.2:dc.name==='普通'?.3:dc.name==='困难'?.4:.5));d=cl(d,0,mx);G.p.hp-=d;if(d)texts.push(`<span class="neg">-${d} 生命</span>`)}
+if(ef.def&&Number(ef.def)<0){G.p.def=Math.max(1,G.p.def+Number(ef.def));texts.push(`<span class="neg">${Number(ef.def)} 防御</span>`)}
+// Item from event (up to 2 items)
+if(ef.item&&ITEMS[ef.item]){if(addToBag(ef.item)){texts.push(`<span class="pos">🎒 获得: ${ITEMS[ef.item].emoji}${ITEMS[ef.item].name}</span>`)}else{texts.push(`<span class="neg">背包已满，${ITEMS[ef.item].name}丢失</span>`)}}
+if(ef.item2&&ITEMS[ef.item2]){if(addToBag(ef.item2)){texts.push(`<span class="pos">🎒 获得: ${ITEMS[ef.item2].emoji}${ITEMS[ef.item2].name}</span>`)}else{texts.push(`<span class="neg">背包已满，${ITEMS[ef.item2].name}丢失</span>`)}}
+// Lose item mechanic
+if(ef.loseItem&&G.bag.length>0){const lost=pick(G.bag);removeFromBag(lost.uid);texts.push(`<span class="neg">💔 失去: ${lost.emoji}${lost.name}</span>`)}
+// Consume required item
+if(ef.requireItem&&ITEMS[ef.requireItem]){const idx=G.bag.findIndex(bi=>bi.id===ef.requireItem);if(idx>=0){const consumed=G.bag[idx];removeFromBag(consumed.uid);texts.push(`<span style="color:var(--org)">📦 消耗: ${consumed.emoji}${consumed.name}</span>`)}}
+// Small gold bonus per event
+const evtGold=R(2,6+G.month);G.gold+=evtGold;G.totalGold+=evtGold;texts.push(`<span class="pos">+${evtGold}💰</span>`);
+if(!texts.length)texts.push('<span style="color:var(--t3)">无变化</span>');
+gainXP(R(5,15));
+const res=document.createElement('div');res.className='eres fi';
+const rt=document.createElement('div');rt.className='rt';rt.textContent=ch.result||'你做出了选择。';res.appendChild(rt);
+const rf=document.createElement('div');rf.className='rf';rf.innerHTML=texts.join(' | ');res.appendChild(rf);
+if(G.p.hp<=0){const dead=document.createElement('div');dead.style.cssText='color:var(--red);font-size:1.1em;margin-top:10px';dead.textContent='你倒下了...';res.appendChild(dead);$('evtArea').appendChild(res);updateUI();setTimeout(()=>gameOver('death'),1200);return}
+const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.style.marginTop='14px';
+btn.onclick=function(){advanceEvt()};res.appendChild(btn);$('evtArea').appendChild(res);
+setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'center'}),100);updateUI();
+}catch(e){console.error('[selectChoice]',e);
+const res=document.createElement('div');res.className='eres fi';
+if(G.p.hp<=0){res.innerHTML='<div style="color:var(--red)">你倒下了...</div>';$('evtArea').appendChild(res);updateUI();setTimeout(()=>gameOver('death'),1200);return}
+const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.onclick=function(){advanceEvt()};res.appendChild(btn);$('evtArea').appendChild(res);btn.scrollIntoView({behavior:'smooth',block:'center'})}
+}
+
+function advanceEvt(){G.evtIdx++;nextEvent()}
+
+// ===== AI PRELOAD SYSTEM =====
+// Pre-generates AI events/maps/monsters during player idle time (battle, reading, choosing)
+let _preloadedEvent=null;
+let _preloadPromise=null;
+let _preloadedMonsters={};
+
+async function preloadNextEvent(){
+if(_preloadPromise)return;
+const nextIdx=G.evtIdx+1;
+if(nextIdx>=5)return;// month will end
+if(nextIdx===4&&G.isBoss)return;// boss battle, no event needed
+_preloadPromise=(async()=>{
+try{
+const p=G.p;const luckH=p.lk>=15?'幸运值较高，偏向积极':p.lk>=8?'幸运值一般':'幸运值较低，增加风险';
+const rhythm=['前期铺垫','探索展开','中期转折','压力升级','高潮对决'][nextIdx]||'随机';
+const allCategories=['古墓探险','高手对决','意外遭遇','集市交易','自然奇观','神秘事件','生死抉择','旅途插曲','强敌拦路','隐藏宝藏','路人求助','赌局博弈','天灾降临','奇异空间','激战','遗迹探索'];
+const catToTheme={'古墓探险':'tomb','高手对决':'duel','意外遭遇':'stranger','集市交易':'merchant','自然奇观':'blessing','神秘事件':'mystery','生死抉择':'curse','旅途插曲':'adventure','强敌拦路':'battle','隐藏宝藏':'treasure','路人求助':'stranger','赌局博弈':'gamble','天灾降临':'disaster','奇异空间':'mystery','激战':'battle','遗迹探索':'ruins'};
+const reg=G.region?REGIONS[G.region]:null;let pickCat;
+if(reg&&reg.evtWeights&&Object.keys(reg.evtWeights).length>0){
+const pool=[];const wMap=reg.evtWeights;const themeToCat={};
+allCategories.forEach(c=>{const t=catToTheme[c];if(!themeToCat[t])themeToCat[t]=[];themeToCat[t].push(c)});
+Object.entries(wMap).forEach(([theme,w])=>{const cats=themeToCat[theme]||[];cats.forEach(c=>{for(let i=0;i<w;i++)pool.push(c)})});
+allCategories.forEach(c=>pool.push(c));pickCat=pick(pool);
+}else{pickCat=pick(allCategories)}
+const bagItems=G.bag.filter(i=>i.type!=='material').map(i=>i.name).join(',')||'无';
+const prompt=`你是《命运裂隙》的冒险叙事者。请生成一个【${pickCat}】类型的随机事件。
+
+【重要】事件类型必须多样！不要总围绕玩家的觉醒能力展开。这次的主题是「${pickCat}」，请围绕这个类型创造有趣的场景。
+${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' — 请让事件与当前地区环境相符。':''}
+
+以下是一些事件灵感参考（随机选取，不要每次都一样）：
+- 古墓探险: 发现前人墓穴、探索遗迹、触发古代机关
+- 高手对决: 路遇强敌挑战、武斗大会、赏金猎人追杀
+- 意外遭遇: 偶遇旅者、受伤的路人、疯狂的发明家
+- 集市交易: 行脚商人、黑市赌局、以物易物
+- 自然奇观: 流星雨、极光、生命之泉、雷暴
+- 神秘事件: 时间裂缝、幽灵出没、预言石碑、异维度
+- 生死抉择: 诅咒与祝福、牺牲与收获、道德困境
+- 旅途插曲: 温泉休息、美食诱惑、迷路、遇到动物
+- 天灾降临: 洪水、地震、暴风雪、陨石坠落
+- 赌局博弈: 骰子游戏、命运转盘、扑克对决
+
+【第${G.month}月】【第${nextIdx+1}/5事件】【节奏:${rhythm}】【难度】${G.dc.name}
+【玩家】Lv.${p.level} HP:${Math.floor(p.hp)}/${p.maxHp} 攻击:${Math.floor(p.atk)} 防御:${Math.floor(p.def)} 幸运:${p.lk}
+【背包物品】${bagItems}
+【已遭遇】${G.themes.slice(-6).join(',')||'无'}（避免重复！）
+
+要求：
+1. 事件要有创意和沉浸感，不要千篇一律
+2. 三个选项代表不同风险: A高风险高收益，B中等，C低风险低收益
+3. heal/damage在5-30之间，atk/def在1-5之间，luck在1-3之间
+4. effects中可加item给予物品，item2给第二个物品。可用的item id:
+   消耗品: hpPot(生命药剂),hpPotL(大生命药剂),atkPot(攻击药剂),defPot(铁壁药剂),enCrystal(聚能水晶),berserk(狂暴秘药),antidote(解毒药水),bomb(炸弹),rope(绳索),tent(帐篷)
+   材料: ironOre(铁矿石),monsterMat(怪物素材),magicEss(魔法精华),gemStone(宝石),ancientCoin(古币)
+   特殊: treasMap(藏宝图,去遗迹时宝藏翻倍),skullTrophy(骷髅战利品),ruinGuide(遗迹指南,去遗迹时降低陷阱伤害)
+   装备(放入背包自动加属性): ironSword(铁剑+3攻),steelSword(精钢长剑+6攻),shadowDagger(暗影匕首+3攻+暴击),leatherArmor(皮甲+3防+10血),chainMail(锁子甲+6防+20血),ironRing(力量戒指+2攻+1防),energyOrb(能量宝珠+15能量+2攻),luckyCharm(幸运护符+5幸运+暴击)
+   圣物(稀有强力被动): bloodAmulet(血之护符+4攻+吸血),phoenixFeather(凤凰之羽+回复+2防),boneRing(骸骨指环+3攻+击杀回血),starPendant(星辰坠饰+4幸运+暴击),guardianShield(守护者之盾+5防+闪避+15血)
+   适当给予装备/圣物作为珍贵奖励，但不要每个事件都给
+5. effects中可加loseItem:true表示该选项会随机失去一个背包物品
+6. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
+7. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
+8. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
+
+只输出JSON:{"theme":"adventure|ruins|merchant|curse|blessing|trap|tomb|duel|mystery|disaster|treasure|stranger|gamble","title":"3-6字标题","description":"2-3句沉浸式叙事，营造场景氛围","choices":[{"label":"选项描述","result":"结果描述","effects":{}},{"label":"","result":"","effects":{}},{"label":"","result":"","effects":{}}]}`;
+const evt=await callAI(prompt,20000);
+if(evt&&evt.title&&evt.choices&&evt.choices.length){
+evt._preloaded=true;_preloadedEvent=evt;
+console.log('[Preload] Event cached:',evt.title);
+}}catch(e){console.warn('[Preload] Event preload failed:',e)}
+})();
+_preloadPromise.finally(()=>{_preloadPromise=null});
+}
+
+function normalizePreloadedEvent(evt){
+const p=G.p;
+(evt.choices||[]).forEach(ch=>{const ef=ch.effects||{};
+if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
+if(ef.damage)ef.damage=cl(Math.round(ef.damage),0,Math.floor(p.maxHp*.5));
+if(ef.atk)ef.atk=cl(Math.round(ef.atk),0,3+Math.floor(G.month*.5));
+if(ef.def)ef.def=cl(Math.round(ef.def),0,2+Math.floor(G.month*.3));
+if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
+if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold))});
+if(evt.theme&&!G.themes.includes(evt.theme))G.themes.push(evt.theme);
+return evt;
+}
+
+async function preloadMapMonsters(mapData){
+if(!mapData||_preloadedMonsters[mapData.id||mapData.name])return;
+_preloadedMonsters[mapData.id||mapData.name]=true;
+await generateAIMonstersForMap(mapData);
+}
+
+
+// ===== BACKPACK =====
+function addToBag(itemId){
+if(G.bag.length>=G.bagMax)return false;
+const it=ITEMS[itemId];if(!it)return false;
+G.bag.push({...it,id:itemId,uid:Date.now()+'_'+R(0,9999)});updateUI();return true;
+}
+function removeFromBag(uid){G.bag=G.bag.filter(i=>i.uid!==uid);updateUI()}
+
+// Compute passive stat bonuses from equipment & relics in bag
+function getBagBonuses(){
+const b={atk:0,def:0,maxHp:0,maxEn:0,critRate:0,critDamage:0,dodgeRate:0,luck:0,lifesteal:0,hpRegen:0,killHeal:0,chainCount:0};
+G.bag.forEach(item=>{
+if((item.type==='equipment'||item.type==='relic')&&item.stats){
+const s=item.stats;
+if(s.atk)b.atk+=s.atk;if(s.def)b.def+=s.def;if(s.maxHp)b.maxHp+=s.maxHp;if(s.maxEn)b.maxEn+=s.maxEn;
+if(s.critRate)b.critRate+=s.critRate;if(s.critDamage)b.critDamage+=s.critDamage;
+if(s.dodgeRate)b.dodgeRate+=s.dodgeRate;if(s.luck)b.luck+=s.luck;
+if(s.lifesteal)b.lifesteal+=s.lifesteal;if(s.hpRegen)b.hpRegen+=s.hpRegen;
+if(s.killHeal)b.killHeal+=s.killHeal;if(s.chainCount)b.chainCount+=s.chainCount;
+}});return b;
+}
+
+function openBag(){
+$('bagModal').classList.add('on');renderBag()}
+function closeBag(){$('bagModal').classList.remove('on')}
+
+function renderBag(){
+$('bagModalCount').textContent=G.bag.length;
+const grid=$('bagGrid');grid.innerHTML='';
+G.bag.forEach(item=>{
+const slot=document.createElement('div');slot.className='bag-slot';
+const isEquip=item.type==='equipment';const isRelic=item.type==='relic';
+if(isRelic){slot.style.borderColor='var(--pur)';slot.style.background='rgba(160,80,224,.06)'}
+else if(isEquip){slot.style.borderColor='var(--gold)';slot.style.background='rgba(240,192,64,.04)'}
+const typeTag=isRelic?'<div style="font-size:.55em;color:var(--pur);margin-top:1px">圣物</div>':isEquip?'<div style="font-size:.55em;color:var(--gold);margin-top:1px">装备</div>':'';
+slot.innerHTML=`<div class="bi">${item.emoji}</div><div class="bn" style="color:${RARITY_CLR[item.rarity]||'var(--t2)'}">${item.name}</div>${typeTag}`;
+slot.onclick=()=>showBagDetail(item);grid.appendChild(slot)});
+for(let i=G.bag.length;i<G.bagMax;i++){const s=document.createElement('div');s.className='bag-slot empty';s.innerHTML='<div class="bi" style="opacity:.3">空</div>';grid.appendChild(s)}
+$('bagDetail').innerHTML='';
+}
+
+function showBagDetail(item){
+const dd=$('bagDetail');
+const canUse=item.type==='consumable';
+const isPassive=item.type==='equipment'||item.type==='relic';
+const typeColor=isPassive?'var(--gold)':'var(--t3)';
+let statsLine='';
+if(isPassive&&item.stats){
+const s=item.stats;const parts=[];
+if(s.atk)parts.push(`攻击+${s.atk}`);if(s.def)parts.push(`防御+${s.def}`);if(s.maxHp)parts.push(`生命+${s.maxHp}`);
+if(s.maxEn)parts.push(`能量+${s.maxEn}`);if(s.critRate)parts.push(`暴击率+${(s.critRate*100).toFixed(0)}%`);
+if(s.critDamage)parts.push(`暴击伤害+${s.critDamage.toFixed(1)}`);if(s.dodgeRate)parts.push(`闪避率+${(s.dodgeRate*100).toFixed(0)}%`);
+if(s.luck)parts.push(`幸运+${s.luck}`);if(s.lifesteal)parts.push(`吸血${(s.lifesteal*100).toFixed(0)}%`);
+if(s.hpRegen)parts.push(`每回合回复${s.hpRegen}HP`);if(s.killHeal)parts.push(`击杀回复${s.killHeal}HP`);
+if(s.chainCount)parts.push(`每${s.chainCount}次攻击触发雷击`);
+statsLine=`<div style="color:var(--org);font-size:.85em;margin:6px 0;padding:6px;background:rgba(224,128,48,.08);border-radius:6px">被动加成: ${parts.join(' | ')}</div>`}
+// Region boost hint for map items
+let regionHint='';
+if(item.effect&&item.effect.regionBoost){const rg=REGIONS[item.effect.regionBoost];
+if(rg)regionHint=`<div style="color:var(--gold);font-size:.8em;margin:6px 0;padding:6px;background:rgba(240,192,64,.08);border-radius:6px">${rg.icon} 选择前往「${rg.name}」时自动消耗，获得特殊加成</div>`}
+dd.innerHTML=`<div style="font-size:2em">${item.emoji}</div>
+<div style="color:${RARITY_CLR[item.rarity]};font-weight:bold;margin:4px 0">${item.name} <span style="font-size:.75em;color:${typeColor}">[${TYPE_CN[item.type]||''} ${RARITY_CN[item.rarity]||''}]</span></div>
+<div style="color:var(--t2);font-size:.9em;margin:8px 0">${item.desc}</div>
+${statsLine}${regionHint}
+<div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+${canUse?`<button class="btn-sm btn-ok" onclick="useBagItem('${item.uid}')">使用</button>`:''}
+${isPassive?'<div style="color:var(--grn);font-size:.8em;padding:4px">放在背包中自动生效</div>':''}
+<button class="btn-sm btn-no" onclick="discardBagItem('${item.uid}')">丢弃</button>
+</div>`;
+}
+
+function useBagItem(uid){
+const item=G.bag.find(i=>i.uid===uid);if(!item||item.type!=='consumable')return;
+const ef=item.effect,p=G.p;
+const _useBB=getBagBonuses();const _useMaxHp=p.maxHp+_useBB.maxHp;const _useMaxEn=p.maxEn+_useBB.maxEn;
+if(ef.healPct){const h=Math.floor(_useMaxHp*ef.healPct);p.hp=Math.min(_useMaxHp,p.hp+h);G.healing+=h}
+if(ef.tempAtk){G.tempBuffs.atk=(G.tempBuffs.atk||0)+ef.tempAtk}
+if(ef.tempDef){G.tempBuffs.def=(G.tempBuffs.def||0)+ef.tempDef}
+if(ef.enPct){p.en=Math.min(_useMaxEn,p.en+Math.floor(_useMaxEn*ef.enPct))}
+if(ef.tempCrit){G.tempBuffs.crit=(G.tempBuffs.crit||0)+ef.tempCrit}
+if(ef.tempCd){G.tempBuffs.cd=(G.tempBuffs.cd||0)+ef.tempCd}
+if(ef.battleDmg){G.tempBuffs.battleDmg=(G.tempBuffs.battleDmg||0)+ef.battleDmg}
+if(ef.utility){}// rope and similar utility items
+removeFromBag(uid);renderBag();updateUI();
+}
+
+function discardBagItem(uid){removeFromBag(uid);renderBag();updateUI()}
+
+// ===== BATTLE SYSTEM =====
+function genEnemy(isBoss, isBreakthrough){
+const dc=G.dc;const ageYears=getAgeYears()-START_AGE;const pl=G.p.level;
+if(isBreakthrough&&G._btMonster){return G._btMonster}
+if(G._nextEnemy){const ne=G._nextEnemy;G._nextEnemy=null;return ne}
+// Calculate monster star based on player level + region danger
+const baseStar=Math.max(1,Math.min(10,Math.ceil(pl/10)));
+const dangerChance=REGION_DANGER[G.region]||0;
+let starBoost=0;
+if(Math.random()<dangerChance){starBoost=R(2,4)}// Dangerous maps spawn much stronger monsters
+else if(isBoss){starBoost=R(0,1)}
+const monsterStar=Math.max(1,Math.min(10,baseStar+starBoost));
+// Tier within star (初/中/高)
+const tierRoll=Math.random();
+const tierIdx=tierRoll<0.45?0:tierRoll<0.85?1:2;
+const tierMult=MONSTER_TIERS[tierIdx].mult;
+const tierName=MONSTER_TIERS[tierIdx].name;
+// Monster level within the star's range
+const lvRange=STAR_RANGES[monsterStar];
+const monsterLv=R(lvRange[0],lvRange[1]);
+// Stat scaling: base * star_scaling * tier_scaling * difficulty_scaling
+const starScale=1+(monsterStar-1)*0.18;// Stars give 18% per star
+const tierScale=tierMult;
+const diffScale=dc.eHp||1;
+if(isBoss){
+const reg=G.currentMapData;
+if(reg&&REGION_BOSSES[G.region]){
+const rb=REGION_BOSSES[G.region];
+const bossHp=Math.floor(rb.hp*starScale*tierScale*diffScale*(dc.boss||1.5)*1.3);
+const bossAtk=Math.floor(rb.atk*starScale*tierScale*(dc.eAtk||1)*1.3);
+const bossDef=Math.floor(rb.def*starScale*0.9);
+return{name:rb.name,emoji:rb.emoji,hp:bossHp,maxHp:bossHp,atk:bossAtk,def:bossDef,
+lv:monsterLv,isBoss:true,isElite:false,region:G.region,stars:monsterStar,tier:tierIdx,tierName,
+skills:[pick(MONSTER_SKILLS),pick(MONSTER_SKILLS.filter(s=>s.type!=='buff'))]};
+}
+const avail=BOSSES.filter(b=>b.min<=G.month);const b=avail.length?avail[avail.length-1]:BOSSES[0];
+const bHp=Math.floor(b.hp*starScale*tierScale*diffScale*(dc.boss||1.5)*1.3);
+const bAtk=Math.floor(b.atk*starScale*tierScale*(dc.eAtk||1)*1.3);
+const bDef=Math.floor(b.def*starScale*0.9);
+return{name:b.name,emoji:b.emoji,hp:bHp,maxHp:bHp,atk:bAtk,def:bDef,lv:monsterLv,
+isBoss:true,isElite:false,stars:monsterStar,tier:tierIdx,tierName,
+skills:[pick(MONSTER_SKILLS),pick(MONSTER_SKILLS.filter(s=>s.type!=='buff'))]};
+}
+// Region-themed monster pool
+let pool=[];
+const reg=G.region?REGIONS[G.region]:null;
+if(reg&&reg.monsters&&reg.monsters.length){
+reg.monsters.forEach(mid=>{const me=REGION_ENEMIES[mid];if(me&&me.min<=G.month)pool.push({...me,id:mid})})}
+ENEMIES.filter(e=>e.min<=G.month).forEach(e=>pool.push(e));
+if(G.aiMonsters.length){G.aiMonsters.forEach(am=>{if(am.min<=G.month)pool.push(am)})}
+if(!pool.length)pool=[...ENEMIES];
+const e=pick(pool);
+const isElite=Math.random()<.15;const em=isElite?1.4:1;
+const mHp=Math.floor(e.hp*starScale*tierScale*diffScale*em*1.2);
+const mAtk=Math.floor(e.atk*starScale*tierScale*(dc.eAtk||1)*em*1.15);
+const mDef=Math.floor((e.def||2)*starScale*tierScale*em);
+const mSkills=[];
+if(isElite){mSkills.push(pick(MONSTER_SKILLS));if(Math.random()<0.3)mSkills.push(pick(MONSTER_SKILLS))}
+const prefix=isElite?'精英 ':starBoost>=2?'危险 ':'';
+return{name:prefix+e.name,emoji:e.emoji,hp:mHp,maxHp:mHp,atk:mAtk,def:mDef,
+lv:monsterLv,isBoss:false,isElite,region:G.region,stars:monsterStar,tier:tierIdx,tierName,skills:mSkills,isDangerous:starBoost>=2};
+}
+
+// AI Monster Generation - generate region-themed monsters when entering a region
+async function generateAIMonsters(regionId){
+const rg=REGIONS[regionId];if(!rg)return;
+const existingNames=new Set([...ENEMIES.map(e=>e.name),...Object.values(REGION_ENEMIES).map(e=>e.name)]);
+const prompt=`为Roguelike游戏《命运裂隙》生成3个独特怪物，它们生活在「${rg.icon}${rg.name}」地区。
+地区描述: ${rg.desc}
+已有的怪物名（不得重复）: ${[...existingNames].join('、')}
+难度: ${G.dc.name} | 当前月份: 第${G.month}月
+
+要求:
+1. 每个怪物的名字2-6字，有创意且符合地区氛围
+2. emoji代表怪物外观
+3. hp范围20-70, atk范围6-18, def范围1-8（基础值，会随月份缩放）
+4. min表示最早出现的月份(1-5)
+5. 描述1句话
+6. 三个怪物应该有不同的战斗风格特点（高攻低防/高防低攻/均衡等）
+
+只输出JSON数组:
+[{"name":"怪物名","emoji":"🦎","hp":35,"atk":11,"def":4,"min":2,"description":"一句话描述","trait":"特点标签"},
+{"name":"","emoji":"","hp":"","atk":"","def":"","min":"","description":"","trait":""},
+{"name":"","emoji":"","hp":"","atk":"","def":"","min":"","description":"","trait":""}]`;
+try{
+const result=await callAI(prompt,15000);
+let monsters=[];
+if(Array.isArray(result))monsters=result;
+else if(result&&result.name)monsters=[result];
+G.aiMonsters=monsters.filter(m=>m.name&&!existingNames.has(m.name)).map(m=>({
+name:m.name,emoji:m.emoji||'👾',
+hp:cl(Math.round(m.hp||30),15,80),atk:cl(Math.round(m.atk||10),5,20),def:cl(Math.round(m.def||3),1,10),
+min:cl(Math.round(m.min||1),1,8),desc:m.description||'',trait:m.trait||''
+}));
+console.log('[AI Monsters] Generated for',rg.name,':',G.aiMonsters.map(m=>m.name));
+}catch(e){console.error('[AI Monsters] Failed:',e);G.aiMonsters=[]}
+}
+
+function startBattle(isBossF, isBreakthrough){
+G.evts++;const enemy=genEnemy(isBossF, isBreakthrough);const area=$('evtArea');area.innerHTML='';const p=G.p;
+const _stBB=getBagBonuses();const _stMhp=p.maxHp+_stBB.maxHp;const _stMEn=p.maxEn+_stBB.maxEn;
+const _stAtk=Math.floor(p.atk+_stBB.atk);const _stDef=Math.floor(p.def+_stBB.def);
+const card=document.createElement('div');card.className='barea fi';
+const diffInfo=(enemy.stars&&enemy.isBreakthrough)?BT_DIFFICULTIES.find(d=>d.stars===enemy.stars):null;
+const starLabel=diffInfo?`<div style="color:${diffInfo.color};font-size:.85em;margin-bottom:4px">${diffInfo.icon} ${diffInfo.name}突破挑战</div>`
+:(enemy.stars?`<div style="font-size:.85em;margin-bottom:4px;color:${MONSTER_TIERS[enemy.tier||0].color}">${'★'.repeat(Math.min(enemy.stars,5))}${enemy.stars>5?'+'+(enemy.stars-5):''} ${enemy.stars}星${enemy.tierName||''}${enemy.isDangerous?' ⚠️危险':''}</div>`:'');
+const skillLabel=enemy.skills&&enemy.skills.length?`<div style="font-size:.8em;color:var(--org);margin-top:2px">技能: ${enemy.skills.map(s=>s.emoji+s.name).join(' ')}</div>`:'';
+card.innerHTML=`<div class="ecard"><span class="etag th-battle">${isBreakthrough?'突破战':isBossF?'BOSS战':enemy.isElite?'精英战':'战斗'}</span>
+<div class="bent"><div class="be pl"><div class="bem">${G.awk?G.awk.emoji:'🗡️'}</div><div class="ben">${G.awk?G.awk.name:'冒险者'}</div>
+<div class="si">生命 <span class="sv hp" id="bPH">${Math.floor(p.hp)}/${_stMhp}</span></div>
+<div class="bar-w"><div class="bar-hp" id="bPB" style="width:${cl(p.hp/_stMhp*100,0,100)}%"></div></div>
+<div style="margin-top:4px;font-size:.8em;color:var(--t2)">攻击:${_stAtk} 防御:${_stDef} 能量:${Math.floor(p.en)}/${_stMEn}</div></div>
+<div class="bvs">VS</div>
+<div class="be en"><div class="bem">${enemy.emoji}</div><div class="ben">${enemy.isBoss?'👑 ':''}${enemy.name}</div>
+${starLabel}
+<div class="si">Lv.${enemy.lv} 生命 <span class="sv" style="color:var(--red)" id="bEH">${enemy.hp}/${enemy.maxHp}</span></div>
+<div class="bar-w"><div class="bar-hp low" id="bEB" style="width:100%"></div></div>
+<div style="margin-top:4px;font-size:.8em;color:var(--t2)">攻击:${enemy.atk} 防御:${enemy.def}</div>
+${skillLabel}</div></div></div>
+<div class="sfx-container" id="sfxBox">
+<div class="sfx-header"><span class="sfx-title">✦ 状态效果</span><span style="color:var(--t3);font-size:.9em">— 实时Buff/Debuff</span></div>
+<div class="sfx-row sfx-player" id="sfxPlayer"><span class="sfx-label">🗡️ 我方</span><span class="sfx-empty">暂无状态</span></div>
+<div class="sfx-row sfx-enemy" id="sfxEnemy"><span class="sfx-label">👾 敌方</span><span class="sfx-empty">暂无状态</span></div>
+</div>
+<div class="blog" id="bLog"><div class="ls">--- 战斗开始 ---</div></div>
+<div id="bAction"></div>`;
+area.appendChild(card);
+setTimeout(()=>runBattle(enemy,isBreakthrough),600);
+}
+
+function waitForAction(){
+return new Promise(resolve=>{
+const area=$('bAction');if(!area){resolve({type:'attack'});return}
+let timer=null,cdTimer=null;
+function cleanup(){if(timer)clearInterval(timer);if(cdTimer)clearInterval(cdTimer);area.innerHTML=''}
+function startCd(){const cdBar=area.querySelector('.cd-fill');if(!cdBar)return;
+let rem=100;const step=100/100;
+cdTimer=setInterval(()=>{rem-=step;if(cdBar)cdBar.style.width=rem+'%';if(rem<=0){clearInterval(cdTimer);cleanup();resolve({type:'attack'})}},100)}
+function showMain(){area.innerHTML='';
+const cdw=document.createElement('div');cdw.className='cd-bar';const cdf=document.createElement('div');cdf.className='cd-fill';cdf.style.width='100%';cdw.appendChild(cdf);area.appendChild(cdw);
+const wrap=document.createElement('div');wrap.className='ba-wrap';
+[{t:'attack',icon:'⚔️',label:'攻击',sub:'无消耗'},{t:'skill',icon:'⚡',label:'技能',sub:'消耗能量'},{t:'defend',icon:'🛡️',label:'防御',sub:'回能量'},{t:'item',icon:'🎒',label:'道具',sub:'用物品'},{t:'flee',icon:'🏃',label:'逃跑',sub:'看幸运'}].forEach(a=>{
+const btn=document.createElement('div');btn.className='ba-btn';btn.innerHTML=`<span class="ba-icon">${a.icon}</span>${a.label}<span class="ba-sub">${a.sub}</span>`;
+btn.onclick=()=>{cleanup();if(a.type==='skill'||a.t==='skill'){showSkills()}else if(a.t==='item'){showItems()}else{resolve({type:a.t})}};wrap.appendChild(btn)});
+area.appendChild(wrap);startCd()}
+function showSkills(){const avail=G.p.skills.filter(s=>(G.skCD[s.id]||0)<=0&&(s.cost||0)<=G.p.en);
+area.innerHTML='';const wrap=document.createElement('div');wrap.className='ba-sub-wrap';
+if(!avail.length){wrap.innerHTML='<div style="color:var(--t3);text-align:center;padding:10px">没有可用技能</div>';
+const bb=document.createElement('button');bb.className='btn-sm btn-no';bb.textContent='返回';bb.onclick=()=>showMain();wrap.appendChild(bb);area.appendChild(wrap);return}
+avail.forEach(sk=>{const btn=document.createElement('div');btn.className='ba-sub-btn';
+btn.innerHTML=`${sk.emoji} <b>${sk.name}</b> <span style="color:var(--t3)">(${CAT_CN[sk.cat]||''} CD:${sk.cd} 能量:${sk.cost||0})</span>`;
+btn.onclick=()=>{cleanup();resolve({type:'skill',skill:sk})};wrap.appendChild(btn)});
+const bb=document.createElement('button');bb.className='btn-sm btn-no';bb.style.marginTop='6px';bb.textContent='← 返回';bb.onclick=()=>showMain();wrap.appendChild(bb);area.appendChild(wrap)}
+function showItems(){const consumables=G.bag.filter(i=>i.type==='consumable');
+area.innerHTML='';const wrap=document.createElement('div');wrap.className='ba-sub-wrap';
+if(!consumables.length){wrap.innerHTML='<div style="color:var(--t3);text-align:center;padding:10px">没有可用道具</div>';
+const bb=document.createElement('button');bb.className='btn-sm btn-no';bb.textContent='返回';bb.onclick=()=>showMain();wrap.appendChild(bb);area.appendChild(wrap);return}
+consumables.forEach(item=>{const btn=document.createElement('div');btn.className='ba-sub-btn';
+btn.innerHTML=`${item.emoji} <b>${item.name}</b> <span style="color:var(--t3)">(${item.desc})</span>`;
+btn.onclick=()=>{cleanup();resolve({type:'item',item})};wrap.appendChild(btn)});
+const bb=document.createElement('button');bb.className='btn-sm btn-no';bb.style.marginTop='6px';bb.textContent='← 返回';bb.onclick=()=>showMain();wrap.appendChild(bb);area.appendChild(wrap)}
+showMain();
+})}
+
+async function runBattle(enemy, isBreakthrough){
+const log=$('bLog'),p=G.p;let turn=0;
+let pShield=0,pDefBuff=0,pDefDur=0,pReflect=0,pRefDur=0,pEvade=false,pAtkBuff=0,pAtkDur=0,pHot=0,pHotDur=0,pCritB=0,pCritDur=0;
+let eDot=0,eDotDur=0,focusNext=false,atkCount=0,skipEnemyTurn=false,paralyzed=false;
+let eAtkBuff=0,eAtkDur=0,eDefBuff=0,eDefDur=0,eSkillCD={};
+function addL(t,c='ls'){const d=document.createElement('div');d.className=c;d.innerHTML=t;log.appendChild(d);log.scrollTop=log.scrollHeight}
+function updBU(){const _b2=getBagBonuses();const _mhp=p.maxHp+_b2.maxHp;const php=Math.max(0,Math.floor(p.hp)),ehp=Math.max(0,Math.floor(enemy.hp));
+$('bPH').textContent=`${php}/${_mhp}`;$('bEH').textContent=`${ehp}/${enemy.maxHp}`;
+$('bPB').style.width=cl(p.hp/_mhp*100,0,100)+'%';$('bPB').className='bar-hp'+(p.hp/_mhp<.25?' low':p.hp/_mhp<.5?' mid':'');
+$('bEB').style.width=cl(enemy.hp/enemy.maxHp*100,0,100)+'%';updateUI();updSfx()}
+// Status effects display
+function updSfx(){
+const pRow=$('sfxPlayer');const eRow=$('sfxEnemy');
+if(!pRow||!eRow)return;
+let pBuf='',eBuf='';
+// Player buffs
+if(pShield>0)pBuf+=`<span class="sfx-badge sfx-buff">🛡️${pShield}</span>`;
+if(pDefBuff>0&&pDefDur>0)pBuf+=`<span class="sfx-badge sfx-buff">🛡️防+${pDefBuff}(${pDefDur}t)</span>`;
+if(pAtkBuff>0&&pAtkDur>0)pBuf+=`<span class="sfx-badge sfx-buff">📯攻+${Math.floor(pAtkBuff>1?(pAtkBuff-1)*100:pAtkBuff*100)}%(${pAtkDur}t)</span>`;
+if(pReflect>0&&pRefDur>0)pBuf+=`<span class="sfx-badge sfx-buff">🌿反伤${Math.floor(pReflect*100)}%(${pRefDur}t)</span>`;
+if(pEvade)pBuf+=`<span class="sfx-badge sfx-buff">💨闪避准备</span>`;
+if(pHot>0&&pHotDur>0)pBuf+=`<span class="sfx-badge sfx-buff">🌸回复+${pHot}(${pHotDur}t)</span>`;
+if(pCritB>0&&pCritDur>0)pBuf+=`<span class="sfx-badge sfx-buff">⭐暴击+${Math.floor(pCritB*100)}%(${pCritDur}t)</span>`;
+// Awakening passives (persistent indicators)
+const ap=G.awk?.passiveMechanics?.positive;const an=G.awk?.passiveMechanics?.negative;
+if(ap?.hpRegenPct)pBuf+=`<span class="sfx-badge sfx-special">🌿再生${Math.floor(ap.hpRegenPct*100)}%</span>`;
+if(ap?.lifestealPct||getBagBonuses().lifesteal)pBuf+=`<span class="sfx-badge sfx-special">🩸吸血</span>`;
+if(ap?.dotPct)pBuf+=`<span class="sfx-badge sfx-special">🔥灼烧被动</span>`;
+if(ap?.chainCount)pBuf+=`<span class="sfx-badge sfx-special">⚡雷击/${ap.chainCount}</span>`;
+if(ap?.shieldPct)pBuf+=`<span class="sfx-badge sfx-special">🧊冰甲</span>`;
+if(ap?.fullEvade)pBuf+=`<span class="sfx-badge sfx-special">🕳️维度闪避</span>`;
+if(ap?.critAfterDodge&&focusNext)pBuf+=`<span class="sfx-badge sfx-buff">🎯下次必暴</span>`;
+if(!G.immortalUsed&&ap?.specialMechanic==='immortal_once')pBuf+=`<span class="sfx-badge sfx-special">🔥不灭</span>`;
+// Player debuffs
+if(paralyzed)pBuf+=`<span class="sfx-badge sfx-debuff">⚡麻痹</span>`;
+if(an?.selfBurnPct)pBuf+=`<span class="sfx-badge sfx-debuff">🔥自灼${Math.floor(an.selfBurnPct*100)}%</span>`;
+if(an?.hpLossPct)pBuf+=`<span class="sfx-badge sfx-debuff">🩸血耗${Math.floor(an.hpLossPct*100)}%</span>`;
+if(an?.damageTaken)pBuf+=`<span class="sfx-badge sfx-debuff">💔易伤+${Math.floor(an.damageTaken*100)}%</span>`;
+if(pAtkBuff<0)pBuf+=`<span class="sfx-badge sfx-debuff">⬇️攻击下降</span>`;
+// Bag passives
+const _sbb=getBagBonuses();
+if(_sbb.hpRegen)pBuf+=`<span class="sfx-badge sfx-special">🪶回复${_sbb.hpRegen}/t</span>`;
+if(_sbb.chainCount)pBuf+=`<span class="sfx-badge sfx-special">👑雷冠/${_sbb.chainCount}</span>`;
+// Enemy buffs/debuffs
+if(eDot>0&&eDotDur>0)eBuf+=`<span class="sfx-badge sfx-dot">☠️持续伤害${eDot}(${eDotDur}t)</span>`;
+if(skipEnemyTurn)eBuf+=`<span class="sfx-badge sfx-debuff">❄️冻结</span>`;
+if(eAtkBuff>0&&eAtkDur>0)eBuf+=`<span class="sfx-badge sfx-buff">📯攻击+${Math.floor(eAtkBuff*100)}%(${eAtkDur}t)</span>`;
+if(eDefBuff>0&&eDefDur>0)eBuf+=`<span class="sfx-badge sfx-buff">🛡️防御+${Math.floor(eDefBuff*100)}%(${eDefDur}t)</span>`;
+if(enemy.isBoss)eBuf+=`<span class="sfx-badge sfx-special">👑Boss</span>`;
+if(enemy.isElite)eBuf+=`<span class="sfx-badge sfx-special">💢精英</span>`;
+if(enemy.stars){const _di=(enemy.isBreakthrough)?BT_DIFFICULTIES.find(d=>d.stars===enemy.stars):null;
+if(_di){eBuf+=`<span class="sfx-badge sfx-special">${_di.icon}${_di.name}</span>`}
+else{eBuf+=`<span class="sfx-badge sfx-special" style="color:${MONSTER_TIERS[enemy.tier||0].color}">${'★'.repeat(Math.min(enemy.stars,5))}${enemy.tierName||''}</span>`}}
+pRow.innerHTML='<span class="sfx-label">🗡️ 我方</span>'+(pBuf||'<span class="sfx-empty">暂无状态</span>');
+eRow.innerHTML='<span class="sfx-label">👾 敌方</span>'+(eBuf||'<span class="sfx-empty">暂无状态</span>');
+}
+// Monster skills helper
+function tryMonsterSkill(){
+try{
+if(!enemy.skills||!enemy.skills.length)return false;
+const avail=enemy.skills.filter((_,i)=>(eSkillCD[i]||0)<=0);
+if(!avail.length)return false;
+if(Math.random()<(enemy.isBoss?0.4:enemy.isElite?0.3:0.2)){
+const sk=avail[R(0,avail.length-1)];const skIdx=enemy.skills.indexOf(sk);
+eSkillCD[skIdx]=R(2,4);
+addL(`${sk.emoji} ${enemy.name}使用「${sk.name}」!`,'le');
+// Helper: calc damage with shield
+function _skDmg(raw){let d=Math.max(1,raw-pDef+R(-2,2));if(pShield>0){const ab=Math.min(pShield,d);pShield-=ab;d-=ab}return Math.max(0,d)}
+if(sk.mult&&!sk.atkDebuff){let dmg=_skDmg(Math.floor(enemy.atk*(1+eAtkBuff)*sk.mult));
+p.hp-=dmg;addL(`  💥 造成 ${dmg} 伤害!`,'le')}
+else if(sk.dot){eDot=Math.floor(enemy.atk*sk.dotPct);eDotDur=sk.dotTurns||3;addL(`  ☠️ 附加持续伤害 ${eDot}/回合, ${eDotDur}回合`,'le');
+let dmg=_skDmg(Math.floor(enemy.atk*0.5));p.hp-=dmg;addL(`  + 基础伤害 ${dmg}`,'le')}
+else if(sk.freeze){if(Math.random()<sk.freeze){paralyzed=true;addL(`  ❄️ 你被冻结! 下回合无法行动`,'le')}
+let dmg=_skDmg(enemy.atk);p.hp-=dmg;addL(`  + ${dmg} 伤害`,'le')}
+else if(sk.nextMult){eAtkBuff=sk.nextMult-1;eAtkDur=1;addL(`  👤 下次攻击伤害翻倍!`,'le')}
+else if(sk.atkBuff){eAtkBuff=sk.atkBuff;eAtkDur=sk.dur||3;addL(`  📯 攻击力提升${Math.floor(sk.atkBuff*100)}%!`,'le')}
+else if(sk.lifesteal){let dmg=_skDmg(enemy.atk);p.hp-=dmg;const heal=Math.floor(dmg*sk.lifesteal);enemy.hp=Math.min(enemy.maxHp,enemy.hp+heal);addL(`  🩸 造成${dmg}伤害, 回复${heal}HP`,'le')}
+else if(sk.healPct){const heal=Math.floor(enemy.maxHp*sk.healPct);enemy.hp=Math.min(enemy.maxHp,enemy.hp+heal);addL(`  💚 回复 ${heal} HP!`,'ls')}
+else if(sk.defBuff){eDefBuff=sk.defBuff;eDefDur=sk.dur||3;addL(`  🛡️ 防御提升!`,'ls')}
+else if(sk.instantKill){if(Math.random()<sk.instantKill&&p.hp/p.maxHp<0.3){p.hp=0;addL(`  💀 死亡凝视! 灵魂被抽离!`,'le')}else{let dmg=_skDmg(enemy.atk);p.hp-=dmg;addL(`  凝视造成 ${dmg} 伤害`,'le')}}
+else if(sk.atkDebuff){const rawMult=sk.mult||1.0;let dmg=_skDmg(Math.floor(enemy.atk*rawMult));p.hp-=dmg;pAtkBuff=Math.max(pAtkBuff-sk.atkDebuff,-0.5);addL(`  👻 造成${dmg}伤害, 你的攻击降低!`,'le')}
+else{let dmg=_skDmg(enemy.atk);p.hp-=dmg;addL(`  造成 ${dmg} 伤害`,'le')}
+return true;}
+return false;
+}catch(e){console.error('[Battle] tryMonsterSkill error:',e.message,e.stack);
+// Fallback: do a basic attack instead of freezing
+try{let fd=Math.max(1,enemy.atk-pDef+R(-2,2));if(pShield>0){const ab=Math.min(pShield,fd);pShield-=ab;fd-=ab}p.hp-=Math.max(0,fd);addL(`${enemy.emoji} ${enemy.name}攻击，造成 ${Math.max(0,fd)} 伤害`,'le')}
+catch(e2){console.error('[Battle] Fallback attack also failed:',e2)}
+return true}
+}
+// Battle start buffs
+if(G.awk?.passiveMechanics?.positive?.shieldPct){pShield=Math.floor(p.maxHp*G.awk.passiveMechanics.positive.shieldPct);addL(`🛡️ 冰甲护盾: ${pShield}`,'ld')}
+// Apply temp buffs from items
+if(G.tempBuffs.atk){pAtkBuff+=G.tempBuffs.atk;pAtkDur=99;addL(`⚗️ 攻击药剂: 攻击+${G.tempBuffs.atk}`,'lcyan')}
+if(G.tempBuffs.def){pDefBuff+=G.tempBuffs.def;pDefDur=99;addL(`🧴 铁壁药剂: 防御+${G.tempBuffs.def}`,'lcyan')}
+if(G.tempBuffs.crit){pCritB+=G.tempBuffs.crit;pCritDur=99;addL(`🍷 暴击率+${(G.tempBuffs.crit*100).toFixed(0)}%`,'lcyan')}
+if(G.tempBuffs.cd){p.cd+=G.tempBuffs.cd;addL(`🍷 暴击伤害+${G.tempBuffs.cd.toFixed(1)}`,'lcyan')}
+if(G.tempBuffs.battleDmg){const bd=G.tempBuffs.battleDmg;enemy.hp-=bd;addL(`💣 爆裂炸弹! 对敌人造成 ${bd} 伤害!`,'lcyan');G.tempBuffs.battleDmg=0}
+
+// Pre-compute effective maxes (bag doesn't change during battle)
+const _bb0=getBagBonuses();
+const bEffMaxHp=p.maxHp+_bb0.maxHp;
+const bEffMaxEn=p.maxEn+_bb0.maxEn;
+
+try{
+while(p.hp>0&&enemy.hp>0){
+turn++;await sleep(400);
+// NaN safety
+if(isNaN(p.hp))p.hp=1;if(isNaN(enemy.hp))enemy.hp=0;
+// Phase 1: Turn start
+p.en=Math.min(bEffMaxEn,p.en+8);
+if(pHotDur>0){const h=pHot;p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`🌸 回春 +${h} HP`,'lp');pHotDur--}
+if(eDotDur>0){enemy.hp-=eDot;addL(`☠️ 持续伤害 ${eDot}`,'lp');eDotDur--}
+// Skills are permanent - no round-based expiration
+// Awakening HP regen
+if(G.awk?.passiveMechanics?.positive?.hpRegenPct){const hr=Math.floor(p.maxHp*G.awk.passiveMechanics.positive.hpRegenPct);p.hp=Math.min(bEffMaxHp,p.hp+hr);G.healing+=hr}
+
+// Phase 2: Player action (include bag bonuses)
+const _bb=getBagBonuses();
+let pAtk=p.atk+_bb.atk+pAtkBuff+Math.floor(G.tempBuffs.atk||0),pDef=p.def+_bb.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
+const effMaxHp=p.maxHp+_bb.maxHp;const effCR=p.cr+_bb.critRate+(p.lk*.002);const effCD=p.cd+_bb.critDamage;const effDG=p.dg+_bb.dodgeRate;
+let bagLifesteal=_bb.lifesteal;let bagHpRegen=_bb.hpRegen;
+atkCount++;let bloodSteal=0;
+if(G.awk?.passiveMechanics?.positive?.lifestealPct)bloodSteal=G.awk.passiveMechanics.positive.lifestealPct;
+bloodSteal+=bagLifesteal;// Add bag lifesteal
+if(G.awk?.passiveMechanics?.positive?.lowHpAtk&&p.hp/effMaxHp<(G.awk.passiveMechanics.positive.lowThresh||.5)){pAtk=Math.floor(pAtk*(1+G.awk.passiveMechanics.positive.lowHpAtk))}
+if(G.awk?.passiveMechanics?.negative?.highHpAtk&&p.hp/effMaxHp>(G.awk.passiveMechanics.negative.highThresh||.7)){pAtk=Math.floor(pAtk*(1+G.awk.passiveMechanics.negative.highHpAtk))}
+// Bag HP regen per turn
+if(bagHpRegen>0){p.hp=Math.min(effMaxHp,p.hp+bagHpRegen);G.healing+=bagHpRegen}
+// Early battle buff (黎明使者)
+if(G.awk?.passiveMechanics?.positive?.earlyAtk&&turn<=(G.awk.passiveMechanics.positive.earlyDur||3)){pAtk=Math.floor(pAtk*(1+G.awk.passiveMechanics.positive.earlyAtk));addL(`🌅 黎明祝福: 攻击+15%`,'lo')}
+
+addL(`--- 第${turn}回合 ---`,'ls');
+// Check if player is paralyzed (skip action)
+if(paralyzed){addL(`⚡ 你被麻痹，无法行动!`,'le');paralyzed=false;
+// Still do CD tick and enemy action
+try{
+p.skills.forEach(sk=>{if(G.skCD[sk.id]>0)G.skCD[sk.id]--});
+updBU();await sleep(350);
+// Enemy still acts (can use skills too)
+if(!skipEnemyTurn){
+Object.keys(eSkillCD).forEach(k=>{if(eSkillCD[k]>0)eSkillCD[k]--});
+const usedSkill=tryMonsterSkill();
+if(!usedSkill){
+let eDmg=Math.max(1,Math.floor(enemy.atk*(1+eAtkBuff))-pDef+R(-2,2));
+if(Math.random()<effDG+(G.awk?.passiveMechanics?.positive?.dodgeBonus||0)){addL(`💨 闪避!`,'lp');G.dodges++;eDmg=0}
+if(eDmg>0){if(pShield>0){const ab=Math.min(pShield,eDmg);pShield-=ab;eDmg-=ab}p.hp-=eDmg;addL(`${enemy.emoji} 造成 ${eDmg} 伤害`,'le')}
+}} else {addL(`${enemy.emoji} 被冻结，跳过行动`,'ls');skipEnemyTurn=false}
+if(pDefDur>0){pDefDur--;if(!pDefDur)pDefBuff=0}if(pRefDur>0){pRefDur--;if(!pRefDur)pReflect=0}
+if(pAtkDur>0){pAtkDur--;if(!pAtkDur)pAtkBuff=0}if(pCritDur>0){pCritDur--;if(!pCritDur){pCritB=0;if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd;G.tempBuffs.cd=0}}}
+updBU();if(p.hp<=0){if(G.awk?.passiveMechanics?.positive?.specialMechanic==='immortal_once'&&!G.immortalUsed){G.immortalUsed=true;p.hp=1;pAtkBuff+=Math.floor(p.atk*.5);pAtkDur=3;addL(`🔥 不灭余烬!`,'lo')}else break}
+}catch(e){console.error('[Battle] Paralyze turn error:',e);addL('⚠️ 回合异常，继续战斗','le');updBU()}
+continue;
+}
+const action=await waitForAction();
+if(!action||p.hp<=0||enemy.hp<=0)break;
+
+// Resolve player action
+if(action.type==='attack'){
+let dmg=Math.max(1,pAtk-enemy.def+R(-2,2));
+let isCrit=Math.random()<(effCR+pCritB)||focusNext;
+if(G.awk?.passiveMechanics?.negative?.normDmg)dmg=Math.floor(dmg*(1+G.awk.passiveMechanics.negative.normDmg));
+if(isCrit){dmg=Math.floor(dmg*(effCD+(G.tempBuffs.cd||0)));addL(`⚔️ 暴击! ${dmg} 伤害`,'lc');G.crits++;focusNext=false;document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),400);
+if(G.awk?.passiveMechanics?.positive?.critHealPct){const ch=Math.floor(dmg*G.awk.passiveMechanics.positive.critHealPct);p.hp=Math.min(bEffMaxHp,p.hp+ch);G.healing+=ch;addL(`🩸 暴击回血 +${ch}`,'lo')}}
+else{addL(`⚔️ 普攻 ${dmg} 伤害`,'lp');
+if(G.awk?.passiveMechanics?.negative?.missSelfPct){const sd=Math.floor(p.maxHp*G.awk.passiveMechanics.negative.missSelfPct);p.hp-=sd;addL(`🌙 非暴击自伤 ${sd}`,'le')}}
+enemy.hp-=dmg;G.dmgDealt+=dmg;
+if(bloodSteal>0){const st=Math.floor(dmg*bloodSteal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st;addL(`🩸 吸血 +${st}`,'lo')}
+// Awakening DOT
+if(G.awk?.passiveMechanics?.positive?.dotPct){eDot=Math.floor(pAtk*G.awk.passiveMechanics.positive.dotPct);eDotDur=G.awk.passiveMechanics.positive.dotDur||3;addL(`🔥 灼烧附加 ${eDot}/回合`,'lo')}
+// Storm chain (awakening)
+if(G.awk?.passiveMechanics?.positive?.chainCount&&atkCount%(G.awk.passiveMechanics.positive.chainCount||3)===0){const cd=Math.floor(pAtk*(G.awk.passiveMechanics.positive.chainDmg||.5));enemy.hp-=cd;G.dmgDealt+=cd;addL(`⚡ 雷击! ${cd} 无视防御`,'lo')}
+// Bag chain (thunderCrown relic)
+if(_bb.chainCount>0&&atkCount%_bb.chainCount===0){const bagChain=Math.floor(pAtk*0.4);enemy.hp-=bagChain;G.dmgDealt+=bagChain;addL(`👑 圣物雷击! ${bagChain} 无视防御`,'lo')}
+}
+else if(action.type==='skill'){
+const sk=action.skill;G.skCD[sk.id]=sk.cd;p.en-=sk.cost||0;
+addL(`${sk.emoji} 释放: ${sk.name}`,'lk');
+if(sk.dmg){
+let dmg=Math.floor((sk.dmg+pAtk*.3)*(1+(G.awk?.passiveMechanics?.positive?.skillDmg||0)));
+if(sk.piercing){enemy.hp-=dmg;addL(`🎯 穿透! ${dmg} 伤害`,'lp')}
+else{dmg=Math.max(1,dmg-Math.floor(enemy.def*.3));enemy.hp-=dmg;addL(`⚔️ 造成 ${dmg} 伤害`,'lp')}
+G.dmgDealt+=dmg;
+let isCrit=Math.random()<(effCR+pCritB)||focusNext;
+if(isCrit){const bonus=Math.floor(dmg*((effCD+(G.tempBuffs.cd||0))-1));enemy.hp-=bonus;G.dmgDealt+=bonus;addL(`💥 暴击! 额外 ${bonus}`,'lc');G.crits++;focusNext=false;document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),400)}
+if(sk.dot){eDot=sk.dot;eDotDur=3}
+if(bloodSteal>0){const st=Math.floor(dmg*bloodSteal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st}
+if(sk.steal){const st=Math.floor(dmg*sk.steal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st;addL(`🩸 吸血 +${st}`,'lo')}
+}
+if(sk.healAmt){let h=Math.floor(sk.healAmt*G.dc.heal*(1+(G.awk?.passiveMechanics?.positive?.healBoost||0)));if(p.hp>p.baseHp*1.5)h=Math.floor(h*.5);p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`💚 恢复 ${h} HP`,'lp')}
+if(sk.defBuff){pDefBuff=sk.defBuff;pDefDur=sk.dur||2;addL(`🛡️ 防御+${sk.defBuff}`,'ld')}
+if(sk.shield){pShield=sk.shield;addL(`🔮 护盾 ${sk.shield}`,'ld')}
+if(sk.reflect){pReflect=sk.reflect;pRefDur=sk.dur||3;addL(`🌿 反伤${Math.floor(sk.reflect*100)}%`,'ld')}
+if(sk.evade){pEvade=true;addL(`💨 准备闪避`,'lp')}
+if(sk.atkBuff){pAtkBuff=sk.atkBuff;pAtkDur=sk.dur||3;addL(`📯 攻击+${sk.atkBuff}`,'lp');if(sk.defDebuff){pDefBuff-=sk.defDebuff;addL(`😤 防御-${sk.defDebuff}`,'le')}}
+if(sk.critBoost){pCritB=sk.critBoost;pCritDur=sk.dur||4;addL(`⭐ 暴击率提升`,'lp')}
+if(sk.hot){pHot=sk.hot;pHotDur=sk.dur||3}
+if(sk.energyGain){p.en=Math.min(bEffMaxEn,p.en+sk.energyGain);addL(`🌀 能量+${sk.energyGain}`,'lk')}
+// skills are permanent - no round-based expiration
+}
+else if(action.type==='defend'){
+pDefBuff=Math.max(pDefBuff,p.def);pDefDur=1;p.en=Math.min(bEffMaxEn,p.en+8);
+addL(`🛡️ 防御姿态! 防御翻倍，能量+8`,'ld');
+}
+else if(action.type==='item'){
+const item=action.item;const ef=item.effect||{};
+if(ef.healPct){const h=Math.floor(bEffMaxHp*ef.healPct);p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`🧪 使用${item.name}: +${h} HP`,'lcyan')}
+if(ef.enPct){p.en=Math.min(bEffMaxEn,p.en+Math.floor(bEffMaxEn*ef.enPct));addL(`💎 使用${item.name}: 能量恢复`,'lcyan')}
+if(ef.tempAtk){pAtkBuff+=ef.tempAtk;pAtkDur=Math.max(pAtkDur,99);addL(`⚗️ ${item.name}: 攻击+${ef.tempAtk}`,'lcyan')}
+if(ef.tempDef){pDefBuff+=ef.tempDef;pDefDur=Math.max(pDefDur,99);addL(`🧴 ${item.name}: 防御+${ef.tempDef}`,'lcyan')}
+if(ef.tempCrit){pCritB+=ef.tempCrit;pCritDur=Math.max(pCritDur,99)}
+removeFromBag(item.uid);
+}
+else if(action.type==='flee'){
+// Escape attempt - luck-based probability
+const bb0f=getBagBonuses();
+const fleeLuck=p.lk+bb0f.luck;
+const fleeChance=cl(0.15+fleeLuck*0.035,0.1,0.90);// 15% base + 3.5% per luck point, 10%-90%
+const roll=Math.random();
+addL(`🏃 尝试逃跑... (成功率:${Math.floor(fleeChance*100)}%)`,'lo');
+if(roll<fleeChance){
+// Success - lose 70% current HP
+const hpLoss=Math.floor(p.hp*0.7);
+p.hp-=hpLoss;
+addL(`🏃 逃跑成功! 但慌乱中损失了 ${hpLoss} 点生命!`,'lp');
+if(p.hp<=0){p.hp=1;addL(`⚠️ 险些丧命，以1HP逃脱!`,'le')}
+updBU();
+// End battle as escaped (no rewards)
+await sleep(800);
+const escRes=document.createElement('div');escRes.className='bres w fi';escRes.style.borderColor='var(--org)';
+escRes.innerHTML=`<div style="font-size:1.2em;margin-bottom:6px;color:var(--org)">🏃 逃跑成功</div>
+<div style="font-size:.9em;color:var(--t2)">你成功逃离了战斗，但付出了惨痛代价。<br>损失 ${hpLoss} 点生命值</div>`;
+const escBtn=document.createElement('button');escBtn.className='btn-big';escBtn.textContent='继续';escBtn.style.marginTop='10px';
+escBtn.onclick=function(){advanceEvt()};escRes.appendChild(escBtn);
+$('evtArea').appendChild(escRes);
+setTimeout(()=>escBtn.scrollIntoView({behavior:'smooth',block:'center'}),100);
+updateUI();return;// Exit runBattle entirely
+}else{
+// Failed - wasted turn, enemy gets free attack
+addL(`❌ 逃跑失败! 你被拦住了!`,'le');
+}
+}
+// CD tick
+p.skills.forEach(sk=>{if(G.skCD[sk.id]>0)G.skCD[sk.id]--});
+updBU();if(enemy.hp<=0)break;
+// Start preloading next event while waiting between turns
+preloadNextEvent();
+await sleep(350);
+
+// Phase 4: Enemy action (with monster skills)
+try{
+if(skipEnemyTurn){addL(`${enemy.emoji} ${enemy.name}被冻结，跳过行动`,'ls');skipEnemyTurn=false}
+else if(pEvade){addL(`💨 闪避了攻击!`,'lp');pEvade=false;G.dodges++;if(G.awk?.passiveMechanics?.positive?.critAfterDodge)focusNext=true}
+else{
+// Tick enemy skill CDs
+Object.keys(eSkillCD).forEach(k=>{if(eSkillCD[k]>0)eSkillCD[k]--});
+const usedSkill=tryMonsterSkill();
+if(!usedSkill){
+// Basic attack with boss/elite modifiers
+let eDmg=Math.max(1,Math.floor(enemy.atk*(1+eAtkBuff))-pDef+R(-2,2));
+if(enemy.isBoss&&turn%3===0){eDmg=Math.floor(eDmg*1.5);addL(`👑 ${enemy.name}发动特殊攻击!`,'le')}
+if(enemy.isElite&&enemy.hp/enemy.maxHp<.5&&Math.random()<.2){eDmg=Math.floor(eDmg*1.3);addL(`💢 ${enemy.name}蓄力攻击!`,'le')}
+// Dodge check
+if(Math.random()<effDG+(G.awk?.passiveMechanics?.positive?.dodgeBonus||0)){addL(`💨 闪避!`,'lp');G.dodges++;eDmg=0;if(G.awk?.passiveMechanics?.positive?.critAfterDodge)focusNext=true}
+// Full evade (虚空漫步)
+if(G.awk?.passiveMechanics?.positive?.fullEvade&&Math.random()<G.awk.passiveMechanics.positive.fullEvade){addL(`🕳️ 维度闪避! 完全回避!`,'lp');eDmg=0}
+if(eDmg>0){
+if(G.awk?.passiveMechanics?.negative?.damageTaken)eDmg=Math.floor(eDmg*(1+G.awk.passiveMechanics.negative.damageTaken));
+if(pShield>0){const ab=Math.min(pShield,eDmg);pShield-=ab;eDmg-=ab;addL(`🔮 护盾吸收 ${ab}`,'ld')}
+if(pReflect>0&&pRefDur>0){const rd=Math.floor(eDmg*pReflect);enemy.hp-=rd;G.dmgDealt+=rd;addL(`🌿 反弹 ${rd}`,'lp')}
+p.hp-=eDmg;addL(`${enemy.emoji} ${enemy.name}攻击，造成 ${eDmg} 伤害`,'le');
+}}}
+// Frost freeze
+if(G.awk?.passiveMechanics?.positive?.freezeChance&&Math.random()<G.awk.passiveMechanics.positive.freezeChance){addL(`❄️ 冻结敌人1回合!`,'lo');skipEnemyTurn=true}
+// Buff tick
+if(pDefDur>0){pDefDur--;if(!pDefDur)pDefBuff=0}if(pRefDur>0){pRefDur--;if(!pRefDur)pReflect=0}
+if(pAtkDur>0){pAtkDur--;if(!pAtkDur)pAtkBuff=0}if(pCritDur>0){pCritDur--;if(!pCritDur){pCritB=0;if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd;G.tempBuffs.cd=0}}}
+// Enemy buff tick
+if(eAtkDur>0){eAtkDur--;if(!eAtkDur)eAtkBuff=0}if(eDefDur>0){eDefDur--;if(!eDefDur)eDefBuff=0}
+// Blood self burn
+if(G.awk?.passiveMechanics?.negative?.hpLossPct){const bl=Math.floor(p.maxHp*G.awk.passiveMechanics.negative.hpLossPct);p.hp-=bl;addL(`🩸 血之代价 -${bl}`,'le')}
+if(G.awk?.passiveMechanics?.negative?.selfBurnPct){const fb=Math.floor(p.maxHp*G.awk.passiveMechanics.negative.selfBurnPct);p.hp-=fb;addL(`🔥 灼烧反噬 -${fb}`,'le')}
+// Paralyze
+if(G.awk?.passiveMechanics?.negative?.paralyzeChance&&Math.random()<G.awk.passiveMechanics.negative.paralyzeChance){addL(`⚡ 被麻痹! 下回合无法行动`,'le');paralyzed=true}
+updBU();
+// Phase 5: Player death check
+if(p.hp<=0){
+if(G.awk?.passiveMechanics?.positive?.specialMechanic==='immortal_once'&&!G.immortalUsed){
+G.immortalUsed=true;p.hp=1;pAtkBuff+=Math.floor(p.atk*.5);pAtkDur=3;addL(`🔥 不灭余烬! 以1HP存活!`,'lo');
+}else{break}
+}}catch(e){console.error('[Battle] Enemy action error:',e);addL('⚠️ 战斗异常，继续','le');updBU()}
+}
+await sleep(400);
+// Clear temp buffs and restore base stats
+if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd}
+if(G.tempBuffs.crit){}// pCritB was separate, p.cr unchanged
+G.tempBuffs={};
+if(p.hp>0){
+if(isBreakthrough){
+addL(`--- 突破成功! ---`,'ls');
+await sleep(1000);
+await completeBreakthrough(G._btStars||3);
+}else{battleWin(enemy)}
+}else{
+addL(`--- 你被击败了... ---`,'ls');
+if(isBreakthrough){setTimeout(()=>{showScr('gameScr');addL('突破失败...你可以继续修炼再试','le');G._btMonster=null;advanceEvt()},2000)}
+else{setTimeout(()=>gameOver('death'),1500)}
+}
+}catch(_bErr){console.error('[Battle] Critical error:',_bErr);
+try{addL('⚠️ 战斗系统异常，已自动恢复','le')}catch(e){}
+await sleep(500);
+const errDiv=document.createElement('div');errDiv.className='bres w fi';errDiv.style.borderColor='var(--org)';
+errDiv.innerHTML='<div style="color:var(--org);margin-bottom:6px">战斗出现异常</div>';
+const errBtn=document.createElement('button');errBtn.className='btn-big';errBtn.textContent='继续冒险';
+errBtn.onclick=function(){advanceEvt()};errDiv.appendChild(errBtn);
+const area=$('evtArea');if(area)area.appendChild(errDiv);
+}
+}
+
+async function battleWin(enemy){
+try{
+G.kills++;const xpMult=enemy.isBoss?80:enemy.isElite?35:15;const xpGain=enemy.lv*xpMult+(enemy.stars||1)*5;
+const leveled=gainXP(xpGain);
+// killHeal passive (boneRing etc.)
+const _bbKill=getBagBonuses();
+if(_bbKill.killHeal>0){G.p.hp=Math.min(G.p.maxHp+_bbKill.maxHp,G.p.hp+_bbKill.killHeal);G.healing+=_bbKill.killHeal}
+// Post-battle HP recovery (difficulty-scaled)
+const hpBase=enemy.isBoss?R(20,35):enemy.isElite?R(12,22):R(8,16);
+const hpRecover=Math.floor(hpBase*G.dc.heal);let aH=hpRecover;if(G.p.hp>G.p.baseHp*1.5)aH=Math.floor(aH*.5);
+G.p.hp=Math.min(G.p.maxHp+(_bbKill.maxHp||0),G.p.hp+aH);G.healing+=aH;G.p.en=G.p.maxEn+(_bbKill.maxEn||0);
+// Gold reward (difficulty-scaled)
+const goldBase=enemy.isBoss?R(40,80):enemy.isElite?R(15,30):R(5,15);
+const goldReward=Math.floor(goldBase*(1+G.month*0.1)*(G.dc.reward||1));
+G.gold+=goldReward;G.totalGold+=goldReward;
+addL(`--- 战斗胜利! ---`,'ls');
+let winExtras=`+${aH} 生命 | +${xpGain} 经验 | +${goldReward}💰`;
+if(_bbKill.killHeal>0)winExtras+=` | 💀 击杀回复+${_bbKill.killHeal}`;
+addL(winExtras,'lp');
+const res=document.createElement('div');res.className='bres w fi';
+res.innerHTML=`<div style="font-size:1.3em;margin-bottom:8px">${enemy.isBoss?'👑 Boss击败!':'⚔️ 战斗胜利!'}</div>
+<div style="font-size:.9em">+${aH} 生命 | +${xpGain} 经验 | +${goldReward}💰${leveled?' | 🎉 升级了! Lv.'+G.p.level:''}</div>`;
+const dropArea=document.createElement('div');dropArea.id='itemDropArea';res.appendChild(dropArea);
+// Show breakthrough notification if pending
+if(G.breakthroughPending){
+const btNote=document.createElement('div');btNote.style.cssText='background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:10px;margin-top:8px;text-align:center;animation:fadeIn .5s';
+btNote.innerHTML=`<div style="color:var(--red);font-weight:bold">⚡ 突破试炼已开启!</div><div style="color:var(--t2);font-size:.85em">Lv.${getNextBtLevel()} 突破任务 — 点击顶部「突破!」按钮选择难度挑战</div>`;
+res.appendChild(btNote);
+}
+// Always show continue button
+const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.style.marginTop='12px';
+btn.onclick=function(){advanceEvt()};res.appendChild(btn);
+$('evtArea').appendChild(res);
+setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'center'}),200);
+// Item drop
+const dropChance=30+enemy.lv*1+G.dc.dropB+G.p.lk*.5+(enemy.isElite?35:0)+(enemy.isBoss?75:0);
+if(Math.random()*100<dropChance){dropItem(enemy)}
+updateUI();
+// Preload next event while player views rewards
+preloadNextEvent();
+}catch(e){console.error('[battleWin]',e);
+const res=document.createElement('div');res.className='bres w fi';
+const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.onclick=function(){advanceEvt()};res.appendChild(btn);$('evtArea').appendChild(res);btn.scrollIntoView({behavior:'smooth',block:'center'})}
+}
+
+function dropItem(enemy){
+const area=$('itemDropArea');if(!area)return;
+const r=Math.random()*100;let pool;
+if(enemy.isBoss){pool=['hpPotL','enCrystal','berserk','mystKey','awkShard','magicEss','gemStone','treasMap','skullTrophy',
+// Relics & epic equipment (boss exclusive)
+'bloodAmulet','thunderCrown','phoenixFeather','voidEye','ancientTome','flameBlade','frostEdge','dragonPlate','starPendant','guardianShield']}
+else if(enemy.isElite){pool=['hpPotL','atkPot','defPot','enCrystal','magicEss','monsterMat','gemStone','bomb','ancientCoin','ruinGuide',
+// Rare equipment (elite+)
+'steelSword','shadowDagger','chainMail','energyOrb','luckyCharm','boneRing']}
+else{pool=['hpPot','atkPot','defPot','ironOre','monsterMat','antidote','rope','tent','ruinGuide',
+// Common equipment (any fight)
+'ironSword','leatherArmor','ironRing']}
+const itemId=pick(pool);const it=ITEMS[itemId];if(!it)return;
+if(addToBag(itemId)){
+let dropStats='';
+if((it.type==='equipment'||it.type==='relic')&&it.stats){
+const s=it.stats;const parts=[];
+if(s.atk)parts.push(`攻击+${s.atk}`);if(s.def)parts.push(`防御+${s.def}`);if(s.maxHp)parts.push(`生命+${s.maxHp}`);
+if(s.maxEn)parts.push(`能量+${s.maxEn}`);if(s.critRate)parts.push(`暴击+${(s.critRate*100).toFixed(0)}%`);
+if(s.critDamage)parts.push(`暴伤+${s.critDamage.toFixed(1)}`);if(s.dodgeRate)parts.push(`闪避+${(s.dodgeRate*100).toFixed(0)}%`);
+if(s.luck)parts.push(`幸运+${s.luck}`);if(s.lifesteal)parts.push(`吸血${(s.lifesteal*100).toFixed(0)}%`);
+if(s.hpRegen)parts.push(`每回合+${s.hpRegen}HP`);if(s.killHeal)parts.push(`击杀+${s.killHeal}HP`);
+if(s.chainCount)parts.push(`每${s.chainCount}击雷击`);
+dropStats=`<div style="color:var(--org);font-size:.8em;margin-top:2px">${parts.join(' | ')}</div>`}
+const typeBadge=(it.type==='equipment'||it.type==='relic')?`<div style="color:var(--gold);font-size:.75em;margin-top:2px">[${TYPE_CN[it.type]}] 被动生效</div>`:'';
+area.innerHTML=`<div class="item-drop" style="border-color:${it.type==='relic'?'var(--pur)':it.type==='equipment'?'var(--gold)':'var(--bdr)'}"><div style="font-size:2em">${it.emoji}</div><div style="color:${RARITY_CLR[it.rarity]};font-weight:bold">${it.name}</div><div style="color:var(--t2);font-size:.85em">${it.desc}</div>${dropStats}${typeBadge}<div style="color:var(--grn);font-size:.8em;margin-top:4px">已放入背包</div></div>`;
+}else{area.innerHTML='<div style="color:var(--org);font-size:.85em;padding:8px">背包已满，物品丢失</div>'}
+updateUI();
+}
+
+// ===== SKILL AWAKENING (Breakthrough milestones) =====
+async function checkSkillAwaken(){
+// Skills are awarded during breakthroughs - check both pending flag and star rating
+if(!G.breakthroughPending&&!G._btSkillQuality)return;
+if(G.p.level>=20)G.maxSlot=12;
+if(G.p.level>=40)G.maxSlot=15;
+if(G.p.level>=60)G.maxSlot=18;
+if(G.p.level>=80)G.maxSlot=21;
+await showTrans('✦ 技能觉醒 ✦',1200);
+showScr('skAwkScr');
+const starRating=G._btStarRating||3;
+const quality=G._btSkillQuality||'good';
+const qualityLabel=quality==='legendary'?'传说':quality==='elite'?'精英':quality==='good'?'优质':'基础';
+$('skAwkSub').textContent=`Lv.${G.p.level} ${qualityLabel}级技能 — 技能槽位: ${G.maxSlot}个`;
+const cardsDiv=$('skAwkCards');cardsDiv.innerHTML='<div class="loading" style="padding:40px">AI 正在锻造技能...</div>';
+const skills=await generateSkillCandidates(starRating);
+// Return a promise that resolves when player picks a skill
+return new Promise(resolve=>{
+cardsDiv.innerHTML='';
+skills.forEach((sk,i)=>{
+const card=document.createElement('div');card.className='skawk-card';card.style.borderColor=CAT_CLR[sk.cat]||'var(--bdr)';
+const lifeLabel='永久';
+card.innerHTML=`<div class="sk-emoji">${sk.emoji}</div><div class="sk-name">${sk.name}</div>
+<div class="sk-desc">${sk.desc}</div>
+<div class="sk-info">分类: ${CAT_CN[sk.cat]||sk.cat}<br>CD: ${sk.cd}回合 | 能量: ${sk.cost||0}<br>永久技能${sk.dmg?'<br>伤害: '+sk.dmg:''}</div>`;
+card.onclick=()=>{
+if(G.p.skills.length<G.maxSlot){G.p.skills.push(sk);G.skCD[sk.id]=0}
+else{const old=G.p.skills.shift();delete G.skCD[old.id];G.p.skills.push(sk);G.skCD[sk.id]=0}
+G.totalSkills++;updateUI();showScr('gameScr');resolve();
+};cardsDiv.appendChild(card)});
+});
+}
+
+async function generateSkillCandidates(starRating){
+starRating=starRating||3;
+const cats=['damage','survival','support','energy'];
+const weights=G.awk?.skillAffinity==='damage'?[60,15,15,10]:G.awk?.skillAffinity==='survival'?[20,50,20,10]:G.awk?.skillAffinity==='support'?[20,20,50,10]:G.awk?.skillAffinity==='energy'?[15,15,15,55]:[30,25,25,20];
+const pickedCats=[];for(let i=0;i<3;i++){let r=Math.random()*100,cat='damage',cum=0;for(let j=0;j<cats.length;j++){cum+=weights[j];if(r<cum){cat=cats[j];break}}pickedCats.push(cat)}
+const strength=(1+(G.p.level-10)*.06+starRating*0.15).toFixed(2);
+const existNames=G.p.skills.map(s=>s.name).join(',');
+const awkName=G.awk?G.awk.name:'无';
+const awkDir=G.awk?DIR_NAMES[G.awk.direction]+'('+G.awk.direction+')':'无';
+const awkTitle=G.awk?G.awk.title:'';
+const awkPassive=G.awk?G.awk.passiveName+': '+G.awk.passiveDescription:'无';
+const awkNarrative=G.awk?G.awk.narrativeStyle:'通用';
+const awkDesc=G.awk?G.awk.description:'';
+const qualityDesc=starRating>=5?'传说级，极其强力且独特':starRating>=4?'精英级，效果优秀':starRating>=3?'优质技能，效果良好':'基础技能';
+const prompt=`为《命运裂隙》玩家生成3个候选技能，技能必须与玩家的觉醒体主题高度契合！
+
+【觉醒体】${awkName}「${awkTitle}」
+【方向】${awkDir}
+【觉醒描述】${awkDesc}
+【被动技能】${awkPassive}
+【叙事风格】${awkNarrative}
+【等级】Lv.${G.p.level} 【强度系数】${strength} 【突破星级】${starRating}星
+【技能品质】${qualityDesc}
+【已有技能】${existNames||'无'}(不得重名)
+
+重要要求：
+1. 技能名称、描述和效果必须与觉醒体「${awkName}」的主题风格一致
+2. ${starRating>=5?'传说级技能必须有独特机制和强力效果，伤害/效果系数大幅提升':''}
+3. 技能不只是数值，要有与觉醒体背景故事关联的叙事感
+4. 参考被动「${G.awk?G.awk.passiveName:''}」的风格来设计
+
+生成3个不同分类的技能,JSON:
+[{"name":"名称2-5字","category":"${pickedCats[0]}","emoji":"","description":"一句话，体现觉醒体风格","cooldown":${R(2,5)},"energyCost":${R(8,25)},"effects":{}},
+{"name":"","category":"${pickedCats[1]}","emoji":"","description":"","cooldown":${R(2,5)},"energyCost":${R(8,25)},"effects":{}},
+{"name":"","category":"${pickedCats[2]}","emoji":"","description":"","cooldown":${R(2,5)},"energyCost":${R(8,25)},"effects":{}}]
+damage类effects:{damage:${10+starRating*5}-${25+starRating*8},dot?,piercing?} survival:{shield?,heal?,defBuff?,evade?,block?} support:{atkBuff?,critBoost?,hot?,lifesteal?,dmg?} energy:{energyGain?,energySteal?,cdReduce?}`;
+let result=await callAI(prompt,15000);
+let skills=[];
+if(result){
+if(Array.isArray(result)){skills=result}
+else if(result.skills&&Array.isArray(result.skills)){skills=result.skills}
+else if(result.name){skills=[result]}// single skill returned
+}
+// Process skills
+skills=skills.map((sk,i)=>{
+sk.id='sk_'+Date.now()+'_'+R(0,9999)+'_'+i;
+sk.cat=sk.category||pickedCats[i]||'damage';
+sk.cost=sk.energyCost||sk.cost||R(10,20);sk.cd=sk.cooldown||sk.cd||R(2,4);
+sk.desc=sk.description||sk.desc||'一个技能';sk.dmg=sk.effects?.damage||sk.dmg||0;sk.emoji=sk.emoji||'✨';
+if(sk.effects?.damage)sk.dmg=Math.floor(sk.effects.damage*parseFloat(strength));
+// Skills are permanent - no lifespan assignment needed
+G.aiSkills++;return sk;
+}).filter(s=>s.name);
+// Fill with presets if needed
+while(skills.length<3){
+const cat=pick(cats);const pool=PRESET_SKILLS.filter(s=>s.cat===cat&&!G.p.skills.find(ps=>ps.name===s.name));
+const t=pool.length?pick(pool):pick(PRESET_SKILLS);
+const sk={...t,id:'sk_'+Date.now()+'_'+R(0,9999)+'_p'};
+skills.push(sk);
+}
+return skills.slice(0,3);
+}
+
+// ===== MONTH COMPLETE =====
+async function monthComplete(){
+// Month lifespan tick (months type)
+// Skills are permanent - no month-based expiration
+// Heal 5% maxHP
+const healAmt=Math.floor(G.p.maxHp*.05);G.p.hp=Math.min(G.p.maxHp,G.p.hp+healAmt);G.healing+=healAmt;
+G.month++;
+G.currentAgeMonth++;// Age by 1 game-month (12 game-months = 1 year)
+// Check lifespan (age-based)
+if(!isAlive()){await showTrans(`${getAgeYears()}岁${getAgeMonths()}月 — 大限已至`);gameOver('lifespan');return}
+// Reset preload cache for new month and regenerate AI maps in background
+_preloadedEvent=null;_preloadPromise=null;_preloadedMonsters={};
+generateAIMaps();// fire-and-forget, runs while player picks region
+// Show region picker for next month
+showRegionPicker();
+}
+
+// ===== AI MAP GENERATION =====
+const MAP_TEMPLATES=[
+{type:'wild',icons:['🌲','🌳','🍃','🌿'],names:['幽暗密林','古树深林','毒雾丛林','精灵森林','血色树海','万年古木'],battleRate:0.50,evtWeights:{adventure:3,stranger:2,trap:2,disaster:1,treasure:1}},
+{type:'town',icons:['🏘️','🏰','🏠','🛕'],names:['边境小镇','贸易重镇','流浪者营地','盗贼之城','炼金之都','武斗城'],battleRate:0.15,evtWeights:{merchant:5,stranger:4,gamble:3,mystery:2,blessing:2}},
+{type:'ruins',icons:['🏛️','⛩️','🗿','🏚️'],names:['上古遗迹','失落神殿','废弃王城','远古祭坛','地下陵墓','神秘废墟'],battleRate:0.35,evtWeights:{tomb:5,treasure:5,ruins:4,trap:4,mystery:3}},
+{type:'road',icons:['🔀','🛤️','⛰️','🏜️'],names:['十字路口','荒野古道','山脊小径','河流渡口','沙漠商路','风暴走廊'],battleRate:0.30,evtWeights:{adventure:2,stranger:3,duel:2,mystery:2,blessing:2}},
+{type:'abyss',icons:['🕳️','🌑','💀','👁️'],names:['暗影深渊','虚空裂口','冥界之门','混沌裂隙','永夜之地','死灵墓穴'],battleRate:0.50,evtWeights:{curse:4,mystery:4,disaster:3,duel:3,battle:3}},
+{type:'special',icons:['🌋','❄️','⚡','🌊','☀️','🌙'],names:['熔岩地狱','永冻冰原','雷霆峡谷','深海遗迹','光明圣域','月影秘境'],battleRate:0.40,evtWeights:{adventure:3,mystery:3,treasure:3,trap:2,disaster:2}}
+];
+
+async function generateAIMaps(){
+G.aiMaps=[];
+const ageYears=getAgeYears();
+const hasTreasMap=G.bag.some(bi=>bi.id==='treasMap');
+const hasRuinGuide=G.bag.some(bi=>bi.id==='ruinGuide');
+const dirName=G.awk?DIR_NAMES[G.awk.direction]+'系':'通用';
+// AI only generates ruins/encounters/special areas (fixed locations handle towns/forests/roads)
+const prompt=`为Roguelike游戏《命运裂隙》生成3个随机发现的遗迹、墓穴或奇遇地点。玩家当前${ageYears}岁, Lv.${G.p.level}, ${dirName}觉醒者。
+
+重要:
+1. 只生成遗迹(ruins)、特殊(special)或深渊(abyss)类型的随机发现地点
+2. 每个地点有独特的名字(2-6字)、简短描述(1-2句)
+3. 这些是玩家在冒险中偶然发现的隐藏地点，不是固定城镇或森林
+4. 名字要有创意，带有神秘和探险感
+${hasTreasMap?'5. 必须包含1个宝藏特别丰富的遗迹，名字像"上古遗迹·xxx"':''}
+${hasRuinGuide?'6. 可以包含一个危险但回报丰厚的探险区域':''}
+
+只输出JSON数组:
+[{"name":"地图名","icon":"一个emoji","type":"ruins|special|abyss","description":"1-2句描述","battleRate":0.2-0.6,"monsterHint":"该地区怪物特征,1句话"},
+{"name":"","icon":"","type":"","description":"","battleRate":"","monsterHint":""},
+{"name":"","icon":"","type":"","description":"","battleRate":"","monsterHint":""}]`;
+try{
+const result=await callAI(prompt,20000);
+let maps=[];
+if(Array.isArray(result))maps=result;
+else if(result&&result.name)maps=[result];
+// Validate and fill with ruins templates
+maps=maps.filter(m=>m.name&&m.icon);
+while(maps.length<3){
+const tpl=pick(MAP_TEMPLATES.filter(t=>t.type==='ruins'||t.type==='special'||t.type==='abyss'));
+const name=pick(tpl.names)+('·'+['东','西','南','北','深','远','隐','幽'][R(0,7)]);
+maps.push({name,icon:pick(tpl.icons),type:tpl.type,description:'一处'+pick(['神秘','危险','古老','未知','被遗忘'])+'的'+pick(['遗迹','墓穴','秘境','废墟']),battleRate:tpl.battleRate,monsterHint:''})
+}
+// Apply template defaults
+G.aiMaps=maps.slice(0,3).map((m,i)=>{
+const tpl=MAP_TEMPLATES.find(t=>t.type===m.type)||MAP_TEMPLATES[2];
+return{
+id:'ruin_'+i,name:m.name,icon:m.icon,type:m.type,
+desc:m.description||'一处神秘的区域',
+battleRate:cl(Number(m.battleRate)||tpl.battleRate,0.05,0.7),
+evtWeights:{...tpl.evtWeights},
+monsterHint:m.monsterHint||'',
+cls:m.type==='ruins'?'rg-ruin':m.type==='abyss'?'rg-dark':'rg-road',
+isTreasureMap:hasTreasMap&&m.type==='ruins'
+}});
+}catch(e){console.error('[AI Maps] Failed:',e);fallbackMaps()}
+if(!G.aiMaps.length)fallbackMaps();
+// Generate AI monsters for first map as preview
+if(G.aiMaps[0])generateAIMonstersForMap(G.aiMaps[0]);
+}
+
+function fallbackMaps(){
+G.aiMaps=[];
+const types=['ruins','special','abyss'];
+types.forEach((type,i)=>{
+const tpl=MAP_TEMPLATES.find(t=>t.type===type);
+if(!tpl)return;
+const name=pick(tpl.names)+('·'+['东','西','南','北','深','远','隐','幽'][R(0,7)]);
+G.aiMaps.push({
+id:'ruin_'+i,name,icon:pick(tpl.icons),type,
+desc:'一处'+pick(['神秘','危险','古老','被遗忘'])+'的'+pick(['遗迹','墓穴','秘境','废墟']),
+battleRate:tpl.battleRate,evtWeights:{...tpl.evtWeights},
+monsterHint:'',cls:type==='ruins'?'rg-ruin':type==='abyss'?'rg-dark':'rg-road',
+isTreasureMap:false
+})});
+}
+
+async function generateAIMonstersForMap(mapData){
+const prompt=`为Roguelike游戏《命运裂隙》生成3个独特怪物，它们生活在「${mapData.icon}${mapData.name}」。
+地区类型: ${mapData.type} | 描述: ${mapData.desc}
+${mapData.monsterHint?'怪物特征: '+mapData.monsterHint:''}
+难度: ${G.dc.name} | 玩家等级: Lv.${G.p.level}
+
+要求: 名字2-6字有创意, emoji, hp:20-70, atk:6-18, def:1-8, min:1-5, 描述1句话
+只输出JSON数组:
+[{"name":"怪物名","emoji":"🦎","hp":35,"atk":11,"def":4,"min":2,"description":"一句话","trait":"标签"},
+{"name":"","emoji":"","hp":"","atk":"","def":"","min":"","description":"","trait":""},
+{"name":"","emoji":"","hp":"","atk":"","def":"","min":"","description":"","trait":""}]`;
+try{
+const result=await callAI(prompt,15000);
+let monsters=[];
+if(Array.isArray(result))monsters=result;
+else if(result&&result.name)monsters=[result];
+G.aiMonsters=monsters.filter(m=>m.name).map(m=>({
+name:m.name,emoji:m.emoji||'👾',
+hp:cl(Math.round(m.hp||30),15,80),atk:cl(Math.round(m.atk||10),5,20),def:cl(Math.round(m.def||3),1,10),
+min:cl(Math.round(m.min||1),1,8),desc:m.description||'',trait:m.trait||''
+}));
+console.log('[AI Monsters] for',mapData.name,':',G.aiMonsters.map(m=>m.name));
+}catch(e){console.error('[AI Monsters] Failed:',e);G.aiMonsters=[]}
+}
+
+function showRegionPicker(){
+showScr('regScr');
+const isFirstMonth=G.month===1;
+const pl=G.p.level;
+$('regSub').textContent=isFirstMonth?'🌅 新手教学月 — 选择一个安全的起点开始冒险':`${getAgeYears()}岁${getAgeMonths()}月 Lv.${pl} — 选择下一个目的地`;
+const grid=$('regGrid');grid.innerHTML='';
+// Check for map items
+const hasTreasMap=G.bag.some(bi=>bi.id==='treasMap');
+const hasRuinGuide=G.bag.some(bi=>bi.id==='ruinGuide');
+const hint=$('regHint');
+if(hasTreasMap||hasRuinGuide){
+hint.style.display='block';
+let hints=[];
+if(hasTreasMap)hints.push('🗺️ 藏宝图在手，遗迹类地图宝藏大增！');
+if(hasRuinGuide)hints.push('📜 遗迹指南可用，降低陷阱伤害');
+hint.textContent=hints.join(' | ');
+}else{hint.style.display='none'}
+// First month: tutorial maps
+if(isFirstMonth){
+const maps=TUTORIAL_MAPS.map((m,i)=>({...m,id:'tut_'+i,isTreasureMap:false,monsterHint:m.monsterHint||''}));
+$('regHint').textContent='💡 第一个月是新手教学期，选择较安全的区域熟悉游戏';$('regHint').style.display='block';
+maps.forEach(map=>renderMapCard(grid,map,false,hasTreasMap,hasRuinGuide));
+return;
+}
+// Later months: World map (fixed locations) + AI ruins
+// 1. Fixed world locations
+WORLD_LOCATIONS.forEach(loc=>{
+const locked=pl<loc.minLv;
+const visitedCount=G.regionsVisited.filter(r=>r===loc.id).length;
+const card=document.createElement('div');card.className='reg-card '+(loc.cls||'rg-road');
+if(locked){card.style.opacity='0.5';card.style.cursor='not-allowed'}
+const tags=[];
+if(locked)tags.push(`<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">🔒 需要Lv.${loc.minLv}</span>`);
+else if(loc.minLv>0)tags.push(`<span class="rg-tag" style="background:rgba(64,192,112,.15);color:var(--grn)">Lv.${loc.minLv}+</span>`);
+if(loc.battleRate>0.5)tags.push('<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">⚔️ 战斗频繁</span>');
+if(loc.battleRate<0.15)tags.push('<span class="rg-tag" style="background:rgba(64,192,112,.15);color:var(--grn)">🏠 安全区域</span>');
+if(loc.evtWeights&&loc.evtWeights.treasure)tags.push('<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">💰 宝藏</span>');
+if(loc.evtWeights&&loc.evtWeights.merchant)tags.push('<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">🏪 交易</span>');
+if(loc.evtWeights&&loc.evtWeights.curse)tags.push('<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">💀 危险</span>');
+if(loc.evtWeights&&loc.evtWeights.mystery)tags.push('<span class="rg-tag" style="background:rgba(80,180,200,.15);color:#60c0d0">🔮 神秘</span>');
+const posInfo=`<div style="font-size:.7em;color:var(--t3);margin-top:2px">📍 地图坐标 (${loc.x},${loc.y})</div>`;
+card.innerHTML=`<div class="rg-icon">${loc.icon}</div><div class="rg-name">${loc.name}</div>
+<div class="rg-desc">${loc.desc}</div>
+${loc.monsterHint?'<div style="color:var(--t3);font-size:.75em;margin:2px 0">🐾 '+loc.monsterHint+'</div>':''}
+${tags.join('')}${posInfo}
+${visitedCount>0?'<div style="color:var(--t3);font-size:.7em;margin-top:4px">已探索 '+visitedCount+' 次</div>':''}`;
+if(!locked){card.onclick=()=>selectMapRegion(loc)}
+grid.appendChild(card);
+});
+// 2. AI-generated ruins/encounters (if available)
+if(G.aiMaps.length){
+const ruins=G.aiMaps.filter(m=>m.type==='ruins'||m.type==='special'||(m.evtWeights&&(m.evtWeights.tomb||m.evtWeights.ruins)));
+if(ruins.length){
+const sep=document.createElement('div');sep.style.cssText='grid-column:1/-1;text-align:center;color:var(--gold);font-size:.9em;margin:12px 0 4px;border-top:1px solid var(--bdr);padding-top:8px';
+sep.textContent='🏛️ 发现的遗迹与奇遇';
+grid.appendChild(sep);
+ruins.forEach(map=>renderMapCard(grid,map,true,hasTreasMap,hasRuinGuide));
+}
+// Preload monsters for AI maps in background while player chooses
+G.aiMaps.forEach(m=>preloadMapMonsters(m));
+}
+}
+// Helper: render a single map card
+function renderMapCard(grid,map,showAIBadge,hasTreasMap,hasRuinGuide){
+const card=document.createElement('div');card.className='reg-card '+(map.cls||'rg-road');
+const visited=G.regionsVisited.filter(r=>r===map.id||r===map.name).length;
+const tags=[];
+if(showAIBadge)tags.push('<span class="rg-tag" style="background:rgba(80,180,200,.15);color:#60c0d0">🤖 AI生成</span>');
+if(map.battleRate>0.4)tags.push('<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">战斗频繁</span>');
+if(map.battleRate<0.2)tags.push('<span class="rg-tag" style="background:rgba(64,192,112,.15);color:var(--grn)">相对安全</span>');
+if(map.evtWeights&&map.evtWeights.treasure)tags.push('<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">宝藏</span>');
+if(map.evtWeights&&map.evtWeights.merchant)tags.push('<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">交易</span>');
+if(map.evtWeights&&map.evtWeights.curse)tags.push('<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">危险</span>');
+if(map.evtWeights&&map.evtWeights.mystery)tags.push('<span class="rg-tag" style="background:rgba(80,180,200,.15);color:#60c0d0">神秘</span>');
+if(map.isTreasureMap)tags.push('<span class="rg-tag" style="background:rgba(220,180,40,.2);color:var(--gold)">🗺️ 藏宝</span>');
+let mapBonus='';
+if(map.isTreasureMap&&hasTreasMap)mapBonus='<div style="color:var(--gold);font-size:.75em;margin-top:4px">🗺️ 藏宝图加成: 宝藏概率翻倍!</div>';
+if(map.type==='ruins'&&hasRuinGuide)mapBonus+='<div style="color:var(--grn);font-size:.75em;margin-top:2px">📜 遗迹指南: 陷阱伤害降低</div>';
+card.innerHTML=`<div class="rg-icon">${map.icon}</div><div class="rg-name">${map.name}</div>
+<div class="rg-desc">${map.desc}</div>
+${map.monsterHint?'<div style="color:var(--t3);font-size:.75em;margin:2px 0">🐾 '+map.monsterHint+'</div>':''}
+${tags.join('')}${mapBonus}
+${visited?'<div style="color:var(--t3);font-size:.7em;margin-top:4px">已去过'+visited+'次</div>':''}`;
+card.onclick=()=>selectMapRegion(map);
+grid.appendChild(card);
+}
+
+function selectMapRegion(map){
+G.region=map.type;G.currentMapData=map;
+G.regionsVisited.push(map.id||map.name);
+// Map REGIONS for compatibility
+if(!REGIONS[map.type]){
+REGIONS[map.type]={name:map.name,icon:map.icon,cls:map.cls||'rg-road',desc:map.desc,battleRate:map.battleRate,evtWeights:map.evtWeights||{},monsters:[]};
+}
+// Consume map items if ruins
+if(map.type==='ruins'){
+const mapIdx=G.bag.findIndex(bi=>bi.id==='treasMap');
+if(mapIdx>=0)removeFromBag(G.bag[mapIdx].uid);
+const guideIdx=G.bag.findIndex(bi=>bi.id==='ruinGuide');
+if(guideIdx>=0)removeFromBag(G.bag[guideIdx].uid);
+}
+// Generate AI monsters for current map (async, background)
+generateAIMonstersForMap(map);
+// Pre-generate NEXT month's maps in background while player plays this month
+generateAIMaps();
+showTrans(`${map.icon} 前往${map.name}...`,1000).then(()=>startMonth());
+}
+
+// Legacy selectRegion for backward compat
+function selectRegion(id){
+const rg=REGIONS[id];if(!rg)return;
+G.region=id;G.regionsVisited.push(id);
+if(id==='ruins'){
+const mapIdx=G.bag.findIndex(bi=>bi.id==='treasMap');
+if(mapIdx>=0)removeFromBag(G.bag[mapIdx].uid);
+const guideIdx=G.bag.findIndex(bi=>bi.id==='ruinGuide');
+if(guideIdx>=0)removeFromBag(G.bag[guideIdx].uid);
+}
+generateAIMonsters(id);
+showTrans(`${rg.icon} 前往${rg.name}...`,1000).then(()=>startMonth());
+}
+
+// ===== GAME OVER (with AI Death Narrative) =====
+async function gameOver(reason){
+showScr('goScr');const p=G.p,box=$('goBox');
+const ageStr=`${getAgeYears()}岁${getAgeMonths()}月`;
+const lifespanStr=`${getLifespanYears()}岁`;
+const reasonText=reason==='lifespan'?`寿终正寝 — 享年${ageStr}`:'战死沙场 — 生命归零';
+const regionName=G.currentMapData?G.currentMapData.icon+' '+G.currentMapData.name:G.region?(REGIONS[G.region]?REGIONS[G.region].icon+' '+REGIONS[G.region].name:'-'):'-';
+// Build journey summary for AI
+const journeyParts=[];
+journeyParts.push(`${G.awk?G.awk.name:'冒险者'}(${DIR_NAMES[G.awk?.direction]||''}系)`);
+journeyParts.push(`${G.dc.name}难度`);
+journeyParts.push(`Lv.${p.level} ${G.breakthroughTier}次突破`);
+journeyParts.push(`击杀${G.kills}只怪物`);
+journeyParts.push(`经历${G.evts}个事件`);
+journeyParts.push(`总伤害${G.dmgDealt}`);
+journeyParts.push(`存活至${ageStr}`);
+if(p.skills)journeyParts.push(`${p.skills.length}个技能`);
+const journeySummary=journeyParts.join('，');
+// Generate AI death narrative
+let narrative='';
+try{
+const narPrompt=`为Roguelike游戏《命运裂隙》的冒险者写一段简短的死亡/结局叙事(2-3句话)。
+【冒险者】${G.awk?G.awk.emoji+G.awk.name+'「'+G.awk.title+'」':'无名冒险者'}
+【结局】${reasonText}
+【旅途】${journeySummary}
+【最终地区】${regionName}
+【关键数据】击杀${G.kills}，暴击${G.crits}次，闪避${G.dodges}次，累计金币${G.totalGold}
+请用沉浸式的文学风格，带有一些诗意和悲壮感。只输出叙事文字，不要其他内容。`;
+const narResult=await callAIText(narPrompt,10000);
+if(narResult&&narResult.trim())narrative=narResult.trim();
+}catch(e){console.error('[Death Narrative]',e)}
+if(!narrative)narrative=`${G.awk?G.awk.name:'冒险者'}的旅途在${regionName}终结。裂隙中的命运永远无法预测，但这段冒险将被铭记。`;
+$('goScr').querySelector('.go-t').textContent=reason==='lifespan'?'寿终正寝':'战死沙场';
+box.innerHTML=`
+<div style="background:var(--bgc);border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:14px;font-size:.95em;line-height:1.8;color:var(--t1);font-style:italic">${narrative}</div>
+<div class="go-r"><span class="label">结局</span><span class="value">${reasonText}</span></div>
+<div class="go-r"><span class="label">觉醒</span><span class="value">${G.awk?G.awk.emoji+' '+G.awk.name:'无'}</span></div>
+<div class="go-r"><span class="label">被动</span><span class="value">${G.awk?G.awk.passiveName:'-'}</span></div>
+<div class="go-r"><span class="label">难度</span><span class="value">${G.dc.name}</span></div>
+<div class="go-r"><span class="label">享年</span><span class="value">${ageStr} / 寿至${lifespanStr}</span></div>
+<div class="go-r"><span class="label">冒险时长</span><span class="value">${G.month} 月</span></div>
+<div class="go-r"><span class="label">玩家等级</span><span class="value">Lv.${p.level} ${getTitle(p.level).icon}${getTitle(p.level).name}</span></div>
+<div class="go-r"><span class="label">突破次数</span><span class="value">${G.breakthroughTier}次</span></div>
+<div class="go-r"><span class="label">最终地区</span><span class="value">${regionName}</span></div>
+<div class="go-r"><span class="label">击杀怪物</span><span class="value">${G.kills}</span></div>
+<div class="go-r"><span class="label">经历事件</span><span class="value">${G.evts}</span></div>
+<div class="go-r"><span class="label">事件汇总</span><span class="value">AI: ${G.aiEvts} / 预设: ${G.preEvts}</span></div>
+<div class="go-r"><span class="label">技能汇总</span><span class="value">AI: ${G.aiSkills} / 总: ${G.totalSkills}</span></div>
+<div class="go-r"><span class="label">背包物品</span><span class="value">${G.bag.length}个</span></div>
+<div class="go-r"><span class="label">最终属性</span><span class="value">攻击${Math.floor(p.atk)} 防御${Math.floor(p.def)} 生命${p.maxHp}</span></div>
+<div class="go-r"><span class="label">暴击/闪避/幸运</span><span class="value">${(p.cr*100).toFixed(0)}% / ${(p.dg*100).toFixed(0)}% / ${p.lk}</span></div>
+<div class="go-r"><span class="label">暴击/闪避次数</span><span class="value">${G.crits} / ${G.dodges}</span></div>
+<div class="go-r"><span class="label">总伤害</span><span class="value">${G.dmgDealt}</span></div>
+<div class="go-r"><span class="label">总治疗</span><span class="value">${G.healing}</span></div>
+<div class="go-r"><span class="label">累计金币</span><span class="value">${G.totalGold}💰</span></div>
+<div class="go-r"><span class="label">剩余金币</span><span class="value">${G.gold}💰</span></div>`;
+// Save play record
+savePlayRecord(reason);
+// Show history button
+const histBtn=document.createElement('button');histBtn.className='btn-sm btn-no';histBtn.style.marginTop='12px';histBtn.textContent='📜 查看历史记录';
+histBtn.onclick=()=>showPlayHistory();box.appendChild(histBtn);
+}
+
+// ===== PLAY RECORDS SAVE SYSTEM =====
+function savePlayRecord(reason){
+try{
+const records=JSON.parse(localStorage.getItem('rift_records')||'[]');
+const record={
+id:Date.now(),
+date:new Date().toLocaleString('zh-CN'),
+awkName:G.awk?G.awk.name:'无',awkDir:G.awk?G.awk.direction:'无',
+diff:G.dc.name,level:G.p.level,tier:G.breakthroughTier,
+age:`${getAgeYears()}岁${getAgeMonths()}月`,months:G.month,
+kills:G.kills,evts:G.evts,dmg:G.dmgDealt,gold:G.totalGold,
+crits:G.crits,dodges:G.dodges,skills:G.totalSkills,
+reason:reason==='lifespan'?'寿终':'战死',
+title:getTitle(G.p.level).name
+};
+records.push(record);
+// Keep last 50 records
+if(records.length>50)records.splice(0,records.length-50);
+localStorage.setItem('rift_records',JSON.stringify(records));
+}catch(e){console.error('[Save Record]',e)}
+}
+function showPlayHistory(){
+try{
+const records=JSON.parse(localStorage.getItem('rift_records')||'[]');
+if(!records.length){alert('暂无历史记录');return}
+const recent=records.slice(-10).reverse();
+let html='📜 最近10次冒险记录:\n\n';
+recent.forEach((r,i)=>{
+html+=`${i+1}. ${r.date} | ${r.awkName}(${DIR_NAMES[r.awkDir]||''}) | Lv.${r.level} ${r.title} | ${r.reason} | ${r.age} | 击杀${r.kills} | ${r.diff}\n`;
+});
+// Stats across all records
+const totalGames=records.length;
+const avgLevel=Math.round(records.reduce((s,r)=>s+r.level,0)/totalGames);
+const bestLevel=Math.max(...records.map(r=>r.level));
+const totalKills=records.reduce((s,r)=>s+r.kills,0);
+html+=`\n📊 总统计: ${totalGames}次冒险 | 平均Lv.${avgLevel} | 最高Lv.${bestLevel} | 累计击杀${totalKills}`;
+alert(html);
+}catch(e){alert('读取记录失败')}
+}
+
+// ===== NPC BATTLE SYSTEM =====
+function startNPCBattle(){
+const pl=G.p.level;
+const npcNames=['流浪剑客','赏金猎人','暗影刺客','圣骑士','狂战士','魔法师','游侠','武僧','死灵法师','龙骑士'];
+const npcEmojis=['🗡️','🏹','🥷','⚜️','💪','🧙','🏃','👊','💀','🐲'];
+const idx=R(0,npcNames.length-1);
+const starInfo=getMonsterStarTier(pl);
+const tierMult=MONSTER_TIERS[starInfo.tierIdx].mult;
+const npc={
+name:npcNames[idx],emoji:npcEmojis[idx],isNPC:true,
+hp:Math.floor((40+pl*5)*tierMult),maxHp:Math.floor((40+pl*5)*tierMult),
+atk:Math.floor((8+pl*1.5)*tierMult),def:Math.floor((3+pl*0.8)*tierMult),
+lv:pl+R(-2,2),isBoss:false,isElite:Math.random()<0.2,
+stars:starInfo.star,tier:starInfo.tierIdx,tierName:starInfo.tier.name,
+skills:[pick(MONSTER_SKILLS)]
+};
+if(npc.isElite){npc.hp=Math.floor(npc.hp*1.4);npc.maxHp=npc.hp;npc.atk=Math.floor(npc.atk*1.4);npc.name='精英 '+npc.name;npc.skills.push(pick(MONSTER_SKILLS))}
+G.evts++;const area=$('evtArea');area.innerHTML='';
+const card=document.createElement('div');card.className='barea fi';
+card.innerHTML=`<div style="text-align:center;padding:20px;color:var(--org)">
+<div style="font-size:2em;margin-bottom:8px">${npc.emoji}</div>
+<div style="font-size:1.2em;font-weight:bold">${npc.name}</div>
+<div style="color:var(--t2);margin:6px 0">Lv.${npc.lv} — 一位${npc.isElite?'实力强劲的':'流浪的'}冒险者挡住了去路!</div>
+<div style="margin:12px 0">
+<button class="btn-big" onclick="this.closest('.barea').remove();startBattle(false)" style="background:var(--redd)">⚔️ 迎战</button>
+<button class="btn-big btn-no" onclick="this.closest('.barea').remove();advanceEvt()" style="margin-left:10px">🏃 避开</button>
+</div></div>`;
+area.appendChild(card);
+// Override genEnemy for this battle
+G._nextEnemy=npc;
+}
+
+// ===== START =====
+async function startGame(diff){
+G.diff=diff;G.dc=DIFF[diff];
+await showTrans('命运正在觉醒...',1500);showScr('awkScr');
+$('awkWrap').innerHTML=`<div style="color:var(--gold);font-size:1.4em;margin-bottom:10px">觉 醒</div>
+<div style="color:var(--t2);margin-bottom:20px">点击法阵，觉醒你的命运</div>
+<div class="awk-circle" id="awkCircle" onclick="doAwaken()"><div class="awk-inner"><span style="font-size:2.5em">✦</span><div class="txt">点击觉醒</div><div class="sub">AI 将为你创造独特命运</div></div></div>`;
+}
+</script>
+</body>
+</html>
