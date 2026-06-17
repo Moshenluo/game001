@@ -939,8 +939,9 @@ clearTimeout(timer);
 if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
 let jsonStr=null;const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
-if(!jsonStr){let d=0,s=-1,e=-1;for(let i=0;i<text.length;i++){if(text[i]==='{'){if(d===0)s=i;d++}else if(text[i]==='}'){d--;if(d===0&&s>=0){e=i+1;break}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
-if(!jsonStr)throw new Error('No JSON');const parsed=JSON.parse(jsonStr);return parsed;
+if(!jsonStr){let d=0,s=-1,e=-1,openChar=null;for(let i=0;i<text.length;i++){const c=text[i];if(d===0&&(c==='{'||c==='[')){s=i;d=1;openChar=c;continue}if(d>0){if(c==='{'||c==='[')d++;else if((c==='}'&&openChar==='{')||(c===']'&&openChar==='[')){d--;if(d===0){e=i+1;break}}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
+function _repairJSON(str){str=str.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*$/gm,'');const firstChar=str.trim()[0];let inStr=false,q='';let out='';for(let i=0;i<str.length;i++){const c=str[i],p=i>0?str[i-1]:'';if(inStr){if(c===q&&p!=='\\'){out+='"';inStr=false}else{out+=c}continue}if(c==='"'||c==="'"){inStr=true;q=c;out+='"';continue}out+=c}str=out;str=str.replace(/(['"])?([a-zA-Z_]\w*)(['"])?\s*:/g,function(m,p1,k,p2){if(p1==='\"'||p1==="'")return m;return '"'+k+'":'});str=str.replace(/,(\s*[}\]])/g,'$1');try{return JSON.parse(str)}catch(_){return null}}
+if(!jsonStr)throw new Error('No JSON');let parsed;try{parsed=JSON.parse(jsonStr)}catch(_){parsed=_repairJSON(jsonStr);if(!parsed)throw new Error('JSON parse failed after repair')}return parsed;
 }catch(e){console.error('[AI] FAIL:',e.message);return null}
 }
 
@@ -1727,7 +1728,7 @@ const tierName=MONSTER_TIERS[tierIdx].name;
 const lvRange=STAR_RANGES[monsterStar];
 const monsterLv=R(lvRange[0],lvRange[1]);
 // Stat scaling: base * star_scaling * tier_scaling * difficulty_scaling
-const starScale=1+(monsterStar-1)*0.18;// Stars give 18% per star
+const starScale=1+(monsterLv-1)*0.06;// Level-based: 6% per monster level for meaningful scaling
 const tierScale=tierMult;
 const diffScale=dc.eHp||1;
 if(isBoss){
@@ -2398,7 +2399,7 @@ const starRating=G._btStarRating||3;
 const quality=G._btSkillQuality||'good';
 const qualityLabel=quality==='legendary'?'传说':quality==='elite'?'精英':quality==='good'?'优质':'基础';
 $('skAwkSub').textContent=`Lv.${G.p.level} ${qualityLabel}级技能 — 技能槽位: ${G.maxSlot}个`;
-const cardsDiv=$('skAwkCards');cardsDiv.innerHTML='<div class="loading" style="padding:40px">AI 正在锻造技能...</div>';
+const cardsDiv=$('skAwkCards');cardsDiv.innerHTML='<div class="loading" style="padding:40px">✦ AI 正在生成技能...</div>';
 const skills=await generateSkillCandidates(starRating);
 // Return a promise that resolves when player picks a skill
 return new Promise(resolve=>{
@@ -2552,7 +2553,7 @@ const tpl=MAP_TEMPLATES.find(t=>t.type===m.type)||MAP_TEMPLATES[2];
 // ~1/3 of ruins/abyss maps require a treasure map to enter
 const requireTreas=(m.type==='ruins'||m.type==='abyss')&&(i===0||Math.random()<0.33);
 return{
-id:'ruin_'+i,name:m.name,icon:m.icon,type:m.type,
+id:'ruin_'+G.month+'_'+i,name:m.name,icon:m.icon,type:m.type,
 desc:m.description||'一处神秘的区域',
 battleRate:cl(Number(m.battleRate)||tpl.battleRate,0.05,0.7),
 evtWeights:{...tpl.evtWeights},
@@ -2576,7 +2577,7 @@ if(!tpl)return;
 const name=pick(tpl.names)+('·'+['东','西','南','北','深','远','隐','幽'][R(0,7)]);
 const requireTreas=(type==='ruins'||type==='abyss')&&(i===0||Math.random()<0.33);
 G.aiMaps.push({
-id:'ruin_'+i,name,icon:pick(tpl.icons),type,
+id:'ruin_'+G.month+'_'+i,name,icon:pick(tpl.icons),type,
 desc:'一处'+pick(['神秘','危险','古老','被遗忘'])+'的'+pick(['遗迹','墓穴','秘境','废墟']),
 battleRate:tpl.battleRate,evtWeights:{...tpl.evtWeights},
 monsterHint:'',cls:type==='ruins'?'rg-ruin':type==='abyss'?'rg-dark':'rg-road',
