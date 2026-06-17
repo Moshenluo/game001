@@ -654,7 +654,7 @@ G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
 G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
 _preloadedEvent=null;_preloadPromise=null;_preloadedMonsters={};
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
-G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.aiMaps=[];G.currentMapData=null;G.deathNarrative='';
+G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';
 await showTrans('踏入命运裂隙...',1200);showRegionPicker();
 }
 
@@ -1862,10 +1862,15 @@ G.month++;
 G.currentAgeMonth++;// Age by 1 game-month (12 game-months = 1 year)
 // Check lifespan (age-based)
 if(!isAlive()){await showTrans(`${getAgeYears()}岁${getAgeMonths()}月 — 大限已至`);gameOver('lifespan');return}
-// Reset preload cache for new month and regenerate AI maps in background
+// Reset preload cache for new month and regenerate AI maps
 _preloadedEvent=null;_preloadPromise=null;_preloadedMonsters={};
-generateAIMaps();// fire-and-forget, runs while player picks region
-// Show region picker for next month
+// Show loading while AI generates maps
+showScr('regScr');
+$('regSub').textContent=`${getAgeYears()}岁${getAgeMonths()}月 — 正在探索新区域...`;
+const grid=$('regGrid');grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--t2)"><div class="loading" style="font-size:1.1em">🗺️ AI 正在发现新的遗迹与奇遇...</div></div>';
+$('regHint').style.display='none';
+await generateAIMaps();
+// Now show the full region picker with AI maps ready
 showRegionPicker();
 }
 
@@ -1915,6 +1920,8 @@ maps.push({name,icon:pick(tpl.icons),type:tpl.type,description:'一处'+pick(['�
 // Apply template defaults
 G.aiMaps=maps.slice(0,3).map((m,i)=>{
 const tpl=MAP_TEMPLATES.find(t=>t.type===m.type)||MAP_TEMPLATES[2];
+// ~1/3 of ruins/abyss maps require a treasure map to enter
+const requireTreas=(m.type==='ruins'||m.type==='abyss')&&(i===0||Math.random()<0.33);
 return{
 id:'ruin_'+i,name:m.name,icon:m.icon,type:m.type,
 desc:m.description||'一处神秘的区域',
@@ -1922,7 +1929,8 @@ battleRate:cl(Number(m.battleRate)||tpl.battleRate,0.05,0.7),
 evtWeights:{...tpl.evtWeights},
 monsterHint:m.monsterHint||'',
 cls:m.type==='ruins'?'rg-ruin':m.type==='abyss'?'rg-dark':'rg-road',
-isTreasureMap:hasTreasMap&&m.type==='ruins'
+isTreasureMap:hasTreasMap&&m.type==='ruins',
+requireTreasMap:requireTreas
 }});
 }catch(e){console.error('[AI Maps] Failed:',e);fallbackMaps()}
 if(!G.aiMaps.length)fallbackMaps();
@@ -1937,12 +1945,13 @@ types.forEach((type,i)=>{
 const tpl=MAP_TEMPLATES.find(t=>t.type===type);
 if(!tpl)return;
 const name=pick(tpl.names)+('·'+['东','西','南','北','深','远','隐','幽'][R(0,7)]);
+const requireTreas=(type==='ruins'||type==='abyss')&&(i===0||Math.random()<0.33);
 G.aiMaps.push({
 id:'ruin_'+i,name,icon:pick(tpl.icons),type,
 desc:'一处'+pick(['神秘','危险','古老','被遗忘'])+'的'+pick(['遗迹','墓穴','秘境','废墟']),
 battleRate:tpl.battleRate,evtWeights:{...tpl.evtWeights},
 monsterHint:'',cls:type==='ruins'?'rg-ruin':type==='abyss'?'rg-dark':'rg-road',
-isTreasureMap:false
+isTreasureMap:false,requireTreasMap:requireTreas
 })});
 }
 
@@ -2022,7 +2031,7 @@ grid.appendChild(card);
 });
 // 2. AI-generated ruins/encounters (if available)
 if(G.aiMaps.length){
-const ruins=G.aiMaps.filter(m=>m.type==='ruins'||m.type==='special'||(m.evtWeights&&(m.evtWeights.tomb||m.evtWeights.ruins)));
+const ruins=G.aiMaps;
 if(ruins.length){
 const sep=document.createElement('div');sep.style.cssText='grid-column:1/-1;text-align:center;color:var(--gold);font-size:.9em;margin:12px 0 4px;border-top:1px solid var(--bdr);padding-top:8px';
 sep.textContent='🏛️ 发现的遗迹与奇遇';
@@ -2037,8 +2046,12 @@ G.aiMaps.forEach(m=>preloadMapMonsters(m));
 function renderMapCard(grid,map,showAIBadge,hasTreasMap,hasRuinGuide){
 const card=document.createElement('div');card.className='reg-card '+(map.cls||'rg-road');
 const visited=G.regionsVisited.filter(r=>r===map.id||r===map.name).length;
+// Check if this map requires a treasure map and player doesn't have one
+const needsTreasMap=map.requireTreasMap&&!hasTreasMap;
+if(needsTreasMap){card.style.opacity='0.5';card.style.cursor='not-allowed'}
 const tags=[];
 if(showAIBadge)tags.push('<span class="rg-tag" style="background:rgba(80,180,200,.15);color:#60c0d0">🤖 AI生成</span>');
+if(map.requireTreasMap)tags.push(`<span class="rg-tag" style="background:rgba(220,180,40,.2);color:var(--gold)">${hasTreasMap?'🗺️ 藏宝图可入':'🔒 需要藏宝图'}</span>`);
 if(map.battleRate>0.4)tags.push('<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">战斗频繁</span>');
 if(map.battleRate<0.2)tags.push('<span class="rg-tag" style="background:rgba(64,192,112,.15);color:var(--grn)">相对安全</span>');
 if(map.evtWeights&&map.evtWeights.treasure)tags.push('<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">宝藏</span>');
@@ -2054,7 +2067,12 @@ card.innerHTML=`<div class="rg-icon">${map.icon}</div><div class="rg-name">${map
 ${map.monsterHint?'<div style="color:var(--t3);font-size:.75em;margin:2px 0">🐾 '+map.monsterHint+'</div>':''}
 ${tags.join('')}${mapBonus}
 ${visited?'<div style="color:var(--t3);font-size:.7em;margin-top:4px">已去过'+visited+'次</div>':''}`;
+if(needsTreasMap){
+card.innerHTML+='<div style="color:var(--red);font-size:.75em;margin-top:4px">🔒 此处需要藏宝图才能探索</div>';
+card.onclick=()=>{};
+}else{
 card.onclick=()=>selectMapRegion(map);
+}
 grid.appendChild(card);
 }
 
