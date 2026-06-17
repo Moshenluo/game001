@@ -161,8 +161,10 @@ async function handleAI(request, env) {
 
   if (!res.ok) {
     const errText = await res.text();
-    console.error('[AI Proxy] DeepSeek error:', res.status, errText.substring(0, 200));
-    return error('AI service error: ' + res.status, 502);
+    console.error('[AI Proxy] DeepSeek error:', res.status, errText.substring(0, 300));
+    let detail = res.status;
+    try { const ej = JSON.parse(errText); if (ej.error) detail += ': ' + (ej.error.message || ej.error.type || JSON.stringify(ej.error).slice(0, 100)); } catch (_) { detail += ' ' + errText.slice(0, 120); }
+    return error('DeepSeek: ' + detail, 502);
   }
 
   const data = await res.json();
