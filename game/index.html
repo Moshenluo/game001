@@ -85,8 +85,17 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .bag-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
 .bag-slot{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .bag-slot:hover{border-color:var(--gold);background:var(--bgch)}.bag-slot.empty{opacity:.3;cursor:default;border-style:dashed}.bag-slot .bi{font-size:1.5em}.bag-slot .bn{font-size:.7em;color:var(--t2);margin-top:2px}
+.bag-slot.merged{border-color:var(--gold);box-shadow:0 0 8px rgba(240,192,64,.4);animation:mergePulse 2s infinite}.bag-slot.merged .bn{color:var(--gold);font-weight:bold}@keyframes mergePulse{0%,100%{box-shadow:0 0 6px rgba(240,192,64,.3)}50%{box-shadow:0 0 14px rgba(240,192,64,.6)}}
 .bag-detail{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-top:10px;text-align:center;animation:fadeIn .3s}
 .item-drop{background:var(--bgc);border:1px solid var(--gold);border-radius:8px;padding:12px;margin-top:8px;text-align:center;animation:fadeIn .4s}
+.best-tabs{display:flex;gap:6px;margin:8px 0}.best-tab{background:var(--bgc);border:1px solid var(--bdr);border-radius:6px;padding:4px 12px;color:var(--t2);cursor:pointer;font-size:.8em;transition:all .2s}.best-tab.active{border-color:var(--gold);color:var(--gold)}
+.best-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0;max-height:360px;overflow-y:auto}
+.best-card{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s}.best-card:hover{border-color:var(--gold);background:var(--bgch)}.best-card .bc-e{font-size:1.8em}.best-card .bc-n{font-size:.75em;color:var(--t1);margin-top:2px}.best-card .bc-k{font-size:.65em;color:var(--t3)}
+.best-card.boss{border-color:var(--pur);background:rgba(160,80,224,.06)}.best-card.unknown{opacity:.35;filter:grayscale(1)}.best-card.unknown .bc-e{filter:brightness(0)}
+.shop-tabs{display:flex;gap:6px;margin:8px 0}.shop-tab{background:var(--bgc);border:1px solid var(--bdr);border-radius:6px;padding:6px 16px;color:var(--t2);cursor:pointer;font-size:.85em;transition:all .2s;flex:1;text-align:center}.shop-tab.active{border-color:var(--gold);color:var(--gold)}
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0;max-height:340px;overflow-y:auto}
+.shop-item{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s}.shop-item:hover{border-color:var(--gold);background:var(--bgch)}.shop-item .si-e{font-size:1.5em}.shop-item .si-n{font-size:.72em;color:var(--t1);margin-top:2px}.shop-item .si-p{font-size:.7em;color:var(--gold);margin-top:3px}
+.shop-btn{background:var(--bgc);border:1px solid var(--gold);border-radius:8px;padding:6px 14px;color:var(--gold);cursor:pointer;font-size:.85em;margin-bottom:8px;transition:all .2s}.shop-btn:hover{background:rgba(240,192,64,.1)}
 .go-t{font-size:2.5em;color:var(--red);margin-bottom:10px;text-shadow:0 0 40px rgba(224,64,80,.3);letter-spacing:2px}
 .go-box{background:var(--bg2);border-radius:12px;padding:24px 32px;margin:20px 0;text-align:left;min-width:320px;border:1px solid var(--bdr);box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .go-r{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}.go-r:last-child{border-bottom:none}.go-r .label{color:var(--t2)}.go-r .value{color:var(--gold);font-weight:bold}
@@ -284,6 +293,8 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .reg-card.rg-ruin{border-color:var(--pur)}.reg-card.rg-ruin:hover{background:rgba(160,80,224,.06)}.reg-card.rg-ruin .rg-name{color:var(--pur)}
 .reg-card.rg-road{border-color:var(--blu)}.reg-card.rg-road:hover{background:rgba(64,128,224,.06)}.reg-card.rg-road .rg-name{color:var(--blu)}
 .reg-card.rg-dark{border-color:var(--red)}.reg-card.rg-dark:hover{background:rgba(224,64,80,.06)}.reg-card.rg-dark .rg-name{color:var(--red)}
+.reg-card.rg-coastal{border-color:#40c0c0}.reg-card.rg-coastal:hover{background:rgba(64,192,192,.06)}.reg-card.rg-coastal .rg-name{color:#60d0d0}
+.reg-card.rg-ice{border-color:#a0c0e0}.reg-card.rg-ice:hover{background:rgba(160,192,224,.06)}.reg-card.rg-ice .rg-name{color:#b0d0f0}
 .reg-hint{font-size:.8em;color:var(--t2);text-align:center;margin:8px 0;padding:6px 12px;background:var(--bgc);border-radius:8px;border:1px solid var(--bdr)}
 .region-badge{display:inline-block;font-size:.75em;padding:2px 8px;border-radius:6px;margin-left:8px}
 .age-warn{animation:pulse 1.5s infinite;color:var(--red)!important}
@@ -451,6 +462,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="skbar" id="skBar"></div>
 </div>
 <button class="bag-btn" onclick="openBag()">🎒 背包 (<span id="bagCount">0</span>/<span id="bagMax">20</span>)</button>
+<button class="save-btn" onclick="openBestiary()" style="margin-left:6px">📖 图鉴</button>
 <button class="save-btn" onclick="openSaveModal()" style="margin-left:6px">💾 存档</button>
 <div class="ep" id="evtProg"></div>
 <div class="earea" id="evtArea"></div>
@@ -495,6 +507,24 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="bag-grid" id="bagGrid"></div>
 <div id="bagDetail"></div>
 <div class="btn-row" style="margin-top:12px"><button class="btn-sm btn-no" onclick="closeBag()">关闭</button></div>
+</div></div>
+
+<!-- Bestiary Modal -->
+<div class="modal-bg" id="bestiaryModal"><div class="modal" style="max-width:620px">
+<h3>📖 怪物图鉴 (<span id="bestiaryCount">0</span>种)</h3>
+<div class="best-tabs"><button class="best-tab active" onclick="switchBestTab('all')">全部</button><button class="best-tab" onclick="switchBestTab('boss')">Boss</button></div>
+<div class="best-grid" id="bestiaryGrid"></div>
+<div id="bestiaryDetail"></div>
+<div class="btn-row" style="margin-top:12px"><button class="btn-sm btn-no" onclick="closeBestiary()">关闭</button></div>
+</div></div>
+
+<!-- Shop Modal -->
+<div class="modal-bg" id="shopModal"><div class="modal" style="max-width:600px">
+<h3>🏪 <span id="shopTitle">商店</span> <span style="font-size:.7em;color:var(--gold)">💰 <span id="shopGold">0</span></span></h3>
+<div class="shop-tabs"><button class="shop-tab active" onclick="switchShopTab('buy')">购买</button><button class="shop-tab" onclick="switchShopTab('sell')">出售</button></div>
+<div class="shop-grid" id="shopGrid"></div>
+<div id="shopMsg" style="color:var(--grn);font-size:.85em;text-align:center;min-height:1.2em;margin-top:6px"></div>
+<div class="btn-row" style="margin-top:12px"><button class="btn-sm btn-no" onclick="closeShop()">关闭</button></div>
 </div></div>
 
 <script>
@@ -780,6 +810,14 @@ const RARITY_CLR={common:'var(--t2)',rare:'var(--blu)',epic:'var(--pur)'};
 const RARITY_CN={common:'普通',rare:'稀有',epic:'史诗'};
 const TYPE_CN={consumable:'消耗品',material:'材料',special:'特殊',equipment:'装备',relic:'圣物'};
 
+// Shop inventory by tier
+const SHOP_TIERS={basic:{sellMul:0.4,label:'基础商店'},advanced:{sellMul:0.5,label:'高级商店'},premium:{sellMul:0.6,label:'精品商店'}};
+const SHOP_INVENTORY={
+basic:['hpPot','atkPot','defPot','antidote','rope','tent','ironSword','leatherArmor','ironRing'],
+advanced:['hpPot','hpPotL','atkPot','defPot','enCrystal','antidote','bomb','rope','tent','ironSword','steelSword','leatherArmor','chainMail','ironRing','energyOrb','luckyCharm','monsterMat','ironOre','gemStone','treasMap','ruinGuide'],
+premium:['hpPotL','atkPot','defPot','enCrystal','berserk','antidote','bomb','mystKey','awkShard','magicEss','steelSword','shadowDagger','chainMail','energyOrb','luckyCharm','boneRing','voidCloak','crystalStaff','berserkerAxe','scoutBoots','warHorn','monsterMat','gemStone','treasMap','ruinGuide','ancientCoin']
+};
+
 // === Age/Lifespan System (12 months = 1 year) ===
 const DIR_LIFESPAN={shadow:35,flame:38,storm:38,blood:38,frost:40,void:40,holy:50,life:50};
 const DIR_LIFESPAN_BONUS={shadow:3,flame:3,storm:3,blood:3,frost:4,void:4,holy:5,life:5};
@@ -861,21 +899,64 @@ battleRate:0.30,evtWeights:{},
 monsters:['bandit','wanderer','wildDog','scavenger','mercenary']},
 abyss:{name:'暗影深渊',icon:'🕳️',cls:'rg-dark',desc:'裂隙最深处的黑暗领域，强敌环伺。极高风险，但也有最珍贵的奖励。',
 battleRate:0.50,evtWeights:{curse:4,mystery:4,disaster:3,duel:3,battle:3},
-monsters:['demon','shadowBeast','wraith','darkMage','abyssalFiend','voidWalker','doomKnight']}
+monsters:['demon','shadowBeast','wraith','darkMage','abyssalFiend','voidWalker','doomKnight']},
+coastal:{name:'珊瑚海域',icon:'🐚',cls:'rg-coastal',desc:'碧蓝的珊瑚礁海岸，海盗与海怪出没。海风中带着咸味和危险。',
+battleRate:0.40,evtWeights:{adventure:3,treasure:3,stranger:3,mystery:2,gamble:2},
+monsters:['crab','siren','seaSerpent','pirate','krakenTent']},
+ice:{name:'永终冰原',icon:'🏔️',cls:'rg-ice',desc:'永冻的冰雪荒原，极光之下隐藏着古老的冰霜巨兽。',
+battleRate:0.45,evtWeights:{adventure:3,mystery:3,trap:3,treasure:2,disaster:2},
+monsters:['iceWolf','frostGiant','blizzardSpirit','iceGolem','polarWyrm']}
 };
 
-// === World Map: Fixed Locations ===
+// === World Map: Region Groups ===
+const REGION_GROUPS={
+soulrest:{name:'灵息区',icon:'🌿',desc:'裂隙中心的宁静谷地，冒险者的起点'},
+shadow_forest:{name:'残影之林',icon:'🌑',desc:'幽暗的古老森林，钟楼与教堂隐匿其中'},
+scorch:{name:'焦灼荒原',icon:'🌋',desc:'熔岩与火焰的荒原，斗技场矗立其中'},
+abyss:{name:'深渊之域',icon:'🕳️',desc:'漂浮在虚空中的暗紫岛屿'},
+fate_tower:{name:'宿命之塔',icon:'🗼',desc:'直入星空的神秘螺旋高塔'},
+grey:{name:'灰白走廊',icon:'🏜️',desc:'荒芜的沙漠古道与古老宫殿废墟'},
+coral:{name:'珊瑚海域',icon:'🐚',desc:'碧蓝的珊瑚礁海岸与海盗港口'},
+ice:{name:'永终冰原',icon:'🏔️',desc:'永冻的冰雪山脉，极光之下的冰川洞穴'}
+};
+// === World Map: Fixed Locations (28) ===
 const WORLD_LOCATIONS=[
-{id:'awaken_village',name:'觉醒村',icon:'🏘️',type:'town',x:50,y:85,minLv:1,desc:'裂隙中的起始村落，安全的补给站。新手冒险者的家园。',battleRate:0.08,evtWeights:{merchant:4,stranger:4,blessing:3,gamble:1},monsterHint:'偶尔的小毛贼',cls:'rg-town',fixed:true},
-{id:'beast_forest',name:'猎兽林',icon:'🌲',type:'wild',x:25,y:70,minLv:1,desc:'茂密的原始森林，野兽横行。适合磨练初期战斗技巧。',battleRate:0.55,evtWeights:{adventure:4,stranger:2,trap:2,treasure:1},monsterHint:'灰狼、巨熊、毒蛛',cls:'rg-wild',fixed:true},
-{id:'crossroad',name:'十字路口',icon:'🔀',type:'road',x:50,y:65,minLv:5,desc:'四通八达的旷野驿站，命运在此交汇。各类事件均衡出现。',battleRate:0.30,evtWeights:{adventure:3,stranger:3,mystery:2,blessing:2},monsterHint:'流浪者和野狗',cls:'rg-road',fixed:true},
-{id:'market_town',name:'贸易重镇',icon:'🏪',type:'town',x:75,y:60,minLv:8,desc:'繁华的商业中心，商人云集。交易、赌博、情报集散地。',battleRate:0.10,evtWeights:{merchant:5,stranger:4,gamble:3,mystery:1},monsterHint:'小偷和强盗',cls:'rg-town',fixed:true},
-{id:'miner_canyon',name:'矿工峡谷',icon:'⛏️',type:'wild',x:15,y:50,minLv:12,desc:'深邃的峡谷矿区，富含矿石但也有危险生物。战斗频率高。',battleRate:0.50,evtWeights:{adventure:3,trap:3,treasure:2,mystery:1},monsterHint:'石像鬼、穴居兽',cls:'rg-wild',fixed:true},
-{id:'temple',name:'圣光神殿',icon:'⛪',type:'town',x:80,y:40,minLv:18,desc:'古老的神殿，祝福与治愈之地。偶有守护者考验来者。',battleRate:0.15,evtWeights:{blessing:5,stranger:3,mystery:3,merchant:2},monsterHint:'神殿守卫',cls:'rg-town',fixed:true},
-{id:'shadow_woods',name:'暗影密林',icon:'🌑',type:'wild',x:30,y:35,minLv:22,desc:'被暗影笼罩的森林，精英怪物栖息地。高风险高回报。',battleRate:0.60,evtWeights:{adventure:3,trap:3,curse:2,treasure:2},monsterHint:'暗影兽、吸血鬼',cls:'rg-wild',fixed:true},
-{id:'dragon_valley',name:'龙眠山谷',icon:'🐉',type:'wild',x:60,y:20,minLv:35,desc:'传说中巨龙的栖息地。极强怪物出没，但宝藏丰厚。',battleRate:0.65,evtWeights:{adventure:4,treasure:3,trap:2,disaster:2},monsterHint:'幼龙、龙裔',cls:'rg-wild',fixed:true},
-{id:'abyss_rift',name:'深渊裂隙',icon:'🕳️',type:'abyss',x:45,y:10,minLv:50,desc:'世界最深处的黑暗领域。只有最强者才能在此生存。',battleRate:0.70,evtWeights:{curse:4,mystery:4,disaster:3,duel:3},monsterHint:'深渊恶魔、虚空行者',cls:'rg-dark',fixed:true},
-{id:'fate_tower',name:'命运之塔',icon:'🗼',type:'abyss',x:50,y:5,minLv:70,desc:'裂隙尽头的神秘高塔。命运的终点，只有永恒觉醒者方可进入。',battleRate:0.75,evtWeights:{mystery:5,curse:3,disaster:3,treasure:3},monsterHint:'命运守卫、混沌之王',cls:'rg-dark',fixed:true}
+// 灵息区 (3)
+{id:'soulrest_village',name:'灵息村',icon:'🏘️',type:'town',region:'soulrest',x:50,y:82,minLv:1,desc:'灵息区中心的起始村落，安全的补给站与交易中心。',battleRate:0.08,evtWeights:{merchant:5,stranger:4,blessing:3,gamble:1},monsterHint:'偶尔的小毛贼',cls:'rg-town',fixed:true,shopTier:'basic'},
+{id:'soulrest_farm',name:'灵息牧场',icon:'🌾',type:'wild',region:'soulrest',x:42,y:78,minLv:1,desc:'村外的丰饶牧场，偶有野兽侵扰。新手练手的好去处。',battleRate:0.35,evtWeights:{adventure:4,stranger:3,blessing:2,treasure:1},monsterHint:'野猪、毒蛛',cls:'rg-wild',fixed:true},
+{id:'soulrest_shrine',name:'灵息神龛',icon:'⛩️',type:'town',region:'soulrest',x:58,y:76,minLv:3,desc:'古老的灵息神龛，供奉着裂隙守护神。祝福与净化之地。',battleRate:0.12,evtWeights:{blessing:5,mystery:3,stranger:2,merchant:2},monsterHint:'守护精灵',cls:'rg-town',fixed:true,shopTier:'advanced'},
+// 残影之林 (4)
+{id:'shadow_edge',name:'残影林缘',icon:'🌲',type:'wild',region:'shadow_forest',x:22,y:68,minLv:1,desc:'残影之林的边缘地带，树影婆娑中隐约可见野兽。',battleRate:0.50,evtWeights:{adventure:4,stranger:2,trap:2,treasure:1},monsterHint:'灰狼、哥布林斥候',cls:'rg-wild',fixed:true},
+{id:'shadow_clock',name:'残影钟楼',icon:'🕰️',type:'ruins',region:'shadow_forest',x:18,y:60,minLv:8,desc:'废弃的钟楼矗立在密林深处，齿轮仍在无声转动。',battleRate:0.40,evtWeights:{tomb:4,trap:4,mystery:3,treasure:3},monsterHint:'骷髅兵、怨灵',cls:'rg-ruin',fixed:true},
+{id:'shadow_chapel',name:'暗影教堂',icon:'⛪',type:'ruins',region:'shadow_forest',x:28,y:55,minLv:12,desc:'被遗弃的哥特式教堂，彩色玻璃仍在月光下闪烁。',battleRate:0.35,evtWeights:{tomb:3,mystery:4,blessing:3,curse:2},monsterHint:'诅咒骑士、木乃伊',cls:'rg-ruin',fixed:true},
+{id:'shadow_deep',name:'残影深处',icon:'🌑',type:'wild',region:'shadow_forest',x:15,y:50,minLv:18,desc:'残影之林最幽暗的核心，连光都无法抵达。精英怪物栖息。',battleRate:0.60,evtWeights:{adventure:3,trap:3,curse:3,treasure:2},monsterHint:'暗影兽、吸血鬼',cls:'rg-wild',fixed:true},
+// 焦灼荒原 (4)
+{id:'scorch_outpost',name:'焦灼前哨',icon:'🏕️',type:'town',region:'scorch',x:78,y:58,minLv:8,desc:'焦灼荒原边缘的军事前哨，战士与商人在此聚集。',battleRate:0.12,evtWeights:{merchant:4,stranger:4,duel:3,gamble:2},monsterHint:'雇佣兵、土匪',cls:'rg-town',fixed:true,shopTier:'advanced'},
+{id:'scorch_arena',name:'灼热斗技场',icon:'🏟️',type:'wild',region:'scorch',x:82,y:48,minLv:15,desc:'古老的圆形斗技场，至今仍吸引着嗜血的挑战者。',battleRate:0.65,evtWeights:{duel:5,battle:4,adventure:2,treasure:2},monsterHint:'兽人武士、雇佣兵',cls:'rg-wild',fixed:true},
+{id:'scorch_lava',name:'熔岩地带',icon:'🌋',type:'wild',region:'scorch',x:88,y:40,minLv:22,desc:'地裂喷涌的熔岩区域，脚下的大地随时可能崩塌。',battleRate:0.55,evtWeights:{disaster:4,trap:4,treasure:3,adventure:2},monsterHint:'熔岩元素、石像鬼',cls:'rg-wild',fixed:true},
+{id:'scorch_oasis',name:'焦荒绿洲',icon:'🏝️',type:'town',region:'scorch',x:72,y:45,minLv:10,desc:'焦灼荒原中难得的清凉绿洲，旅人的休憩之地。',battleRate:0.10,evtWeights:{merchant:4,stranger:5,blessing:3,gamble:2},monsterHint:'流浪者',cls:'rg-town',fixed:true,shopTier:'basic'},
+// 深渊之域 (3)
+{id:'abyss_gate',name:'深渊入口',icon:'🕳️',type:'abyss',region:'abyss',x:45,y:18,minLv:35,desc:'通往深渊的门扉，紫色触手从裂隙中蔓延而出。',battleRate:0.55,evtWeights:{curse:4,mystery:4,disaster:3,duel:2},monsterHint:'恶魔、暗影兽',cls:'rg-dark',fixed:true},
+{id:'abyss_float',name:'浮岛遗迹',icon:'🏝️',type:'ruins',region:'abyss',x:40,y:12,minLv:45,desc:'悬浮在虚空中的古老岛屿，遗迹中暗藏远古文明的秘密。',battleRate:0.50,evtWeights:{tomb:5,treasure:5,mystery:4,trap:3},monsterHint:'远古守卫、沙虫',cls:'rg-ruin',fixed:true},
+{id:'abyss_nest',name:'虚空巢穴',icon:'🕸️',type:'abyss',region:'abyss',x:50,y:8,minLv:55,desc:'深渊最深处的孵化巢穴，虚空幼虫在此蠕动生长。',battleRate:0.70,evtWeights:{curse:5,disaster:4,battle:3,mystery:3},monsterHint:'虚空幼虫、深渊魔物',cls:'rg-dark',fixed:true},
+// 宿命之塔 (3)
+{id:'fate_base',name:'命运之门',icon:'🚪',type:'road',region:'fate_tower',x:50,y:28,minLv:25,desc:'巨塔的基座入口，命运的石阶向上延伸至不可见之处。',battleRate:0.30,evtWeights:{mystery:4,stranger:3,adventure:3,treasure:2},monsterHint:'流浪剑圣、雇佣兵',cls:'rg-road',fixed:true},
+{id:'fate_mid',name:'星辰回廊',icon:'🌀',type:'ruins',region:'fate_tower',x:52,y:18,minLv:40,desc:'塔中的回廊映射着星空，每一步都踏在命运的节点上。',battleRate:0.45,evtWeights:{mystery:5,treasure:4,trap:3,curse:2},monsterHint:'暗黑法师、诅咒骑士',cls:'rg-ruin',fixed:true},
+{id:'fate_summit',name:'终焉之座',icon:'🗼',type:'abyss',region:'fate_tower',x:50,y:5,minLv:70,desc:'塔顶的王座，裂隙命运的终点。只有永恒觉醒者方可登顶。',battleRate:0.75,evtWeights:{mystery:5,curse:4,disaster:4,treasure:4},monsterHint:'末日骑士、深渊领主',cls:'rg-dark',fixed:true},
+// 灰白走廊 (4)
+{id:'grey_palace',name:'灰白宫殿遗迹',icon:'🏛️',type:'ruins',region:'grey',x:75,y:30,minLv:20,desc:'风化千年的宫殿废墟，石柱间回荡着远古的低语。',battleRate:0.40,evtWeights:{tomb:5,treasure:4,ruins:4,mystery:3},monsterHint:'墓卫、骷髅兵',cls:'rg-ruin',fixed:true},
+{id:'grey_road',name:'灰白古道',icon:'🛤️',type:'road',region:'grey',x:80,y:25,minLv:15,desc:'穿越沙漠的古老商路，风沙中偶现商旅的残骸。',battleRate:0.30,evtWeights:{adventure:3,stranger:3,mystery:2,treasure:2},monsterHint:'沙灵、拾荒者',cls:'rg-road',fixed:true},
+{id:'grey_tomb',name:'沙葬古墓',icon:'⚰️',type:'ruins',region:'grey',x:85,y:20,minLv:28,desc:'被黄沙掩埋的帝王古墓，盗墓者的天堂与坟墓。',battleRate:0.50,evtWeights:{tomb:5,trap:5,treasure:5,curse:3},monsterHint:'木乃伊、远古守卫',cls:'rg-ruin',fixed:true},
+{id:'grey_waste',name:'荒芜旷野',icon:'🏜️',type:'wild',region:'grey',x:70,y:35,minLv:12,desc:'灰白走廊中的广阔荒野，偶有沙暴席卷而来。',battleRate:0.45,evtWeights:{adventure:3,disaster:3,trap:2,treasure:2},monsterHint:'沙虫、野狗群',cls:'rg-wild',fixed:true},
+// 珊瑚海域 (3)
+{id:'coral_beach',name:'珊瑚浅滩',icon:'🐚',type:'coastal',region:'coral',x:10,y:80,minLv:5,desc:'碧蓝浅海中珊瑚丛生，美丽的海面下暗藏危险。',battleRate:0.35,evtWeights:{adventure:3,treasure:3,mystery:2,blessing:2},monsterHint:'巨蟹、海蛇',cls:'rg-coastal',fixed:true},
+{id:'coral_deep',name:'深海裂谷',icon:'🌊',type:'coastal',region:'coral',x:5,y:70,minLv:20,desc:'海底深处的裂谷，黑暗的海水中有发光的未知生物。',battleRate:0.55,evtWeights:{mystery:4,treasure:4,trap:3,adventure:2},monsterHint:'深海触手、海妖',cls:'rg-coastal',fixed:true},
+{id:'coral_port',name:'海盗港',icon:'🏴‍☠️',type:'town',region:'coral',x:15,y:75,minLv:8,desc:'法外之徒的避风港，黑市交易与朗姆酒的天堂。',battleRate:0.15,evtWeights:{merchant:5,gamble:5,stranger:4,duel:2},monsterHint:'海盗、盗贼',cls:'rg-town',fixed:true,shopTier:'advanced'},
+// 永终冰原 (4)
+{id:'ice_hills',name:'冰原山麓',icon:'🏔️',type:'ice',region:'ice',x:30,y:15,minLv:30,desc:'永终冰原的入口，凛冽的寒风中夹杂着冰晶碎片。',battleRate:0.45,evtWeights:{adventure:3,trap:3,treasure:2,mystery:2},monsterHint:'冰狼、暴雪精灵',cls:'rg-ice',fixed:true},
+{id:'ice_lake',name:'冻湖秘境',icon:'❄️',type:'wild',region:'ice',x:25,y:8,minLv:40,desc:'永冻的湖面如镜，冰层下隐约可见巨大的身影游动。',battleRate:0.50,evtWeights:{mystery:4,treasure:3,trap:3,adventure:2},monsterHint:'冰石像、极光蛟',cls:'rg-ice',fixed:true},
+{id:'ice_cave',name:'冰川洞穴',icon:'🧊',type:'ruins',region:'ice',x:35,y:5,minLv:50,desc:'冰川深处的洞穴系统，冰壁上刻满了远古符文。',battleRate:0.55,evtWeights:{tomb:4,treasure:4,mystery:4,trap:3},monsterHint:'霜巨人、冰石像',cls:'rg-ice',fixed:true},
+{id:'ice_peak',name:'永终之巅',icon:'⛰️',type:'ice',region:'ice',x:20,y:3,minLv:65,desc:'冰原的最高峰，极光在此汇聚成命运之河。',battleRate:0.65,evtWeights:{mystery:5,curse:3,treasure:4,disaster:3},monsterHint:'霜巨人、极光蛟',cls:'rg-ice',fixed:true}
 ];
 
 // Expanded region-themed enemy pool
@@ -910,7 +991,24 @@ wraith:{name:'幽灵',emoji:'👤',hp:35,atk:17,def:3,min:4},
 darkMage:{name:'暗黑法师',emoji:'🧙',hp:30,atk:20,def:3,min:5},
 abyssalFiend:{name:'深渊魔物',emoji:'👹',hp:65,atk:19,def:8,min:7},
 voidWalker:{name:'虚空行者',emoji:'🕳️',hp:50,atk:15,def:6,min:6},
-doomKnight:{name:'末日骑士',emoji:'🖤',hp:75,atk:22,def:10,min:8}
+doomKnight:{name:'末日骑士',emoji:'🖤',hp:75,atk:22,def:10,min:8},
+// coastal (5)
+crab:{name:'巨蟹',emoji:'🦀',hp:35,atk:10,def:6,min:1},
+siren:{name:'海妖',emoji:'🧜',hp:30,atk:14,def:3,min:3},
+seaSerpent:{name:'海蛇',emoji:'🐍',hp:25,atk:13,def:2,min:2},
+pirate:{name:'海盗',emoji:'🏴‍☠️',hp:35,atk:11,def:4,min:2},
+krakenTent:{name:'深海触手',emoji:'🦑',hp:50,atk:16,def:5,min:5},
+// ice (5)
+iceWolf:{name:'冰狼',emoji:'🐺',hp:32,atk:12,def:4,min:3},
+frostGiant:{name:'霜巨人',emoji:'🧌',hp:70,atk:18,def:8,min:6},
+blizzardSpirit:{name:'暴雪精灵',emoji:'🌨️',hp:28,atk:15,def:2,min:4},
+iceGolem:{name:'冰石像',emoji:'🧊',hp:60,atk:11,def:10,min:5},
+polarWyrm:{name:'极光蛟',emoji:'🐉',hp:55,atk:17,def:6,min:7},
+// supplementary (4)
+sandWraith:{name:'沙灵',emoji:'🌪️',hp:30,atk:13,def:3,min:3},
+tombGuardian:{name:'墓卫',emoji:'⚔️',hp:55,atk:14,def:8,min:5},
+lavaElem:{name:'熔岩元素',emoji:'🔥',hp:45,atk:16,def:5,min:4},
+voidLarva:{name:'虚空幼虫',emoji:'🪱',hp:35,atk:12,def:3,min:4}
 };
 
 // Region-themed boss pool
@@ -919,11 +1017,13 @@ wild:{name:'森林之王·巨狼芬里尔',emoji:'🐺',hp:130,atk:22,def:9,min:
 town:{name:'黑帮教父',emoji:'🎭',hp:100,atk:18,def:12,min:5},
 ruins:{name:'法老亡灵',emoji:'⚰️',hp:160,atk:24,def:11,min:5},
 road:{name:'流浪剑圣',emoji:'⚔️',hp:120,atk:26,def:8,min:5},
-abyss:{name:'深渊领主',emoji:'👿',hp:200,atk:30,def:14,min:5}
+abyss:{name:'深渊领主',emoji:'👿',hp:200,atk:30,def:14,min:5},
+coastal:{name:'深海霸主·克拉肯',emoji:'🦑',hp:150,atk:25,def:10,min:5},
+ice:{name:'永冬之王·冰霜巨龙',emoji:'🐉',hp:180,atk:28,def:13,min:5}
 };
 
 // ===== GAME STATE =====
-let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,bossKills:0,npcKills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null};
+let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,bossKills:0,npcKills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null,bestiary:{}};
 
 // ===== AI API =====
 // Check if worker proxy is available (for leaderboard/achievements/save only)
@@ -1036,7 +1136,7 @@ G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
 G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
 _evtQueue=[];_fillPromise=null;_preloadedMonsters={};
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
-G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';
+G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};
 await showTrans('踏入命运裂隙...',1200);showRegionPicker();
 }
 
@@ -1226,6 +1326,12 @@ else if(G.region&&REGIONS[G.region]){const rg=REGIONS[G.region];regEl.textConten
 regEl.style.background=rg.cls==='rg-wild'?'rgba(64,160,96,.15)':rg.cls==='rg-town'?'rgba(240,192,64,.12)':rg.cls==='rg-ruin'?'rgba(160,80,224,.12)':rg.cls==='rg-dark'?'rgba(224,64,80,.12)':'rgba(64,128,224,.12)';
 regEl.style.color=rg.cls==='rg-wild'?'#60c080':rg.cls==='rg-town'?'var(--gold)':rg.cls==='rg-ruin'?'var(--pur)':rg.cls==='rg-dark'?'var(--red)':'var(--blu)'}
 else{regEl.style.display='none'}
+// Shop button (show when at a location with shop)
+let shopBtn=document.getElementById('uiShopBtn');
+const locShopTier=G.currentMapData?G.currentMapData.shopTier:null;
+if(locShopTier){if(!shopBtn){shopBtn=document.createElement('button');shopBtn.id='uiShopBtn';shopBtn.className='shop-btn';shopBtn.style.cssText='margin-left:8px;margin-bottom:0;vertical-align:middle';regEl.parentNode.insertBefore(shopBtn,regEl.nextSibling)}
+shopBtn.textContent='🏪 '+((SHOP_TIERS[locShopTier]||{}).label||'商店');shopBtn.onclick=()=>openShop(locShopTier);shopBtn.style.display='inline-block'}
+else if(shopBtn){shopBtn.style.display='none'}
 updateUI();
 // Batch preload events for this month
 _evtQueue=[];preloadNextEvent().catch(()=>{});
@@ -1615,9 +1721,24 @@ await generateAIMonstersForMap(mapData);
 
 
 // ===== BACKPACK =====
+function mergeEquipment(newItem,existingItem){
+const lv=(existingItem.mergeLv||0)+1;
+if(lv>5)return false;
+const merged={...existingItem};merged.mergeLv=lv;
+merged.name=(ITEMS[existingItem.id]||existingItem).name+' +'+lv;
+if(existingItem.stats){const ns={};for(const k in existingItem.stats){ns[k]=Math.ceil((ITEMS[existingItem.id].stats[k]||existingItem.stats[k])*(1+lv*0.3))}merged.stats=ns}
+merged.uid=existingItem.uid;
+const idx=G.bag.findIndex(i=>i.uid===existingItem.uid);
+if(idx>=0)G.bag[idx]=merged;
+addL(`🔥 装备融合! ${merged.name}`,'lp');
+return merged;
+}
 function addToBag(itemId){
 if(G.bag.length>=G.bagMax)return false;
 const it=ITEMS[itemId];if(!it)return false;
+// Equipment merge check: same id equipment already in bag?
+if(it.type==='equipment'){const existing=G.bag.find(i=>i.id===itemId&&i.type==='equipment');
+if(existing&&(existing.mergeLv||0)<5){mergeEquipment(it,existing);updateUI();return true}}
 G.bag.push({...it,id:itemId,uid:Date.now()+'_'+R(0,9999)});updateUI();return true;
 }
 function removeFromBag(uid){G.bag=G.bag.filter(i=>i.uid!==uid);updateUI()}
@@ -1645,10 +1766,11 @@ $('bagModalCount').textContent=G.bag.length;
 const grid=$('bagGrid');grid.innerHTML='';
 G.bag.forEach(item=>{
 const slot=document.createElement('div');slot.className='bag-slot';
+if(item.mergeLv)slot.classList.add('merged');
 const isEquip=item.type==='equipment';const isRelic=item.type==='relic';
 if(isRelic){slot.style.borderColor='var(--pur)';slot.style.background='rgba(160,80,224,.06)'}
-else if(isEquip){slot.style.borderColor='var(--gold)';slot.style.background='rgba(240,192,64,.04)'}
-const typeTag=isRelic?'<div style="font-size:.55em;color:var(--pur);margin-top:1px">圣物</div>':isEquip?'<div style="font-size:.55em;color:var(--gold);margin-top:1px">装备</div>':'';
+else if(isEquip&&!item.mergeLv){slot.style.borderColor='var(--gold)';slot.style.background='rgba(240,192,64,.04)'}
+const typeTag=isRelic?'<div style="font-size:.55em;color:var(--pur);margin-top:1px">圣物</div>':item.mergeLv?`<div style="font-size:.55em;color:var(--gold);margin-top:1px">融合+${item.mergeLv}</div>`:isEquip?'<div style="font-size:.55em;color:var(--gold);margin-top:1px">装备</div>':'';
 slot.innerHTML=`<div class="bi">${item.emoji}</div><div class="bn" style="color:${RARITY_CLR[item.rarity]||'var(--t2)'}">${item.name}</div>${typeTag}`;
 slot.onclick=()=>showBagDetail(item);grid.appendChild(slot)});
 for(let i=G.bag.length;i<G.bagMax;i++){const s=document.createElement('div');s.className='bag-slot empty';s.innerHTML='<div class="bi" style="opacity:.3">空</div>';grid.appendChild(s)}
@@ -1676,6 +1798,7 @@ if(item.effect&&item.effect.regionBoost){const rg=REGIONS[item.effect.regionBoos
 if(rg)regionHint=`<div style="color:var(--gold);font-size:.8em;margin:6px 0;padding:6px;background:rgba(240,192,64,.08);border-radius:6px">${rg.icon} 选择前往「${rg.name}」时自动消耗，获得特殊加成</div>`}
 dd.innerHTML=`<div style="font-size:2em">${item.emoji}</div>
 <div style="color:${RARITY_CLR[item.rarity]};font-weight:bold;margin:4px 0">${item.name} <span style="font-size:.75em;color:${typeColor}">[${TYPE_CN[item.type]||''} ${RARITY_CN[item.rarity]||''}]</span></div>
+${item.mergeLv?`<div style="color:var(--gold);font-size:.8em;margin:4px 0">🔥 融合等级 +${item.mergeLv} — 属性强化${item.mergeLv*30}%</div>`:''}
 <div style="color:var(--t2);font-size:.9em;margin:8px 0">${item.desc}</div>
 ${statsLine}${regionHint}
 <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
@@ -1706,6 +1829,91 @@ removeFromBag(uid);renderBag();updateUI();
 }
 
 function discardBagItem(uid){removeFromBag(uid);renderBag();updateUI()}
+
+// ===== BESTIARY =====
+let _bestTab='all';
+function openBestiary(){$('bestiaryModal').classList.add('on');renderBestiary()}
+function closeBestiary(){$('bestiaryModal').classList.remove('on')}
+function switchBestTab(tab){_bestTab=tab;document.querySelectorAll('.best-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.best-tab').forEach(t=>{if(t.textContent.includes(tab==='boss'?'Boss':'全部'))t.classList.add('active')});renderBestiary()}
+function renderBestiary(){
+const grid=$('bestiaryGrid');grid.innerHTML='';
+const b=G.bestiary||{};const keys=Object.keys(b);
+// Build full monster pool from REGION_ENEMIES + discovered
+const allMonsters={};
+for(const rk in REGION_ENEMIES){REGION_ENEMIES[rk].forEach(m=>{if(!allMonsters[m.name])allMonsters[m.name]={emoji:m.emoji||'👹',isBoss:false}})}
+for(const rk in REGION_BOSSES){const rb=REGION_BOSSES[rk];if(!allMonsters[rb.name])allMonsters[rb.name]={emoji:rb.emoji||'👑',isBoss:true}}
+for(const name in b){allMonsters[name]={emoji:b[name].emoji||'👹',isBoss:b[name].isBoss}}
+let entries=Object.entries(allMonsters);
+if(_bestTab==='boss')entries=entries.filter(([,v])=>v.isBoss);
+$('bestiaryCount').textContent=keys.length;
+entries.sort((a,b_)=>{const aD=!!b[a[0]],bD=!!b[b_[0]];if(aD!==bD)return aD?-1:1;return a[0].localeCompare(b_[0])});
+entries.forEach(([name,info])=>{
+const discovered=!!b[name];const card=document.createElement('div');
+card.className='best-card'+(info.isBoss?' boss':'')+(!discovered?' unknown':'');
+const d=discovered?b[name]:null;
+card.innerHTML=`<div class="bc-e">${discovered?info.emoji:'❓'}</div><div class="bc-n">${discovered?name:'???'}</div><div class="bc-k">${discovered?'击杀 '+d.kills:''}</div>`;
+if(discovered)card.onclick=()=>showBestiaryDetail(name,d,info);
+grid.appendChild(card)});
+$('bestiaryDetail').innerHTML='';
+}
+function showBestiaryDetail(name,d,info){
+const dd=$('bestiaryDetail');
+const stars='⭐'.repeat(d.maxStars||1);
+dd.innerHTML=`<div style="background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-top:10px;text-align:center;animation:fadeIn .3s">
+<div style="font-size:2.5em">${info.emoji}</div>
+<div style="font-weight:bold;color:${d.isBoss?'var(--pur)':'var(--t1)'};margin:4px 0">${name}</div>
+<div style="color:var(--gold);font-size:.9em;margin:4px 0">${stars}</div>
+<div style="color:var(--t2);font-size:.85em;margin:8px 0">首次遭遇: 第${d.firstSeen}月 | 总击杀: ${d.kills}</div>
+<div style="color:var(--t3);font-size:.8em">${d.isBoss?'👑 Boss':'普通怪物'} | 区域: ${REGION_GROUPS[d.region]?REGION_GROUPS[d.region].name:d.region}</div>
+</div>`;
+}
+
+// ===== SHOP SYSTEM =====
+let _shopTab='buy';let _shopTier='basic';
+const ITEM_BASE_PRICE={common:10,rare:25,epic:60,material:15};
+function getItemPrice(itemId){const it=ITEMS[itemId];if(!it)return 10;const r=it.rarity||'common';return ITEM_BASE_PRICE[r]||ITEM_BASE_PRICE[it.type]||10}
+function openShop(tier){_shopTier=tier||'basic';_shopTab='buy';$('shopModal').classList.add('on');const st=SHOP_TIERS[_shopTier];$('shopTitle').textContent=st?st.label:'商店';renderShop()}
+function closeShop(){$('shopModal').classList.remove('on')}
+function switchShopTab(tab){_shopTab=tab;document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.shop-tab').forEach(t=>{if((tab==='buy'&&t.textContent==='购买')||(tab==='sell'&&t.textContent==='出售'))t.classList.add('active')});renderShop()}
+function renderShop(){
+$('shopGold').textContent=G.gold;const grid=$('shopGrid');grid.innerHTML='';$('shopMsg').textContent='';
+if(_shopTab==='buy'){renderShopBuy(grid)}else{renderShopSell(grid)}
+}
+function renderShopBuy(grid){
+const items=SHOP_INVENTORY[_shopTier]||SHOP_INVENTORY.basic;
+items.forEach(itemId=>{
+const it=ITEMS[itemId];if(!it)return;
+const price=Math.ceil(getItemPrice(itemId)*1.5);
+const card=document.createElement('div');card.className='shop-item';
+const canBuy=G.gold>=price&&G.bag.length<G.bagMax;
+card.innerHTML=`<div class="si-e">${it.emoji}</div><div class="si-n" style="color:${RARITY_CLR[it.rarity]||'var(--t2)'}">${it.name}</div><div class="si-p">💰 ${price}</div>`;
+if(!canBuy)card.style.opacity='0.5';
+card.onclick=()=>{if(canBuy)buyItem(itemId,price);else{$('shopMsg').textContent=G.bag.length>=G.bagMax?'背包已满!':'金币不足!';$('shopMsg').style.color='var(--red)'}};
+grid.appendChild(card)});
+}
+function renderShopSell(grid){
+if(!G.bag.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--t3);padding:20px">背包空空如也</div>';return}
+const st=SHOP_TIERS[_shopTier]||SHOP_TIERS.basic;
+G.bag.forEach(item=>{
+const price=Math.ceil(getItemPrice(item.id)*st.sellMul);
+const card=document.createElement('div');card.className='shop-item';
+const nameDisplay=item.mergeLv?item.name:(ITEMS[item.id]?ITEMS[item.id].name:item.name);
+card.innerHTML=`<div class="si-e">${item.emoji}</div><div class="si-n" style="color:${RARITY_CLR[item.rarity]||'var(--t2)'}">${nameDisplay}</div><div class="si-p">💰 +${price}</div>`;
+card.onclick=()=>sellItem(item.uid,price);
+grid.appendChild(card)});
+}
+function buyItem(itemId,price){
+if(G.gold<price||G.bag.length>=G.bagMax)return;
+G.gold-=price;addToBag(itemId);
+$('shopMsg').textContent=`购买了 ${ITEMS[itemId].emoji} ${ITEMS[itemId].name}!`;$('shopMsg').style.color='var(--grn)';
+renderShop();updateUI();
+}
+function sellItem(uid,price){
+const item=G.bag.find(i=>i.uid===uid);if(!item)return;
+G.gold+=price;removeFromBag(uid);
+$('shopMsg').textContent=`出售了 ${item.emoji} ${item.name} +${price}💰`;$('shopMsg').style.color='var(--grn)';
+renderShop();updateUI();
+}
 
 // ===== BATTLE SYSTEM =====
 function genEnemy(isBoss, isBreakthrough){
@@ -2302,6 +2510,8 @@ const area=$('evtArea');if(area)area.appendChild(errDiv);
 async function battleWin(enemy){
 try{
 G.kills++;if(enemy.isBoss)G.bossKills++;if(enemy.isNPC)G.npcKills++;
+// Bestiary tracking
+const _bName=enemy.name;if(_bName&&G.bestiary){if(!G.bestiary[_bName])G.bestiary[_bName]={kills:0,firstSeen:G.month,emoji:enemy.emoji||'👹',region:G.region||'unknown',isBoss:!!enemy.isBoss,maxStars:0};G.bestiary[_bName].kills++;if((enemy.stars||1)>G.bestiary[_bName].maxStars)G.bestiary[_bName].maxStars=enemy.stars||1}
 // Decrement curse counter
 if(G.p.curse&&G.p.curse>0){G.p.curse--;if(G.p.curse===0)addL(`✨ 诅咒已消散`,'lp')}
 const xpMult=enemy.isBoss?80:enemy.isElite?35:15;const xpGain=enemy.lv*xpMult+(enemy.stars||1)*5;
@@ -2635,8 +2845,16 @@ maps.forEach(map=>renderMapCard(grid,map,false,hasTreasMap,hasRuinGuide));
 return;
 }
 // Later months: World map (fixed locations) + AI ruins
-// 1. Fixed world locations
-WORLD_LOCATIONS.forEach(loc=>{
+// 1. Fixed world locations — grouped by region
+const regionOrder=['soulrest','shadow_forest','scorch','grey','coral','ice','abyss','fate_tower'];
+regionOrder.forEach(rk=>{
+const rg=REGION_GROUPS[rk];if(!rg)return;
+const locs=WORLD_LOCATIONS.filter(l=>l.region===rk);if(!locs.length)return;
+// Region header
+const hdr=document.createElement('div');hdr.style.cssText='grid-column:1/-1;text-align:left;color:var(--gold);font-size:.9em;margin:10px 0 2px;padding:4px 8px;border-bottom:1px solid rgba(240,192,64,.2);background:rgba(240,192,64,.04);border-radius:4px';
+hdr.innerHTML=`${rg.icon} <b>${rg.name}</b> <span style="color:var(--t3);font-size:.8em;margin-left:6px">${rg.desc}</span>`;
+grid.appendChild(hdr);
+locs.forEach(loc=>{
 const locked=pl<loc.minLv;
 const visitedCount=G.regionsVisited.filter(r=>r===loc.id).length;
 const card=document.createElement('div');card.className='reg-card '+(loc.cls||'rg-road');
@@ -2646,11 +2864,12 @@ if(locked)tags.push(`<span class="rg-tag" style="background:rgba(224,64,80,.15);
 else if(loc.minLv>0)tags.push(`<span class="rg-tag" style="background:rgba(64,192,112,.15);color:var(--grn)">Lv.${loc.minLv}+</span>`);
 if(loc.battleRate>0.5)tags.push('<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">⚔️ 战斗频繁</span>');
 if(loc.battleRate<0.15)tags.push('<span class="rg-tag" style="background:rgba(64,192,112,.15);color:var(--grn)">🏠 安全区域</span>');
+if(loc.shopTier)tags.push(`<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">🏪 ${(SHOP_TIERS[loc.shopTier]||{}).label||'商店'}</span>`);
 if(loc.evtWeights&&loc.evtWeights.treasure)tags.push('<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">💰 宝藏</span>');
 if(loc.evtWeights&&loc.evtWeights.merchant)tags.push('<span class="rg-tag" style="background:rgba(240,192,64,.15);color:var(--gold)">🏪 交易</span>');
 if(loc.evtWeights&&loc.evtWeights.curse)tags.push('<span class="rg-tag" style="background:rgba(224,64,80,.15);color:var(--red)">💀 危险</span>');
 if(loc.evtWeights&&loc.evtWeights.mystery)tags.push('<span class="rg-tag" style="background:rgba(80,180,200,.15);color:#60c0d0">🔮 神秘</span>');
-const posInfo=`<div style="font-size:.7em;color:var(--t3);margin-top:2px">📍 地图坐标 (${loc.x},${loc.y})</div>`;
+const posInfo=`<div style="font-size:.7em;color:var(--t3);margin-top:2px">📍 (${loc.x},${loc.y})</div>`;
 card.innerHTML=`<div class="rg-icon">${loc.icon}</div><div class="rg-name">${loc.name}</div>
 <div class="rg-desc">${loc.desc}</div>
 ${loc.monsterHint?'<div style="color:var(--t3);font-size:.75em;margin:2px 0">🐾 '+loc.monsterHint+'</div>':''}
@@ -2658,6 +2877,7 @@ ${tags.join('')}${posInfo}
 ${visitedCount>0?'<div style="color:var(--t3);font-size:.7em;margin-top:4px">已探索 '+visitedCount+' 次</div>':''}`;
 if(!locked){card.onclick=()=>selectMapRegion(loc)}
 grid.appendChild(card);
+});
 });
 // 2. AI-generated ruins/encounters (if available)
 if(G.aiMaps.length){
@@ -3055,7 +3275,7 @@ currentAgeMonth:G.currentAgeMonth,lifespanMonths:G.lifespanMonths,
 breakthroughTier:G.breakthroughTier,
 regionsVisited:G.regionsVisited,bag:G.bag,
 isBoss:G.isBoss,maxSlot:G.maxSlot,nextSkillLv:G.nextSkillLv,
-themes:G.themes,starKills:G.starKills
+themes:G.themes,starKills:G.starKills,bestiary:G.bestiary
 };
 const res=await fetch(WORKER_URL+'/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
 body:JSON.stringify({playerId:PLAYER_ID||undefined,playerName:G.awk?G.awk.name:'冒险者',data:saveData})});
@@ -3112,7 +3332,7 @@ G.currentAgeMonth=sd.currentAgeMonth||192;G.lifespanMonths=sd.lifespanMonths||48
 G.breakthroughTier=sd.breakthroughTier||0;
 G.regionsVisited=sd.regionsVisited||[];G.bag=sd.bag||[];
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
-G.themes=sd.themes||[];G.starKills=sd.starKills||{};
+G.themes=sd.themes||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};
 G.awk=sd.awk;G.p=sd.p;
 document.getElementById('loadModal').classList.remove('on');
 await showTrans('命运正在重连...',1200);
