@@ -150,9 +150,12 @@ async function handleAI(request, env) {
     temperature: body.temperature ?? AI_TEMP,
     max_tokens: body.max_tokens || AI_MAX_TOKENS,
   };
-  // Disable thinking for DeepSeek V4 models to get direct content response
+  // Disable thinking for DeepSeek V4 models to get direct JSON response
+  // DeepSeek V4 API uses "thinking" parameter, NOT "chat_template_kwargs" (that's llama.cpp specific)
   if (proxyBody.model.includes('v4')) {
-    proxyBody.chat_template_kwargs = { enable_thinking: false };
+    proxyBody.thinking = { type: 'disabled' };
+    // Increase max_tokens for complex prompts (awakening generation etc.)
+    proxyBody.max_tokens = Math.max(proxyBody.max_tokens, 4096);
   }
 
   const res = await fetch(AI_URL, {
