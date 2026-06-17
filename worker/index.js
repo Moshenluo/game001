@@ -150,6 +150,10 @@ async function handleAI(request, env) {
     temperature: body.temperature ?? AI_TEMP,
     max_tokens: body.max_tokens || AI_MAX_TOKENS,
   };
+  // Disable thinking for DeepSeek V4 models to get direct content response
+  if (proxyBody.model.includes('v4')) {
+    proxyBody.chat_template_kwargs = { enable_thinking: false };
+  }
 
   const res = await fetch(AI_URL, {
     method: 'POST',
@@ -169,6 +173,20 @@ async function handleAI(request, env) {
   }
 
   const data = await res.json();
+
+  // Fallback: if content is empty (thinking mode), use reasoning_content
+  if (data.choices && data.choices[0]) {
+    const msg = data.choices[0].message;
+    if (msg && (!msg.content || msg.content.trim() === '')) {
+      const reasoning = msg.reasoning_content || msg.reasoning || '';
+      if (reasoning) {
+        console.log('[AI Proxy] Empty content, using reasoning_content as fallback');
+        msg.content = reasoning;
+      } else {
+        console.warn('[AI Proxy] Both content and reasoning_content empty. Keys:', Object.keys(msg).join(','));
+      }
+    }
+  }
 
   // Log usage (optional, for monitoring)
   const usageKey = 'usage:' + new Date().toISOString().slice(0, 10);
