@@ -141,7 +141,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="modal-bg" id="settingsModal"><div class="modal">
 <h3>⚙️ API 设置</h3>
 <label>API 地址</label><input id="cfgUrl" value="https://api.deepseek.com/chat/completions">
-<label>API Key</label><input id="cfgKey" value="sk-7cf3f67e1ae145c28bf5f0bd8c9dc604" type="password">
+<label>API Key</label><input id="cfgKey" placeholder="请输入你的 API Key" type="password">
 <label>模型</label><input id="cfgModel" value="deepseek-chat">
 <label>温度 (0-1)</label><input id="cfgTemp" value="0.85" type="number" step="0.05" min="0" max="2">
 <div class="btn-row"><button class="btn-sm btn-no" onclick="toggleSettings()">取消</button><button class="btn-sm btn-ok" onclick="saveSettings()">保存</button></div>
@@ -239,9 +239,21 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 
 <script>
 // ===== CONFIG =====
-let CFG={url:'https://api.deepseek.com/chat/completions',key:'sk-7cf3f67e1ae145c28bf5f0bd8c9dc604',model:'deepseek-chat',temp:0.85};
-function toggleSettings(){document.getElementById('settingsModal').classList.toggle('on')}
-function saveSettings(){CFG.url=document.getElementById('cfgUrl').value;CFG.key=document.getElementById('cfgKey').value;CFG.model=document.getElementById('cfgModel').value;CFG.temp=parseFloat(document.getElementById('cfgTemp').value)||0.85;toggleSettings()}
+let CFG={url:'https://api.deepseek.com/chat/completions',key:'',model:'deepseek-chat',temp:0.85};
+// Load saved settings from localStorage
+try{const saved=JSON.parse(localStorage.getItem('rift_cfg')||'{}');if(saved.url)CFG.url=saved.url;if(saved.key)CFG.key=saved.key;if(saved.model)CFG.model=saved.model;if(saved.temp)CFG.temp=saved.temp}catch(e){}
+function toggleSettings(){
+const m=document.getElementById('settingsModal');m.classList.toggle('on');
+if(m.classList.contains('on')){
+document.getElementById('cfgUrl').value=CFG.url;
+document.getElementById('cfgKey').value=CFG.key;
+document.getElementById('cfgModel').value=CFG.model;
+document.getElementById('cfgTemp').value=CFG.temp;
+}}
+function saveSettings(){CFG.url=document.getElementById('cfgUrl').value;CFG.key=document.getElementById('cfgKey').value;CFG.model=document.getElementById('cfgModel').value;CFG.temp=parseFloat(document.getElementById('cfgTemp').value)||0.85;
+try{localStorage.setItem('rift_cfg',JSON.stringify({url:CFG.url,key:CFG.key,model:CFG.model,temp:CFG.temp}))}catch(e){}
+const kn=document.getElementById('keyNotice');if(kn)kn.remove();
+toggleSettings()}
 
 // ===== UTILITY =====
 const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
@@ -575,13 +587,11 @@ let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:
 async function callAI(prompt,timeout=20000){
 try{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
-console.log('[AI] Calling:',CFG.url,'model:',CFG.model);
 const res=await fetch(CFG.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+CFG.key},
 body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:2000}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok){throw new Error('API HTTP '+res.status)}
 const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
-console.log('[AI] Raw:',text.substring(0,300));
 let jsonStr=null;const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
 if(!jsonStr){let d=0,s=-1,e=-1;for(let i=0;i<text.length;i++){if(text[i]==='{'){if(d===0)s=i;d++}else if(text[i]==='}'){d--;if(d===0&&s>=0){e=i+1;break}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
 if(!jsonStr)throw new Error('No JSON');const parsed=JSON.parse(jsonStr);console.log('[AI] OK:',parsed.name||'');return parsed;
@@ -2248,6 +2258,17 @@ G._nextEnemy=npc;
 
 // ===== START =====
 async function startGame(diff){
+// Check API key before starting
+if(!CFG.key||!CFG.key.trim()){
+const modal=document.getElementById('settingsModal');
+modal.classList.add('on');
+const notice=document.createElement('div');notice.id='keyNotice';
+notice.style.cssText='background:rgba(224,64,80,.12);border:1px solid var(--redd);border-radius:8px;padding:10px;margin-bottom:12px;text-align:center;color:var(--red);font-size:.9em';
+notice.innerHTML='⚠️ 请先输入 API Key 才能开始游戏<br><span style="font-size:.8em;color:var(--t3)">可在 <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:var(--blu)">platform.deepseek.com</a> 免费获取</span>';
+const h3=modal.querySelector('h3');if(h3)h3.after(notice);
+return;
+}
+const kn=document.getElementById('keyNotice');if(kn)kn.remove();
 G.diff=diff;G.dc=DIFF[diff];
 await showTrans('命运正在觉醒...',1500);showScr('awkScr');
 $('awkWrap').innerHTML=`<div style="color:var(--gold);font-size:1.4em;margin-bottom:10px">觉 醒</div>
