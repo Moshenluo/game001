@@ -540,7 +540,49 @@ const PRESET_EVENTS=[
 {theme:"gamble",title:"骰子恶魔",description:"一个长着犄角的小恶魔出现在面前，它手里摇着两颗骰子，提议和你玩一个游戏：掷出的点数决定你的命运。",choices:[{label:"和恶魔玩",result:"你掷出了高点数！恶魔不情愿地交出了它的宝物。",effects:{atk:6,item:'berserk',damage:5}},{label:"只赌小的",result:"你赢了个小彩头。",effects:{heal:12,atk:1}},{label:"拒绝并攻击恶魔",result:"恶魔尖叫着逃跑了，留下了些硫磺结晶。",effects:{item:'magicEss',damage:3}}]},
 // === disaster ===
 {theme:"disaster",title:"山洪暴发",description:"暴雨倾盆而下，山洪从高处汹涌而来。你只有几秒钟做出反应！",choices:[{label:"向高处奔跑",result:"你拼命跑上了高坡，虽然筋疲力尽但安全了。",effects:{damage:8,atk:2}},{label:"抱住大树",result:"大树在洪水中摇摇欲坠但最终挺住了。",effects:{damage:12,def:2}},{label:"跳入水中顺流而下",result:"你被洪水冲了很远，在下游发现了一些被冲刷出来的宝物。",effects:{damage:18,item:'gemStone',atk:3}}]},
-{theme:"disaster",title:"陨石坠落",description:"天空中一道火光划过，一颗小型陨石朝着你的方向坠落！冲击波即将袭来。",choices:[{label:"全力奔跑躲避",result:"你勉强跑出了冲击范围，但被碎石击中受了些伤。",effects:{damage:10,def:2}},{label:"躲入最近的掩体",result:"掩体挡住了大部分冲击，你发现陨石碎片中有稀有矿石。",effects:{damage:5,item:'ironOre',item2:'gemStone'}},{label:"用技能抵挡冲击",result:"你释放能量形成护盾，成功挡住了冲击波。",effects:{damage:3,atk:3}}]}
+{theme:"disaster",title:"陨石坠落",description:"天空中一道火光划过，一颗小型陨石朝着你的方向坠落！冲击波即将袭来。",choices:[{label:"全力奔跑躲避",result:"你勉强跑出了冲击范围，但被碎石击中受了些伤。",effects:{damage:10,def:2}},{label:"躲入最近的掩体",result:"掩体挡住了大部分冲击，你发现陨石碎片中有稀有矿石。",effects:{damage:5,item:'ironOre',item2:'gemStone'}},{label:"用技能抵挡冲击",result:"你释放能量形成护盾，成功挡住了冲击波。",effects:{damage:3,atk:3}}]},
+// === Expanded events (with checks & new effects) ===
+// adventure
+{theme:"adventure",title:"裂隙猎人",description:"一位自称裂隙猎人的女子出现在你面前，她手持一把散发蓝光的弩，正在追踪某种裂隙中的异兽。她提议合作。",choices:[{label:"与她联手猎杀",result:"经过激烈的战斗，你们成功猎杀了异兽，她分给你一部分战利品。",effects:{atk:3,gold:25,item:'monsterMat'}},{label:"提议比试箭术",result:"你和她进行了一场友好的箭术比试，从中学到了不少。",check:{stat:"lk",dc:12,type:"roll"},success:{atk:2,luck:2,item:'gemStone'},failure:{damage:5}},{label:"婉拒离开",result:"你不想卷入别人的狩猎，礼貌地告别。",effects:{heal:8}}]},
+{theme:"adventure",title:"断桥上的赌注",description:"一座年久失修的石桥横跨深渊，桥中央站着一个神秘人。他提出：如果你能通过他的考验，就告诉你前方的秘密。",choices:[{label:"接受力量考验",result:"你成功推开了巨石！",check:{stat:"atk",dc:14,type:"roll"},success:{atk:5,gold:30,item:'steelSword'},failure:{damage:15,atkLoss:1}},{label:"接受智慧考验",result:"你解开了谜题。",check:{stat:"def",dc:12,type:"roll"},success:{def:4,item:'enCrystal'},failure:{damage:8}},{label:"绕道而行",result:"你不想冒险，找了另一条路。",effects:{heal:5}}]},
+{theme:"adventure",title:"古战场遗迹",description:"你踏入了一片古老的战场遗址，地面上散落着锈蚀的武器和残破的旗帜。空气中似乎还残留着战争的怨念。",choices:[{label:"搜索指挥官的帐篷",result:"你在帐篷中找到了一份战略地图和一把精良武器。",effects:{atk:4,item:'ironSword',gold:15}},{label:"收集散落的武器",result:"你收集了一些还能用的武器和材料。",effects:{item:'ironOre',item2:'ironOre',atk:1}},{label:"为亡灵祈祷",result:"你为战死者祈祷，感到一股温暖的祝福。",effects:{heal:20,def:2,luck:1}}]},
+// ruins
+{theme:"ruins",title:"被封印的宝库",description:"一扇刻满符文的石门后是远古宝库，但封印需要强大的力量才能打开。石门上的符文似乎在考验来者。",choices:[{label:"用蛮力破开封印",result:"你爆发出惊人的力量！",check:{stat:"atk",dc:16,type:"roll"},success:{atk:4,item:'gemStone',item2:'gemStone',gold:50},failure:{damage:20,atkLoss:2}},{label:"研究符文找到机关",result:"你仔细观察符文的排列规律。",check:{stat:"level",dc:8,type:"threshold"},success:{item:'ancientCoin',item2:'enCrystal',def:2},failure:{damage:10}},{label:"放弃离开",result:"封印太强了，不值得冒险。",effects:{heal:5}}]},
+{theme:"ruins",title:"机关密室",description:"你进入了一间布满机关的密室。地板上的石板、墙壁上的箭孔、天花板上的落石——每一步都可能是致命的。",choices:[{label:"凭借直觉穿越",result:"你的直觉带你安全通过了！",check:{stat:"lk",dc:13,type:"roll"},success:{item:'treasMap',atk:3,gold:20},failure:{damage:25,defLoss:1}},{label:"小心翼翼地破解机关",result:"你耐心地逐个解除机关，虽然耗时但安全。",effects:{def:3,item:'ironOre'}},{label:"原路返回",result:"这太危险了，不值得。",effects:{heal:8}}]},
+{theme:"ruins",title:"失落的祭坛",description:"一座被藤蔓覆盖的祭坛矗立在废墟中央，祭坛上的水晶球散发着微弱的光芒。触摸它可能会带来祝福，也可能是诅咒。",choices:[{label:"触摸水晶球",result:"水晶球中的能量涌入你的身体！",check:{stat:"lk",dc:10,type:"roll"},success:{atk:3,def:2,luck:2},failure:{curse:2,damage:10}},{label:"取走水晶球",result:"你小心地将水晶球取下，它的光芒照亮了隐藏的宝箱。",effects:{item:'enCrystal',gold:15}},{label:"只是观察记录",result:"你记录了祭坛的构造，或许以后有用。",effects:{def:2}}]},
+// tomb
+{theme:"tomb",title:"盗墓者的困境",description:"你在一座古墓中遇到了另一群盗墓者，他们被困在了陷阱中。为首者请求你的帮助，承诺分享战利品。",choices:[{label:"帮助他们脱困",result:"你成功解救了他们，他们信守承诺分给你一部分收获。",effects:{gold:30,item:'hpPot',def:2}},{label:"趁机搜刮他们的营地",result:"你趁他们被困偷了他们的物资...但被发现了。",effects:{item:'gemStone',gold:20,curse:2}},{label:"不管他们继续探索",result:"你继续深入古墓，发现了更多宝藏。",effects:{damage:15,item:'chainMail',gold:10}}]},
+{theme:"tomb",title:"不死守卫",description:"古墓的甬道中站着一具全身铠甲的亡灵守卫，他的剑上闪烁着幽蓝色的光。他似乎在等待一个挑战者。",choices:[{label:"与亡灵守卫战斗",result:"一场激烈的战斗！",check:{stat:"atk",dc:15,type:"roll"},success:{atk:5,item:'skullTrophy',gold:25},failure:{damage:20,defLoss:2}},{label:"寻找绕行通道",result:"你找到了一条隐蔽的侧通道。",effects:{damage:8,item:'hpPot'}},{label:"向亡灵致敬后离开",result:"你的敬意让亡灵放下了武器，他让开了路。",effects:{heal:10,def:2}}]},
+// duel
+{theme:"duel",title:"暗影刺客",description:"一个身穿黑色紧身衣的刺客从暗处现身，他的匕首上涂着剧毒。有人出钱要你的命，但他给你一个选择的机会。",choices:[{label:"与刺客决斗",result:"你与刺客展开了生死对决！",check:{stat:"atk",dc:14,type:"roll"},success:{atk:4,item:'shadowDagger',gold:20},failure:{damage:18,curse:3}},{label:"用金钱买命",result:"你出了更高的价钱让刺客反水。",effects:{goldCost:30,atk:2}},{label:"用计逃脱",result:"你扔出烟雾弹趁机逃跑。",effects:{damage:8,heal:5}}]},
+{theme:"duel",title:"竞技场邀请",description:"一个华丽的竞技场出现在前方，门卫递给你一封邀请函。今晚有一场特别的比赛，胜者可以获得传说中的装备。",choices:[{label:"参加冠军赛",result:"你在冠军赛中遭遇了强大的对手！",check:{stat:"atk",dc:16,type:"roll"},success:{atk:6,item:'berserkerAxe',gold:40},failure:{damage:25,defLoss:1}},{label:"参加普通赛",result:"你在普通赛中取得了不错的成绩。",effects:{atk:3,damage:10,gold:15}},{label:"只当观众",result:"你观看了一场精彩的比赛，学到了不少。",effects:{def:2,atk:1}}]},
+// mystery
+{theme:"mystery",title:"镜中世界",description:"一面古老的铜镜映出了你的倒影，但倒影的动作和你不完全一致。它似乎在邀请你进入镜中世界。",choices:[{label:"进入镜中世界",result:"你穿越镜面来到了一个颠倒的世界！",check:{stat:"lk",dc:14,type:"roll"},success:{atk:4,def:3,item:'voidCloak'},failure:{damage:15,xpLoss:0.2}},{label:"与倒影对话",result:"你从倒影中获得了另一个世界的知识。",effects:{atk:2,def:2}},{label:"打碎铜镜",result:"铜镜碎裂的瞬间释放出一股能量。",effects:{damage:5,atk:3,item:'magicEss'}}]},
+{theme:"mystery",title:"遗忘之塔",description:"一座被时间遗忘的高塔矗立在平原上，塔顶传来微弱的歌声。塔门上没有锁，但门框上刻着：入此门者，将失去一段记忆。",choices:[{label:"进入高塔",result:"你在塔中获得了强大的力量，但代价是一段记忆...",effects:{atk:5,xpLoss:0.15,item:'awkShard'}},{label:"只在底层搜索",result:"你在塔底找到了一些有价值的物品。",effects:{item:'ironOre',item2:'gemStone',heal:10}},{label:"远离高塔",result:"歌声渐渐远去，你继续前行。",effects:{heal:8}}]},
+// merchant
+{theme:"merchant",title:"炼金术士的交易",description:"一位老炼金术士向你展示了他最新的发明——一种可以永久增强体质的药剂。但他需要的不是金币，而是你身上的某种东西。",choices:[{label:"用经验换力量",result:"你献出了一部分修炼经验，换来了永久的力量提升。",effects:{xpLoss:0.25,atk:6}},{label:"用金币购买材料",result:"你用金币购买了炼金材料。",effects:{goldCost:20,item:'magicEss',item2:'ironOre'}},{label:"学习炼金术",result:"你花时间学习了基础炼金术。",effects:{def:2,atk:2,heal:5}}]},
+{theme:"merchant",title:"走私商人的宝库",description:"一个走私商人悄悄向你展示了他的秘密仓库。里面有各种稀有物品，但价格不菲。",choices:[{label:"购买稀有装备",result:"你选中了一件精良的装备。",effects:{item:'chainMail',goldCost:25}},{label:"购买稀有药剂",result:"你买了一些珍贵的药剂。",effects:{item:'berserk',item2:'purifyWater',goldCost:18}},{label:"只是看看",result:"你记住了这个地点，以后可能有用。",effects:{heal:5,luck:1}}]},
+// curse
+{theme:"curse",title:"贪婪的诅咒",description:"你踩到了一个隐藏的陷阱，一个古老的诅咒笼罩了你。诅咒给了你两个选择：失去财富或者失去力量。",choices:[{label:"献出金币解除诅咒",result:"你交出了大量金币，诅咒消散了。",effects:{goldSteal:0.4,heal:10}},{label:"用意志力抵抗诅咒",result:"你集中精神对抗诅咒！",check:{stat:"def",dc:15,type:"roll"},success:{def:3,luck:2},failure:{curse:3,atkLoss:2}},{label:"接受诅咒的代价",result:"诅咒刻入了你的身体，但你变得更坚韧了。",effects:{damage:15,def:4}}]},
+{theme:"curse",title:"亡灵的诅咒",description:"一个被你不慎惊扰的亡灵发出了诅咒。黑色的雾气缠绕在你身上，你感到力量在流失。",choices:[{label:"与亡灵战斗解除诅咒",result:"你与亡灵展开了殊死搏斗！",check:{stat:"atk",dc:13,type:"roll"},success:{atk:3,item:'skullTrophy',heal:10},failure:{damage:20,curse:2}},{label:"用圣光净化",result:"你释放出净化之光。",effects:{damage:10,heal:15,def:2}},{label:"逃跑",result:"你拼命逃离了亡灵的领地。",effects:{damage:12,heal:5}}]},
+// blessing
+{theme:"blessing",title:"大地母亲的恩赐",description:"你在一棵巨大的古树下休息，树干上浮现出一张慈祥的面孔。大地母亲认可了你的善行，决定赐予你祝福。",choices:[{label:"请求力量祝福",result:"温暖的能量涌入你的身体。",effects:{atk:5,heal:20}},{label:"请求防护祝福",result:"一层金色的光芒包裹了你。",effects:{def:5,heal:15,maxHp:10}},{label:"请求幸运祝福",result:"你感到命运的线在轻轻拨动。",effects:{luck:3,item:'luckyCoin'}}]},
+{theme:"blessing",title:"神泉水",description:"你发现了一处隐秘的神泉，泉水散发着淡淡的金光。传说饮用神泉水可以洗涤身心。",choices:[{label:"饮用神泉水",result:"清甜的泉水让你焕然一新。",effects:{heal:30,def:2,luck:1}},{label:"用神泉水净化装备",result:"你用泉水洗涤了身上的装备。",effects:{heal:15,atk:2,def:2}},{label:"装满水瓶带走",result:"你装了一些泉水以备不时之需。",effects:{item:'hpPotL',heal:10}}]},
+// trap
+{theme:"trap",title:"连锁陷阱",description:"你触发了一个连锁陷阱！地面板砖下沉，两侧墙壁开始缓缓合拢，同时天花板上开始落下石块。",choices:[{label:"全力冲刺突围",result:"你拼尽全力向前冲！",check:{stat:"atk",dc:13,type:"roll"},success:{damage:5,atk:2,gold:15},failure:{damage:25,defLoss:1}},{label:"寻找机关停止陷阱",result:"你在墙壁合拢前找到了隐藏的机关。",effects:{damage:10,def:3}},{label:"用物品撑住墙壁",result:"你用一根铁棒撑住了墙壁争取到时间。",effects:{damage:15,item:'rope',heal:5}}]},
+{theme:"trap",title:"幻术迷宫",description:"你误入了一个幻术迷宫，四周的景色不断变换，每一条路看起来都一样。你需要找到真正的出口。",choices:[{label:"凭感觉找到出口",result:"你相信自己的直觉！",check:{stat:"lk",dc:12,type:"roll"},success:{item:'gemStone',atk:2,heal:10},failure:{damage:12,xpLoss:0.1}},{label:"冷静分析路径",result:"你仔细观察幻术的破绽。",check:{stat:"level",dc:6,type:"threshold"},success:{def:3,item:'enCrystal'},failure:{damage:8}},{label:"暴力破坏幻术",result:"你释放出强大的能量打碎了幻术屏障。",effects:{damage:8,atk:3}}]},
+// treasure
+{theme:"treasure",title:"远古宝箱",description:"你发现了一个被强大魔法封印的远古宝箱。封印上有三种不同的解除方式，每一种都有不同的风险。",choices:[{label:"用力量强行破封",result:"你爆发出惊人的力量！",check:{stat:"atk",dc:15,type:"roll"},success:{atk:4,item:'dragonPlate',gold:40},failure:{damage:20,atkLoss:2}},{label:"用幸运尝试巧合",result:"你随手拨弄封印...",check:{stat:"lk",dc:14,type:"roll"},success:{item:'ancientCoin',item2:'gemStone',gold:30},failure:{damage:10}},{label:"仔细研究封印",result:"你花了很长时间研究封印的结构，最终安全地打开了宝箱。",effects:{item:'hpPotL',def:2,gold:15}}]},
+{theme:"treasure",title:"商队遗骸",description:"你发现了一支被劫的商队遗骸，马车翻倒在路边，货物散落一地。大部分贵重物品已经被劫匪拿走，但或许还有遗漏。",choices:[{label:"仔细搜索每辆马车",result:"你在暗格中找到了被遗漏的贵重物品。",effects:{item:'chainMail',gold:20,item2:'hpPot'}},{label:"只搜索武器箱",result:"你找到了一些武器和防具。",effects:{item:'steelSword',heal:5}},{label:"埋葬死者后离开",result:"你为死者举行了简单的葬礼，离开时在地上捡到了一枚古币。",effects:{item:'ancientCoin',heal:10,luck:1}}]},
+// stranger
+{theme:"stranger",title:"流浪的铁匠",description:"一位流浪铁匠在路边支起了铁砧，他声称可以用你带来的材料打造装备。他的手艺看起来相当精湛。",choices:[{label:"用铁矿石打造武器",result:"铁匠挥锤如飞，打造出了一把精良的武器。",effects:{requireItem:'ironOre',item:'steelSword',atk:3}},{label:"请他修理装备",result:"铁匠帮你强化了现有的装备。",effects:{def:3,heal:10}},{label:"只是聊聊天",result:"铁匠分享了很多有趣的旅途见闻。",effects:{atk:1,def:1,heal:5}}]},
+{theme:"stranger",title:"神秘的占卜师",description:"一位戴着面纱的占卜师在路边摆了个摊位。她说可以免费为你占卜一次命运，但结果可能会让你不安。",choices:[{label:"接受占卜",result:"占卜师揭示了你的命运走向！",check:{stat:"lk",dc:11,type:"roll"},success:{luck:3,item:'awkShard',atk:2},failure:{damage:5,curse:1}},{label:"询问前方的危险",result:"占卜师警告了你前方的一些危险。",effects:{def:3,heal:10}},{label:"婉拒离开",result:"你不太相信占卜这种东西。",effects:{heal:5}}]},
+// gamble
+{theme:"gamble",title:"地下赌场",description:"你误入了一个地下赌场，这里灯火通明，人声鼎沸。一个赌徒向你发出挑战：赢家通吃。",choices:[{label:"接受高额赌局",result:"你把一切都押上了赌桌！",check:{stat:"lk",dc:15,type:"roll"},success:{gold:60,item:'berserk',atk:3},failure:{goldSteal:0.3,damage:10}},{label:"只玩小额游戏",result:"你玩了几把小的，有赢有输。",effects:{gold:10,heal:5}},{label:"出老千",result:"你试图作弊...但被发现了！",effects:{damage:15,atk:2,defLoss:1}}]},
+{theme:"gamble",title:"命运的硬币",description:"你在路边捡到了一枚奇异的硬币，一面是天使一面是恶魔。硬币似乎有自己的意志，邀请你抛一次来决定命运。",choices:[{label:"抛出天使面",result:"硬币在空中旋转...",check:{stat:"lk",dc:10,type:"roll"},success:{heal:25,luck:2,atk:2},failure:{damage:15,defLoss:1}},{label:"抛出恶魔面",result:"硬币散发出暗红色的光芒。",check:{stat:"lk",dc:10,type:"roll"},success:{atk:6,item:'berserk'},failure:{curse:2,damage:10}},{label:"收起硬币不抛",result:"你把硬币收了起来，也许以后有用。",effects:{item:'luckyCoin'}}]},
+// disaster
+{theme:"disaster",title:"地震裂隙",description:"脚下的大地突然剧烈颤抖，一道巨大的裂隙正在向你延伸！你必须在大地塌陷前做出选择。",choices:[{label:"跳过裂隙",result:"你纵身一跃！",check:{stat:"atk",dc:12,type:"roll"},success:{atk:3,gold:20,item:'gemStone'},failure:{damage:20,defLoss:1}},{label:"向高处跑",result:"你拼命跑向高地。",effects:{damage:10,heal:5}},{label:"跳入裂隙深处",result:"你跳入了裂隙...发现了一个隐藏的洞穴。",effects:{damage:18,item:'ancientCoin',atk:4}}]},
+{theme:"disaster",title:"暴风雪突袭",description:"一场突如其来的暴风雪将能见度降到了零。温度急剧下降，你必须尽快找到庇护所。",choices:[{label:"在风雪中寻找洞穴",result:"你在几乎冻僵前找到了一个洞穴。",effects:{damage:15,def:2,item:'ironOre'}},{label:"搭建临时庇护所",result:"你用随身的材料搭建了一个简易庇护所。",effects:{damage:8,heal:5,def:1}},{label:"运气好的话冲过去",result:"你决定冲过暴风雪区域！",check:{stat:"lk",dc:13,type:"roll"},success:{damage:5,atk:3,heal:10},failure:{damage:25,curse:1}}]}
 ];
 
 const PRESET_SKILLS=[
@@ -554,6 +596,31 @@ const PRESET_SKILLS=[
 {name:'聚能',cat:'energy',emoji:'🌀',desc:'回复大量能量',cd:3,cost:0,energyGain:25}
 ];
 
+// Immersive transition texts (replaces "AI正在..." loading messages)
+const TRANSIT_TEXTS=[
+'沿着裂隙中的古道前行...','穿越荒芜的废墟走廊...','在命运的迷雾中摸索前行...',
+'沿着干涸的河床赶路...','远处传来低沉的咆哮声...','脚下的地面微微颤动...',
+'空气中弥漫着硫磺的气味...','裂隙中的光芒忽明忽暗...','在残破的路标旁稍作停留...',
+'一阵冷风掠过，带来远方的低语...','踏过碎裂的石板路，前方隐约可见光芒...',
+'风化的骨骸散落路旁，这里曾发生过激战...','远处隐约传来铁匠锤击的声响...',
+'薄雾散去，一座废弃的哨塔出现在眼前...','脚下的裂隙隐隐泛着幽光...',
+];
+const MONTH_TEXTS=[
+'时间在裂隙中悄然流逝...','又一个月过去了，裂隙深处似乎在召唤...',
+'命运的齿轮又转动了一圈...','新的月份，新的危机与机遇...',
+'裂隙中的季节变换，空气中弥漫着陌生的气息...','岁月如梭，修行的路还很长...',
+];
+const GAME_TIPS=[
+'💡 装备在背包中即可生效被动加成','💡 Boss 战前确保药剂充足',
+'💡 幸运值影响暴击率和逃跑成功率','💡 每5个月会遇到区域 Boss',
+'💡 觉醒被动在战斗中自动触发','💡 突破可以解锁更高的等级上限',
+'💡 背包中同类装备取最高加成','💡 事件选择时注意观察属性加成',
+'💡 材料可以在商人处出售换取金币','💡 持续伤害(DOT)可以击杀残血敌人',
+'💡 击败NPC可以获得独特掉落','💡 难度越高，事件奖励也越丰厚',
+];
+function pickTransitText(){const t=pick(TRANSIT_TEXTS);return Math.random()<0.3?t+'<br><span style="color:var(--t3);font-size:.85em">'+pick(GAME_TIPS)+'</span>':t}
+function pickMonthText(){const t=pick(MONTH_TEXTS);return Math.random()<0.3?t+'<br><span style="color:var(--t3);font-size:.85em">'+pick(GAME_TIPS)+'</span>':t}
+
 const ITEMS={
 hpPot:{name:'生命药剂',emoji:'🧪',type:'consumable',rarity:'common',desc:'回复30%最大生命',effect:{healPct:0.3}},
 hpPotL:{name:'大生命药剂',emoji:'🧪',type:'consumable',rarity:'rare',desc:'回复50%最大生命',effect:{healPct:0.5}},
@@ -565,16 +632,23 @@ antidote:{name:'解毒药水',emoji:'🫧',type:'consumable',rarity:'common',des
 bomb:{name:'爆裂炸弹',emoji:'💣',type:'consumable',rarity:'rare',desc:'下场战斗开始时对敌人造成40伤害',effect:{battleDmg:40}},
 rope:{name:'绳索',emoji:'🪢',type:'consumable',rarity:'common',desc:'逃离某些危险场景',effect:{utility:true}},
 tent:{name:'旅行帐篷',emoji:'⛺',type:'consumable',rarity:'common',desc:'回复20%生命并获得临时防御+3',effect:{healPct:0.2,tempDef:3}},
-ironOre:{name:'铁矿石',emoji:'🪨',type:'material',rarity:'common',desc:'普通的矿石材料'},
-monsterMat:{name:'怪物素材',emoji:'🦴',type:'material',rarity:'common',desc:'从怪物身上获取的材料'},
-magicEss:{name:'魔法精华',emoji:'✨',type:'material',rarity:'rare',desc:'蕴含魔力的精华'},
-gemStone:{name:'宝石',emoji:'💎',type:'material',rarity:'rare',desc:'闪闪发光的宝石，价值不菲'},
-ancientCoin:{name:'古币',emoji:'🪙',type:'material',rarity:'rare',desc:'古代文明的货币，或许有人愿意高价收购'},
+purifyWater:{name:'净化之水',emoji:'💧',type:'consumable',rarity:'rare',desc:'清除所有负面状态和诅咒',effect:{clearDebuffs:true}},
+fateElixir:{name:'命运解药',emoji:'🧪',type:'consumable',rarity:'epic',desc:'清除负面状态并回复20%生命',effect:{clearDebuffs:true,healPct:0.2}},
+smokeBomb:{name:'烟雾弹',emoji:'💨',type:'consumable',rarity:'rare',desc:'下场战斗中可100%逃跑成功',effect:{canEscape:true}},
+focusPill:{name:'凝神丹',emoji:'💊',type:'consumable',rarity:'rare',desc:'下场战斗前3回合暴击率+30%',effect:{tempCrit:0.3,critDur:3}},
+ironSkin:{name:'铁皮卷轴',emoji:'📜',type:'consumable',rarity:'rare',desc:'下场战斗前3回合受伤-50%',effect:{tempIronSkin:3}},
+luckyCoin:{name:'幸运铜币',emoji:'🪙',type:'consumable',rarity:'epic',desc:'下次事件必定出现稀有奖励选项',effect:{luckyNext:true}},
+reviveFeather:{name:'复活羽',emoji:'🪶',type:'consumable',rarity:'epic',desc:'携带时死亡自动复活30%HP(每局1次)',effect:{revive:true}},
+ironOre:{name:'铁矿石',emoji:'🪨',type:'material',rarity:'common',desc:'矿石材料，3个可合成精钢长剑'},
+monsterMat:{name:'怪物素材',emoji:'🦴',type:'material',rarity:'common',desc:'怪物材料，3个可合成狂暴秘药'},
+magicEss:{name:'魔法精华',emoji:'✨',type:'material',rarity:'rare',desc:'魔力精华，3个可合成聚能水晶'},
+gemStone:{name:'宝石',emoji:'💎',type:'material',rarity:'rare',desc:'闪闪发光的宝石，可卖给商人换50-100金币'},
+ancientCoin:{name:'古币',emoji:'🪙',type:'material',rarity:'rare',desc:'古代文明的货币，可在特殊商人处购买稀有物品'},
 mystKey:{name:'神秘钥匙',emoji:'🔑',type:'special',rarity:'epic',desc:'似乎能打开某扇隐藏的门...'},
 awkShard:{name:'觉醒碎片',emoji:'💠',type:'special',rarity:'epic',desc:'蕴含觉醒之力的碎片'},
 treasMap:{name:'藏宝图',emoji:'🗺️',type:'special',rarity:'epic',desc:'标记了隐秘宝藏的位置。前往古代遗迹时自动消耗，宝藏概率翻倍！'},
 ruinGuide:{name:'遗迹指南',emoji:'📜',type:'special',rarity:'rare',desc:'前人留下的探索手册。前往遗迹时自动消耗，降低陷阱伤害。'},
-skullTrophy:{name:'骷髅战利品',emoji:'💀',type:'special',rarity:'rare',desc:'强敌的头骨，证明你的实力'},
+skullTrophy:{name:'骷髅战利品',emoji:'💀',type:'relic',rarity:'rare',desc:'强敌的头骨，证明你的实力。携带时+5幸运',stats:{luck:5}},
 // === Equipment (passive bonuses while in bag) ===
 ironSword:{name:'铁剑',emoji:'🗡️',type:'equipment',rarity:'common',desc:'一把坚固的铁剑',stats:{atk:3}},
 steelSword:{name:'精钢长剑',emoji:'⚔️',type:'equipment',rarity:'rare',desc:'精心锻造的长剑，锋利无比',stats:{atk:6}},
@@ -587,6 +661,11 @@ dragonPlate:{name:'龙鳞铠甲',emoji:'🐉',type:'equipment',rarity:'epic',des
 ironRing:{name:'力量戒指',emoji:'💍',type:'equipment',rarity:'common',desc:'增强佩戴者力量的戒指',stats:{atk:2,def:1}},
 energyOrb:{name:'能量宝珠',emoji:'🔮',type:'equipment',rarity:'rare',desc:'蕴含魔力的宝珠，提升能量上限',stats:{maxEn:15,atk:2}},
 luckyCharm:{name:'幸运护符',emoji:'🍀',type:'equipment',rarity:'rare',desc:'传说中能带来好运的护符',stats:{luck:5,critRate:0.03}},
+voidCloak:{name:'虚空斗篷',emoji:'🧥',type:'equipment',rarity:'epic',desc:'穿越虚空的神秘斗篷',stats:{def:4,dodgeRate:0.08,critRate:0.03}},
+crystalStaff:{name:'水晶法杖',emoji:'🔮',type:'equipment',rarity:'epic',desc:'蕴含纯净魔力的法杖',stats:{atk:5,maxEn:25}},
+berserkerAxe:{name:'狂战斧',emoji:'🪓',type:'equipment',rarity:'epic',desc:'嗜血的战斧，攻击力极高但防御下降',stats:{atk:12,def:-3,critDamage:0.6}},
+scoutBoots:{name:'斥候之靴',emoji:'👢',type:'equipment',rarity:'rare',desc:'轻便敏捷的靴子',stats:{dodgeRate:0.06,luck:3}},
+warHorn:{name:'战争号角',emoji:'📯',type:'equipment',rarity:'rare',desc:'吹响号角鼓舞士气',stats:{atk:4}},
 // === Relics (passive bonuses, rarer and more unique) ===
 bloodAmulet:{name:'血之护符',emoji:'🩸',type:'relic',rarity:'epic',desc:'古老的血族遗物，攻击附带吸血效果',stats:{atk:4,lifesteal:0.1}},
 thunderCrown:{name:'雷霆王冠',emoji:'👑',type:'relic',rarity:'epic',desc:'雷帝的遗物，每3次攻击触发雷击',stats:{atk:3,critDamage:0.4,chainCount:3}},
@@ -1100,7 +1179,7 @@ renderEvent(evt,true);
 preloadNextEvent();
 return;
 }
-area.innerHTML='<div class="loading" style="padding:40px;text-align:center">AI 正在编织命运...</div>';
+area.innerHTML='<div class="loading" style="padding:40px;text-align:center">'+pickTransitText()+'</div>';
 const p=G.p,isMile=G.isBoss&&G.evtIdx===4;
 const luckH=p.lk>=15?'幸运值较高，偏向积极':p.lk>=8?'幸运值一般':'幸运值较低，增加风险';
 const rhythm=['前期铺垫','探索展开','中期转折','压力升级','高潮对决'][G.evtIdx]||'随机';
@@ -1143,29 +1222,42 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 
 要求：
 1. 事件要有创意和沉浸感，不要千篇一律
-2. 三个选项代表不同风险: A高风险高收益，B中等，C低风险低收益
+2. 三个选项代表不同风险: A高风险高收益(也可能严重后果)，B中等，C低风险低收益
 3. heal/damage在5-30之间，atk/def在1-5之间，luck在1-3之间
-4. effects中可加item给予物品，item2给第二个物品。可用的item id:
-   消耗品: hpPot(生命药剂),hpPotL(大生命药剂),atkPot(攻击药剂),defPot(铁壁药剂),enCrystal(聚能水晶),berserk(狂暴秘药),antidote(解毒药水),bomb(炸弹),rope(绳索),tent(帐篷)
-   材料: ironOre(铁矿石),monsterMat(怪物素材),magicEss(魔法精华),gemStone(宝石),ancientCoin(古币)
-   特殊: treasMap(藏宝图,去遗迹时宝藏翻倍),skullTrophy(骷髅战利品),ruinGuide(遗迹指南,去遗迹时降低陷阱伤害)
-   装备(放入背包自动加属性): ironSword(铁剑+3攻),steelSword(精钢长剑+6攻),shadowDagger(暗影匕首+3攻+暴击),leatherArmor(皮甲+3防+10血),chainMail(锁子甲+6防+20血),ironRing(力量戒指+2攻+1防),energyOrb(能量宝珠+15能量+2攻),luckyCharm(幸运护符+5幸运+暴击)
-   圣物(稀有强力被动): bloodAmulet(血之护符+4攻+吸血),phoenixFeather(凤凰之羽+回复+2防),boneRing(骸骨指环+3攻+击杀回血),starPendant(星辰坠饰+4幸运+暴击),guardianShield(守护者之盾+5防+闪避+15血)
+4. 至少一个选项必须有潜在负面效果！负面效果不只是扣血，要多样化：
+   - atkLoss:1-3 (永久减少攻击力，严重后果)
+   - defLoss:1-3 (永久减少防御力)
+   - goldSteal:0.1-0.3 (被盗金币百分比)
+   - destroyItem:true (随机毁坏一件背包物品)
+   - curse:1-3 (诅咒，接下来N场战斗ATK-20%)
+   - xpLoss:0.1-0.3 (损失经验百分比)
+   高风险选项失败时应有上述严重后果，不只是damage
+5. effects中可加item给予物品，item2给第二个物品。可用的item id:
+   消耗品: hpPot(生命药剂),hpPotL(大生命药剂),atkPot(攻击药剂),defPot(铁壁药剂),enCrystal(聚能水晶),berserk(狂暴秘药),antidote(解毒药水),bomb(炸弹),rope(绳索),tent(帐篷),purifyWater(净化之水,清除debuff),fateElixir(命运解药,清除debuff+回血),smokeBomb(烟雾弹,逃跑100%),focusPill(凝神丹,临时暴击),ironSkin(铁皮卷轴,临时减伤),luckyCoin(幸运铜币),reviveFeather(复活羽,极稀有)
+   材料: ironOre(铁矿石,3合钢剑),monsterMat(怪物素材,3合狂暴药),magicEss(魔法精华,3合水晶),gemStone(宝石,可卖钱),ancientCoin(古币,特殊货币)
+   特殊: treasMap(藏宝图,去遗迹时宝藏翻倍),ruinGuide(遗迹指南,去遗迹时降低陷阱伤害),mystKey(神秘钥匙,开宝箱),awkShard(觉醒碎片)
+   装备(放入背包自动加属性): ironSword(铁剑+3攻),steelSword(精钢长剑+6攻),shadowDagger(暗影匕首+3攻+暴击),leatherArmor(皮甲+3防+10血),chainMail(锁子甲+6防+20血),ironRing(力量戒指+2攻+1防),energyOrb(能量宝珠+15能量+2攻),luckyCharm(幸运护符+5幸运+暴击),voidCloak(虚空斗篷+4防+闪避+暴击),crystalStaff(水晶法杖+5攻+25能量),berserkerAxe(狂战斧+12攻-3防+暴伤),scoutBoots(斥候靴+闪避+3幸运),warHorn(战争号角+4攻)
+   圣物(稀有强力被动): bloodAmulet(血之护符+4攻+吸血),phoenixFeather(凤凰之羽+回复+2防),boneRing(骸骨指环+3攻+击杀回血),starPendant(星辰坠饰+4幸运+暴击),guardianShield(守护者之盾+5防+闪避+15血),skullTrophy(骷髅战利品+5幸运)
    适当给予装备/圣物作为珍贵奖励，但不要每个事件都给
-5. effects中可加loseItem:true表示该选项会随机失去一个背包物品
-6. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
-7. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
-8. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
+6. effects中可加loseItem:true表示该选项会随机失去一个背包物品
+7. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
+8. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
+9. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
 
-只输出JSON:{"theme":"adventure|ruins|merchant|curse|blessing|trap|tomb|duel|mystery|disaster|treasure|stranger|gamble","title":"3-6字标题","description":"2-3句沉浸式叙事，营造场景氛围","choices":[{"label":"选项描述","result":"结果描述","effects":{}},{"label":"","result":"","effects":{}},{"label":"","result":"","effects":{}}]}`;
+10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":8-18,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。
+   玩家当前属性: 力量${getStatVal('atk')} 体质${getStatVal('def')} 幸运${getStatVal('lk')} 等级${G.p.level} — DC值据此设定
+
+只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":12,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
 let evt=await callAI(prompt,20000),isAI=true;
 if(!evt||!evt.title||!evt.choices||!evt.choices.length){evt=pick(PRESET_EVENTS);isAI=false;G.preEvts++;console.warn('[Event] AI fail, preset:',evt.title)}else{G.aiEvts++}
 if(isAI&&evt.theme&&!G.themes.includes(evt.theme))G.themes.push(evt.theme);
 (evt.choices||[]).forEach(ch=>{const ef=ch.effects||{};
 if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
-if(ef.damage)ef.damage=cl(Math.round(ef.damage),0,Math.floor(p.maxHp*.5));
-if(ef.atk)ef.atk=cl(Math.round(ef.atk),0,3+Math.floor(G.month*.5));
-if(ef.def)ef.def=cl(Math.round(ef.def),0,2+Math.floor(G.month*.3));
+if(ef.damage)ef.damage=cl(Math.round(ef.damage),0,Math.floor(p.maxHp*.6));
+if(ef.atk)ef.atk=cl(Math.round(ef.atk),-5,3+Math.floor(G.month*.5));
+if(ef.def)ef.def=cl(Math.round(ef.def),-5,2+Math.floor(G.month*.3));
+if(ef.atkLoss)ef.atkLoss=cl(Math.round(ef.atkLoss),1,5);
+if(ef.defLoss)ef.defLoss=cl(Math.round(ef.defLoss),1,5);
 if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
 if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold))});
 renderEvent(evt,isAI);
@@ -1190,7 +1282,12 @@ const hasGold=!goldCost||G.gold>=goldCost;
 const canChoose=hasItem&&hasGold;
 const reqLabel=reqItem&&ITEMS[reqItem]?` <span style="color:var(--org);font-size:.8em">[需要: ${ITEMS[reqItem].emoji}${ITEMS[reqItem].name}]</span>`:'';
 const goldLabel=goldCost?` <span style="color:var(--gold);font-size:.8em">[${goldCost}💰]</span>`:'';
-b.innerHTML=`<span class="cn">${['A','B','C'][i]}.</span> ${ch.label}${reqLabel}${goldLabel}`;
+// Attribute check label
+let checkLabel='';
+if(ch.check){const rate=calcCheckRate(ch.check);const statName=STAT_CN[ch.check.stat]||ch.check.stat;
+if(rate!==null){const pct=Math.floor(rate*100);const clr=pct>=70?'var(--grn)':pct>=40?'var(--org)':'var(--red)';
+checkLabel=` <span style="color:${clr};font-size:.8em">[${statName}判定 · ${pct}%]</span>`}}
+b.innerHTML=`<span class="cn">${['A','B','C'][i]}.</span> ${ch.label}${checkLabel}${reqLabel}${goldLabel}`;
 if(!canChoose){b.style.opacity='.4';b.style.cursor='not-allowed';
 b.innerHTML+=!hasItem?` <span style="color:var(--red);font-size:.75em">(缺少物品)</span>`:` <span style="color:var(--red);font-size:.75em">(金币不足)</span>`;
 b.onclick=()=>{}}else{b.onclick=()=>selectChoice(ch)}
@@ -1199,11 +1296,36 @@ cd.appendChild(b)})});
 
 function typeText(t,el,cb){el.textContent='';el.classList.add('typing');let i=0;const tm=setInterval(()=>{if(i<t.length){el.textContent+=t[i];i++}else{clearInterval(tm);el.classList.remove('typing');if(cb)cb()}},25)}
 
+// Attribute check system: calculates success probability for event choices
+const STAT_CN={atk:'力量',def:'体质',lk:'幸运',level:'等级'};
+function getStatVal(stat){const p=G.p;const bb=getBagBonuses();
+if(stat==='atk')return Math.floor(p.atk+bb.atk);if(stat==='def')return Math.floor(p.def+bb.def);
+if(stat==='lk')return p.lk+bb.luck;if(stat==='level')return p.level;return 0}
+function calcCheckRate(check){if(!check)return null;
+const stat=getStatVal(check.stat),dc=Number(check.dc)||10;
+if(check.type==='threshold')return stat>=dc?1.0:0;
+// roll type: d20 + stat/5 >= dc
+return cl((stat/5+10.5-dc)/20,0.05,0.95)}
+function doCheck(check){const stat=getStatVal(check.stat),dc=Number(check.dc)||10;
+if(check.type==='threshold')return{pass:stat>=dc,stat,dc,roll:null};
+const roll=R(1,20);return{pass:(roll+Math.floor(stat/5))>=dc,stat,dc,roll}}
+
 function selectChoice(ch){
 try{
 document.querySelectorAll('.echbtn').forEach(b=>b.style.pointerEvents='none');
 // Start preloading next event while player reads results
 preloadNextEvent();
+// Attribute check: if choice has check field, resolve the check and apply success/failure effects
+if(ch.check){
+const result=doCheck(ch.check);const statName=STAT_CN[ch.check.stat]||ch.check.stat;
+const rollDetail=result.roll!==null?`${statName} ${result.stat} + 掷骰 ${result.roll} = ${Math.floor(result.stat/5)+result.roll}`:`${statName} ${result.stat}`;
+const dcInfo=`${result.pass?'≥':'<'} DC ${result.dc}`;
+const checkMsg=result.pass?`✅ 判定成功! (${rollDetail} ${dcInfo})`:`❌ 判定失败! (${rollDetail} ${dcInfo})`;
+const checkClr=result.pass?'var(--grn)':'var(--red)';
+// Apply success or failure effects
+const efToApply=result.pass?(ch.success||{}):(ch.failure||{});
+ch={...ch,effects:efToApply,_checkResult:checkMsg,_checkClr:checkClr};
+}
 const ef=ch.effects||{},dc=G.dc;let texts=[];
 const _evtBB=getBagBonuses();const _evtMaxHp=G.p.maxHp+_evtBB.maxHp;const _evtMaxEn=G.p.maxEn+_evtBB.maxEn;
 if(ef.heal){let h=Math.floor(Number(ef.heal)*dc.reward*dc.heal)||0;if(G.p.hp>G.p.baseHp*1.5)h=Math.floor(h*.5);G.p.hp=Math.min(_evtMaxHp,G.p.hp+h);G.healing+=h;if(h)texts.push(`<span class="pos">+${h} 生命</span>`)}
@@ -1212,10 +1334,18 @@ if(ef.def){let d=Math.floor(Number(ef.def)*dc.reward)||0;G.p.def+=d;if(d)texts.p
 if(ef.energy){let e=Math.floor(Number(ef.energy)*dc.reward)||0;G.p.en=Math.min(_evtMaxEn,G.p.en+e);if(e)texts.push(`<span class="pos">+${e} 能量</span>`)}
 if(ef.luck){let l=Math.floor(Number(ef.luck))||0;G.p.lk=Math.min(30,G.p.lk+l);if(l)texts.push(`<span class="pos">+${l} 幸运</span>`)}
 if(ef.critRate){G.p.cr=Math.min(.8,G.p.cr+Number(ef.critRate));texts.push(`<span class="pos">暴击+${(Number(ef.critRate)*100).toFixed(1)}%</span>`)}
+if(ef.maxHp){let mh=Math.floor(Number(ef.maxHp));G.p.maxHp+=mh;G.p.hp+=mh;G.p.baseHp+=mh;texts.push(`<span class="pos">+${mh} 最大生命</span>`)}
 if(ef.gold){let g=Math.floor(Number(ef.gold));G.gold+=g;G.totalGold+=g;if(g)texts.push(`<span class="pos">+${g}💰</span>`)}
 if(ef.goldCost){let gc=Math.floor(Number(ef.goldCost));if(G.gold>=gc){G.gold-=gc;texts.push(`<span style="color:var(--org)">-${gc}💰</span>`)}else{texts.push(`<span class="neg">金币不足</span>`)}}
-if(ef.damage){let d=Math.floor(Number(ef.damage)*(2-dc.heal))||0;const mx=Math.floor(G.p.maxHp*(dc.name==='简单'?.2:dc.name==='普通'?.3:dc.name==='困难'?.4:.5));d=cl(d,0,mx);G.p.hp-=d;if(d)texts.push(`<span class="neg">-${d} 生命</span>`)}
+if(ef.damage){let d=Math.floor(Number(ef.damage)*(2-dc.heal))||0;const mx=Math.floor(G.p.maxHp*(dc.name==='简单'?.25:dc.name==='普通'?.4:dc.name==='困难'?.5:.6));d=cl(d,0,mx);G.p.hp-=d;if(d)texts.push(`<span class="neg">-${d} 生命</span>`)}
 if(ef.def&&Number(ef.def)<0){G.p.def=Math.max(1,G.p.def+Number(ef.def));texts.push(`<span class="neg">${Number(ef.def)} 防御</span>`)}
+// Enhanced negative effects
+if(ef.atkLoss){let al=cl(Math.floor(Number(ef.atkLoss)),1,5);G.p.atk=Math.max(1,G.p.atk-al);texts.push(`<span class="neg">⬇ ${al} 攻击(永久)</span>`)}
+if(ef.defLoss){let dl=cl(Math.floor(Number(ef.defLoss)),1,5);G.p.def=Math.max(1,G.p.def-dl);texts.push(`<span class="neg">⬇ ${dl} 防御(永久)</span>`)}
+if(ef.goldSteal){let gs=Math.floor(G.gold*cl(Number(ef.goldSteal),0.05,0.5));if(gs>0){G.gold-=gs;texts.push(`<span class="neg">💰 被盗 ${gs} 金币</span>`)}}
+if(ef.destroyItem&&G.bag.length>0){const eqItems=G.bag.filter(bi=>bi.type==='equipment'||bi.type==='relic'||bi.type==='consumable');if(eqItems.length>0){const victim=pick(eqItems);removeFromBag(victim.uid);texts.push(`<span class="neg">💥 ${victim.emoji}${victim.name} 被毁坏!</span>`)}}
+if(ef.curse){G.p.curse=(G.p.curse||0)+cl(Math.floor(Number(ef.curse)),1,5);texts.push(`<span class="neg">☠️ 被诅咒! (接下来${cl(Math.floor(Number(ef.curse)),1,5)}场战斗ATK-20%)</span>`)}
+if(ef.xpLoss){let xl=Math.floor(G.p.xp*cl(Number(ef.xpLoss),0.05,0.4));if(xl>0){G.p.xp=Math.max(0,G.p.xp-xl);texts.push(`<span class="neg">📉 损失 ${xl} 经验</span>`)}}
 // Item from event (up to 2 items)
 if(ef.item&&ITEMS[ef.item]){if(addToBag(ef.item)){texts.push(`<span class="pos">🎒 获得: ${ITEMS[ef.item].emoji}${ITEMS[ef.item].name}</span>`)}else{texts.push(`<span class="neg">背包已满，${ITEMS[ef.item].name}丢失</span>`)}}
 if(ef.item2&&ITEMS[ef.item2]){if(addToBag(ef.item2)){texts.push(`<span class="pos">🎒 获得: ${ITEMS[ef.item2].emoji}${ITEMS[ef.item2].name}</span>`)}else{texts.push(`<span class="neg">背包已满，${ITEMS[ef.item2].name}丢失</span>`)}}
@@ -1228,6 +1358,8 @@ const evtGold=R(2,6+G.month);G.gold+=evtGold;G.totalGold+=evtGold;texts.push(`<s
 if(!texts.length)texts.push('<span style="color:var(--t3)">无变化</span>');
 gainXP(R(5,15));
 const res=document.createElement('div');res.className='eres fi';
+// Show attribute check result if applicable
+if(ch._checkResult){const ckDiv=document.createElement('div');ckDiv.style.cssText=`color:${ch._checkClr};font-weight:bold;font-size:1.05em;margin-bottom:8px;padding:8px 12px;background:rgba(0,0,0,.2);border-radius:8px;text-align:center`;ckDiv.textContent=ch._checkResult;res.appendChild(ckDiv)}
 const rt=document.createElement('div');rt.className='rt';rt.textContent=ch.result||'你做出了选择。';res.appendChild(rt);
 const rf=document.createElement('div');rf.className='rf';rf.innerHTML=texts.join(' | ');res.appendChild(rf);
 if(G.p.hp<=0){const dead=document.createElement('div');dead.style.cssText='color:var(--red);font-size:1.1em;margin-top:10px';dead.textContent='你倒下了...';res.appendChild(dead);$('evtArea').appendChild(res);updateUI();setTimeout(()=>gameOver('death'),1200);return}
@@ -1291,21 +1423,32 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 
 要求：
 1. 事件要有创意和沉浸感，不要千篇一律
-2. 三个选项代表不同风险: A高风险高收益，B中等，C低风险低收益
+2. 三个选项代表不同风险: A高风险高收益(也可能严重后果)，B中等，C低风险低收益
 3. heal/damage在5-30之间，atk/def在1-5之间，luck在1-3之间
-4. effects中可加item给予物品，item2给第二个物品。可用的item id:
-   消耗品: hpPot(生命药剂),hpPotL(大生命药剂),atkPot(攻击药剂),defPot(铁壁药剂),enCrystal(聚能水晶),berserk(狂暴秘药),antidote(解毒药水),bomb(炸弹),rope(绳索),tent(帐篷)
-   材料: ironOre(铁矿石),monsterMat(怪物素材),magicEss(魔法精华),gemStone(宝石),ancientCoin(古币)
-   特殊: treasMap(藏宝图,去遗迹时宝藏翻倍),skullTrophy(骷髅战利品),ruinGuide(遗迹指南,去遗迹时降低陷阱伤害)
-   装备(放入背包自动加属性): ironSword(铁剑+3攻),steelSword(精钢长剑+6攻),shadowDagger(暗影匕首+3攻+暴击),leatherArmor(皮甲+3防+10血),chainMail(锁子甲+6防+20血),ironRing(力量戒指+2攻+1防),energyOrb(能量宝珠+15能量+2攻),luckyCharm(幸运护符+5幸运+暴击)
-   圣物(稀有强力被动): bloodAmulet(血之护符+4攻+吸血),phoenixFeather(凤凰之羽+回复+2防),boneRing(骸骨指环+3攻+击杀回血),starPendant(星辰坠饰+4幸运+暴击),guardianShield(守护者之盾+5防+闪避+15血)
+4. 至少一个选项必须有潜在负面效果！负面效果不只是扣血，要多样化：
+   - atkLoss:1-3 (永久减少攻击力，严重后果)
+   - defLoss:1-3 (永久减少防御力)
+   - goldSteal:0.1-0.3 (被盗金币百分比)
+   - destroyItem:true (随机毁坏一件背包物品)
+   - curse:1-3 (诅咒，接下来N场战斗ATK-20%)
+   - xpLoss:0.1-0.3 (损失经验百分比)
+   高风险选项失败时应有上述严重后果，不只是damage
+5. effects中可加item给予物品，item2给第二个物品。可用的item id:
+   消耗品: hpPot(生命药剂),hpPotL(大生命药剂),atkPot(攻击药剂),defPot(铁壁药剂),enCrystal(聚能水晶),berserk(狂暴秘药),antidote(解毒药水),bomb(炸弹),rope(绳索),tent(帐篷),purifyWater(净化之水,清除debuff),fateElixir(命运解药,清除debuff+回血),smokeBomb(烟雾弹,逃跑100%),focusPill(凝神丹,临时暴击),ironSkin(铁皮卷轴,临时减伤),luckyCoin(幸运铜币),reviveFeather(复活羽,极稀有)
+   材料: ironOre(铁矿石,3合钢剑),monsterMat(怪物素材,3合狂暴药),magicEss(魔法精华,3合水晶),gemStone(宝石,可卖钱),ancientCoin(古币,特殊货币)
+   特殊: treasMap(藏宝图,去遗迹时宝藏翻倍),ruinGuide(遗迹指南,去遗迹时降低陷阱伤害),mystKey(神秘钥匙,开宝箱),awkShard(觉醒碎片)
+   装备(放入背包自动加属性): ironSword(铁剑+3攻),steelSword(精钢长剑+6攻),shadowDagger(暗影匕首+3攻+暴击),leatherArmor(皮甲+3防+10血),chainMail(锁子甲+6防+20血),ironRing(力量戒指+2攻+1防),energyOrb(能量宝珠+15能量+2攻),luckyCharm(幸运护符+5幸运+暴击),voidCloak(虚空斗篷+4防+闪避+暴击),crystalStaff(水晶法杖+5攻+25能量),berserkerAxe(狂战斧+12攻-3防+暴伤),scoutBoots(斥候靴+闪避+3幸运),warHorn(战争号角+4攻)
+   圣物(稀有强力被动): bloodAmulet(血之护符+4攻+吸血),phoenixFeather(凤凰之羽+回复+2防),boneRing(骸骨指环+3攻+击杀回血),starPendant(星辰坠饰+4幸运+暴击),guardianShield(守护者之盾+5防+闪避+15血),skullTrophy(骷髅战利品+5幸运)
    适当给予装备/圣物作为珍贵奖励，但不要每个事件都给
-5. effects中可加loseItem:true表示该选项会随机失去一个背包物品
-6. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
-7. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
-8. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
+6. effects中可加loseItem:true表示该选项会随机失去一个背包物品
+7. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
+8. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
+9. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
 
-只输出JSON:{"theme":"adventure|ruins|merchant|curse|blessing|trap|tomb|duel|mystery|disaster|treasure|stranger|gamble","title":"3-6字标题","description":"2-3句沉浸式叙事，营造场景氛围","choices":[{"label":"选项描述","result":"结果描述","effects":{}},{"label":"","result":"","effects":{}},{"label":"","result":"","effects":{}}]}`;
+10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":8-18,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。
+   玩家当前属性: 力量${getStatVal('atk')} 体质${getStatVal('def')} 幸运${getStatVal('lk')} 等级${G.p.level} — DC值据此设定
+
+只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":12,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
 const evt=await callAI(prompt,20000);
 if(evt&&evt.title&&evt.choices&&evt.choices.length){
 evt._preloaded=true;_preloadedEvent=evt;
@@ -1319,9 +1462,11 @@ function normalizePreloadedEvent(evt){
 const p=G.p;
 (evt.choices||[]).forEach(ch=>{const ef=ch.effects||{};
 if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
-if(ef.damage)ef.damage=cl(Math.round(ef.damage),0,Math.floor(p.maxHp*.5));
-if(ef.atk)ef.atk=cl(Math.round(ef.atk),0,3+Math.floor(G.month*.5));
-if(ef.def)ef.def=cl(Math.round(ef.def),0,2+Math.floor(G.month*.3));
+if(ef.damage)ef.damage=cl(Math.round(ef.damage),0,Math.floor(p.maxHp*.6));
+if(ef.atk)ef.atk=cl(Math.round(ef.atk),-5,3+Math.floor(G.month*.5));
+if(ef.def)ef.def=cl(Math.round(ef.def),-5,2+Math.floor(G.month*.3));
+if(ef.atkLoss)ef.atkLoss=cl(Math.round(ef.atkLoss),1,5);
+if(ef.defLoss)ef.defLoss=cl(Math.round(ef.defLoss),1,5);
 if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
 if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold))});
 if(evt.theme&&!G.themes.includes(evt.theme))G.themes.push(evt.theme);
@@ -1417,6 +1562,11 @@ if(ef.enPct){p.en=Math.min(_useMaxEn,p.en+Math.floor(_useMaxEn*ef.enPct))}
 if(ef.tempCrit){G.tempBuffs.crit=(G.tempBuffs.crit||0)+ef.tempCrit}
 if(ef.tempCd){G.tempBuffs.cd=(G.tempBuffs.cd||0)+ef.tempCd}
 if(ef.battleDmg){G.tempBuffs.battleDmg=(G.tempBuffs.battleDmg||0)+ef.battleDmg}
+if(ef.clearDebuffs){G.p.curse=0;G.tempBuffs.atk=Math.max(0,G.tempBuffs.atk||0);G.tempBuffs.def=Math.max(0,G.tempBuffs.def||0)}
+if(ef.canEscape){G.tempBuffs.canEscape=true}
+if(ef.tempIronSkin){G.tempBuffs.ironSkin=(ef.tempIronSkin||3)}
+if(ef.luckyNext){G.tempBuffs.luckyNext=true}
+if(ef.revive&&!G._reviveUsed){G._revivePending=true}
 if(ef.utility){}// rope and similar utility items
 removeFromBag(uid);renderBag();updateUI();
 }
@@ -1749,6 +1899,8 @@ if(_peRegen){const hr=Math.floor(p.maxHp*_peRegen);p.hp=Math.min(bEffMaxHp,p.hp+
 // Phase 2: Player action (include bag bonuses)
 const _bb=getBagBonuses();
 let pAtk=p.atk+_bb.atk+pAtkBuff+Math.floor(G.tempBuffs.atk||0),pDef=p.def+_bb.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
+// Curse debuff: -20% ATK per curse stack
+if(G.p.curse&&G.p.curse>0){pAtk=Math.floor(pAtk*0.8);if(turn===1)addL(`☠️ 诅咒: ATK-20% (${G.p.curse}场)`,'le')}
 const effMaxHp=p.maxHp+_bb.maxHp;const effCR=p.cr+_bb.critRate+(p.lk*.002);const effCD=p.cd+_bb.critDamage;const effDG=p.dg+_bb.dodgeRate;
 let bagLifesteal=_bb.lifesteal;let bagHpRegen=_bb.hpRegen;
 atkCount++;let bloodSteal=0;
@@ -1886,10 +2038,11 @@ if(ef.tempCrit){pCritB+=ef.tempCrit;pCritDur=Math.max(pCritDur,99)}
 removeFromBag(item.uid);
 }
 else if(action.type==='flee'){
-// Escape attempt - luck-based probability
+// Escape attempt - luck-based probability (smokeBomb guarantees escape)
 const bb0f=getBagBonuses();
 const fleeLuck=p.lk+bb0f.luck;
-const fleeChance=cl(0.15+fleeLuck*0.035,0.1,0.90);// 15% base + 3.5% per luck point, 10%-90%
+let fleeChance=cl(0.15+fleeLuck*0.035,0.1,0.90);// 15% base + 3.5% per luck point, 10%-90%
+if(G.tempBuffs.canEscape){fleeChance=1.0;G.tempBuffs.canEscape=false}
 const roll=Math.random();
 addL(`🏃 尝试逃跑... (成功率:${Math.floor(fleeChance*100)}%)`,'lo');
 if(roll<fleeChance){
@@ -1946,6 +2099,8 @@ if(_peEvade && Math.random()<_peEvade){addL(`🕳️ 维度闪避! 完全回避!
 if(eDmg>0){
 const _peDmgTaken = passiveEngine.getPenVal('damage_taken');
 if(_peDmgTaken)eDmg=Math.floor(eDmg*(1+_peDmgTaken));
+// IronSkin: reduce damage by 50% for first N turns
+if(G.tempBuffs.ironSkin&&G.tempBuffs.ironSkin>0){eDmg=Math.floor(eDmg*0.5);addL(`📜 铁皮卷轴: 伤害减半!`,'lcyan')}
 if(pShield>0){const ab=Math.min(pShield,eDmg);pShield-=ab;eDmg-=ab;addL(`🔮 护盾吸收 ${ab}`,'ld')}
 if(pReflect>0&&pRefDur>0){const rd=Math.floor(eDmg*pReflect);enemy.hp-=rd;G.dmgDealt+=rd;addL(`🌿 反弹 ${rd}`,'lp')}
 p.hp-=eDmg;addL(`${enemy.emoji} ${enemy.name}攻击，造成 ${eDmg} 伤害`,'le');showDmgPopup('-'+eDmg,'enemy','bPH');
@@ -1956,6 +2111,7 @@ if(_peFreeze && Math.random()<_peFreeze){addL(`❄️ 冻结敌人1回合!`,'lo'
 // Buff tick
 if(pDefDur>0){pDefDur--;if(!pDefDur)pDefBuff=0}if(pRefDur>0){pRefDur--;if(!pRefDur)pReflect=0}
 if(pAtkDur>0){pAtkDur--;if(!pAtkDur)pAtkBuff=0}if(pCritDur>0){pCritDur--;if(!pCritDur){pCritB=0;if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd;G.tempBuffs.cd=0}}}
+if(G.tempBuffs.ironSkin&&G.tempBuffs.ironSkin>0){G.tempBuffs.ironSkin--;if(G.tempBuffs.ironSkin===0)addL(`📜 铁皮效果消散`,'lcyan')}
 // Enemy buff tick
 if(eAtkDur>0){eAtkDur--;if(!eAtkDur)eAtkBuff=0}if(eDefDur>0){eDefDur--;if(!eDefDur)eDefBuff=0}
 // Blood self burn (passive engine)
@@ -1976,6 +2132,10 @@ updBU();
 if(p.hp<=0){
 if(passiveEngine.has('immortal')&&!G.immortalUsed){
 G.immortalUsed=true;p.hp=1;const _peImBuf2=passiveEngine.getVal('on_lethal_atk_buff');const _peImDur2=passiveEngine.getCond('on_lethal_atk_buff')?.duration||3;if(_peImBuf2){pAtkBuff+=Math.floor(p.atk*_peImBuf2);pAtkDur=_peImDur2}addL(`🔥 不灭余烬! 以1HP存活!`,'lo');
+}else if(G._revivePending&&!G._reviveUsed){
+G._reviveUsed=true;G._revivePending=false;p.hp=Math.floor(p.maxHp*0.3);addL(`🪶 复活羽燃烧! 以30%HP复活!`,'lo');
+// Consume the revive feather from bag
+const rfIdx=G.bag.findIndex(bi=>bi.id==='reviveFeather');if(rfIdx>=0)removeFromBag(G.bag[rfIdx].uid);
 }else{break}
 }}catch(e){console.error('[Battle] Enemy action error:',e);addL('⚠️ 战斗异常，继续','le');updBU()}
 }
@@ -2008,7 +2168,10 @@ const area=$('evtArea');if(area)area.appendChild(errDiv);
 
 async function battleWin(enemy){
 try{
-G.kills++;if(enemy.isBoss)G.bossKills++;if(enemy.isNPC)G.npcKills++;const xpMult=enemy.isBoss?80:enemy.isElite?35:15;const xpGain=enemy.lv*xpMult+(enemy.stars||1)*5;
+G.kills++;if(enemy.isBoss)G.bossKills++;if(enemy.isNPC)G.npcKills++;
+// Decrement curse counter
+if(G.p.curse&&G.p.curse>0){G.p.curse--;if(G.p.curse===0)addL(`✨ 诅咒已消散`,'lp')}
+const xpMult=enemy.isBoss?80:enemy.isElite?35:15;const xpGain=enemy.lv*xpMult+(enemy.stars||1)*5;
 const leveled=gainXP(xpGain);
 // killHeal passive (boneRing etc.)
 const _bbKill=getBagBonuses();
@@ -2200,7 +2363,7 @@ _preloadedEvent=null;_preloadPromise=null;_preloadedMonsters={};
 // Show loading while AI generates maps
 showScr('regScr');
 $('regSub').textContent=`${getAgeYears()}岁${getAgeMonths()}月 — 正在探索新区域...`;
-const grid=$('regGrid');grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--t2)"><div class="loading" style="font-size:1.1em">🗺️ AI 正在发现新的遗迹与奇遇...</div></div>';
+const grid=$('regGrid');grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--t2)"><div class="loading" style="font-size:1.1em">🗺️ '+pickMonthText()+'</div></div>';
 $('regHint').style.display='none';
 await generateAIMaps();
 // Now show the full region picker with AI maps ready
