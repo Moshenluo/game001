@@ -2,13 +2,13 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
 <title>命运裂隙 - Rift of Fate | AI Roguelike</title>
 <style>
 :root{--bg:#0a0e17;--bg2:#131a2b;--bgc:#1a2340;--bgch:#222e50;--t1:#e8eaf0;--t2:#8892a8;--t3:#5a6478;--gold:#f0c040;--goldd:#a08020;--red:#e04050;--redd:#802030;--grn:#40c070;--grnd:#208040;--blu:#4080e0;--blud:#204080;--pur:#a050e0;--purd:#603080;--org:#e08030;--bdr:#2a3555;--shd:rgba(0,0,0,.5)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
-.scr{display:none;min-height:100vh;padding:20px;max-width:920px;margin:0 auto;flex-direction:column;align-items:center;justify-content:center}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+.scr{display:none;min-height:100vh;min-height:100dvh;padding:20px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right));padding-bottom:max(20px,env(safe-area-inset-bottom));max-width:920px;margin:0 auto;flex-direction:column;align-items:center;justify-content:center}
 .scr.on{display:flex}
 .t-logo{font-size:3em;font-weight:bold;color:var(--gold);text-shadow:0 0 30px rgba(240,192,64,.3);margin-bottom:8px;letter-spacing:6px}
 .t-sub{font-size:1.1em;color:var(--t2);margin-bottom:40px;letter-spacing:2px}
@@ -104,7 +104,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .skawk-card .sk-info{font-size:.75em;color:var(--t3);line-height:1.6}
 /* ========== RESPONSIVE DESIGN ========== */
 @media(max-width:768px){
-  .scr{padding:12px;padding-top:8px}
+  .scr{padding:12px;padding-top:8px;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:max(12px,env(safe-area-inset-bottom))}
   .t-logo{font-size:2.2em;letter-spacing:3px}
   .t-sub{font-size:.95em;margin-bottom:24px}
   .dg{grid-template-columns:1fr;max-width:400px}
@@ -116,42 +116,54 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .ghdr .li{font-size:1em}
   .ghdr .ec{font-size:.8em}
   .pbar{padding:10px 12px;margin-bottom:8px}
+  .pstats{flex-wrap:wrap;gap:4px}
   .pstats .nm{font-size:.95em}
-  .srow{gap:8px;font-size:.8em}
+  .pstats .lv{font-size:.78em;padding:2px 8px}
+  .srow{gap:6px;font-size:.78em;margin-bottom:3px}
+  .si{display:inline-flex;align-items:center;gap:1px}
   .ep{gap:6px;margin-bottom:8px}
   .edot{width:10px;height:10px}
   .bag-btn{padding:5px 10px;font-size:.8em;margin-bottom:6px}
   .earea{padding-bottom:12px}
   .ecard{padding:16px;border-radius:10px}
-  .etitle{font-size:1.2em;margin-bottom:8px}
-  .edesc{font-size:.92em;line-height:1.6;margin-bottom:14px;min-height:40px}
-  .echbtn{padding:12px 14px;font-size:.88em;border-radius:8px}
+  .etag{font-size:.75em;padding:2px 10px}
+  .etitle{font-size:1.15em;margin-bottom:8px}
+  .edesc{font-size:.9em;line-height:1.6;margin-bottom:12px;min-height:36px}
+  .echc{gap:8px}
+  .echbtn{padding:12px 14px;font-size:.86em;border-radius:8px;line-height:1.4}
+  .echbtn:hover{transform:translateX(2px)}
   .eres{padding:14px}
-  .eres .rt{font-size:.92em;margin-bottom:8px}
-  .eres .rf{font-size:.82em}
+  .eres .rt{font-size:.9em;margin-bottom:8px}
+  .eres .rf{font-size:.8em}
   /* Battle */
-  .bent{flex-direction:column;gap:10px}
-  .be{padding:12px}
-  .be .bem{font-size:2.5em;margin-bottom:4px}
-  .be .ben{font-size:.95em;margin-bottom:6px}
-  .bvs{font-size:1.2em}
-  .blog{max-height:180px;padding:10px;font-size:.8em;line-height:1.6}
-  .ba-wrap{gap:6px}
-  .ba-btn{min-width:60px;padding:10px 6px;font-size:.82em;border-radius:8px}
-  .ba-btn .ba-icon{font-size:1.3em;margin-bottom:2px}
-  .ba-btn .ba-sub{font-size:.65em}
-  .ba-sub-btn{padding:8px 12px;font-size:.85em}
+  .bent{flex-direction:row;gap:8px;align-items:stretch}
+  .be{padding:10px 8px}
+  .be .bem{font-size:2em;margin-bottom:4px}
+  .be .ben{font-size:.88em;margin-bottom:4px}
+  .bvs{font-size:1em;align-self:center}
+  .blog{max-height:160px;padding:10px;font-size:.78em;line-height:1.5}
+  .blog::-webkit-scrollbar{width:4px}
+  .ba-wrap{gap:4px;flex-wrap:nowrap;width:100%}
+  .ba-btn{flex:1;min-width:0;padding:8px 2px;font-size:.76em;border-radius:8px;border-width:1.5px}
+  .ba-btn .ba-icon{font-size:1.2em;margin-bottom:2px}
+  .ba-btn .ba-sub{font-size:.6em}
+  .ba-sub-wrap{margin-top:6px;width:100%}
+  .ba-sub-btn{padding:8px 12px;font-size:.82em;width:100%}
+  .cd-bar{height:4px;margin:4px 0}
   /* Bag */
-  .bag-grid{grid-template-columns:repeat(4,1fr);gap:6px}
-  .bag-slot{padding:8px 4px;min-height:60px}
-  .bag-slot .bi{font-size:1.3em}
-  .bag-slot .bn{font-size:.65em}
+  .bag-grid{grid-template-columns:repeat(4,1fr);gap:5px}
+  .bag-slot{padding:7px 3px;min-height:56px;border-radius:6px}
+  .bag-slot .bi{font-size:1.2em}
+  .bag-slot .bn{font-size:.62em}
+  .bag-detail{padding:10px}
+  .item-drop{padding:10px}
   /* Region picker */
   .reg-grid{grid-template-columns:1fr!important;gap:8px}
   .reg-card{padding:12px}
   .reg-card .rg-icon{font-size:1.5em;margin-bottom:4px}
   .reg-card .rg-name{font-size:1em}
   .reg-card .rg-desc{font-size:.75em}
+  .reg-hint{font-size:.75em}
   /* Awakening */
   .awk-circle{width:180px;height:180px}
   .awk-inner{width:130px;height:130px}
@@ -159,6 +171,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .awk-card{padding:20px;max-width:95vw}
   .awk-card .emoji{font-size:3em}
   .awk-card .name{font-size:1.3em}
+  .awk-card .passive{padding:10px;font-size:.85em}
   /* Skill/Awk cards */
   .skawk-cards{gap:10px}
   .skawk-card{width:160px;padding:14px}
@@ -167,23 +180,35 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .skawk-card .sk-desc{font-size:.75em}
   /* Game over */
   .go-t{font-size:2em}
-  .go-box{min-width:auto;padding:16px 20px}
+  .go-box{min-width:auto;padding:16px 20px;width:100%}
+  .go-r{padding:6px 0;font-size:.9em}
   /* Status effects */
-  .sfx-container{margin:0 -16px}
-  .sfx-badge{font-size:.68em;padding:2px 6px}
-  .sfx-row{padding:2px 8px}
+  .sfx-container{margin:0 -12px}
+  .sfx-badge{font-size:.65em;padding:2px 5px}
+  .sfx-row{padding:2px 6px;gap:3px}
+  .sfx-header{font-size:.68em}
   /* Leaderboard */
-  .lb-panel{padding:14px}
-  .lb-table{font-size:.78em}
+  .lb-panel{padding:14px;width:100%}
+  .lb-table{font-size:.75em}
+  .lb-table td,.lb-table th{padding:4px 6px}
   /* Achievements */
-  .ach-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+  .ach-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
   .ach-card{padding:8px}
+  .ach-card .ach-icon{font-size:1.3em}
+  .ach-card .ach-name{font-size:.8em}
+  .ach-card .ach-desc{font-size:.65em}
   .ach-toast{padding:10px 18px;max-width:90vw}
-  /* Misc */
-  .btn-big{padding:12px 28px;font-size:1em}
-  .trans{font-size:1.3em}
-  .skbar{gap:4px}
-  .skt{font-size:.7em;padding:2px 6px}
+  /* Skill bar */
+  .skbar{gap:3px}
+  .skt{font-size:.68em;padding:2px 5px}
+  .skt:hover .sktip,.skt:active .sktip{display:block}
+  .sktip{width:160px;padding:8px;font-size:1em;left:0;transform:none;bottom:120%}
+  /* Buttons */
+  .btn-big{padding:12px 24px;font-size:.95em}
+  .btn-sm{padding:7px 14px;font-size:.85em}
+  .trans{font-size:1.2em}
+  /* XP bar */
+  .xp-wrap{height:3px}
 }
 /* Extra small screens */
 @media(max-width:380px){
@@ -1187,10 +1212,11 @@ if(G.evtIdx===4&&G.isBoss){startBattle(true);return}
 // Region-modified battle rate
 const reg=G.currentMapData||G.region?REGIONS[G.region]:null;
 const battleRate=G.currentMapData?G.currentMapData.battleRate:(reg?reg.battleRate:0.35);
-if(Math.random()<battleRate){startBattle(false);return}
+if(Math.random()<battleRate){G._queuedEvt=null;startBattle(false);return}
 // NPC encounter chance (8%)
-if(Math.random()<0.08){startNPCBattle();return}
-await triggerEvent();
+if(Math.random()<0.08){G._queuedEvt=null;startNPCBattle();return}
+const qEvt=G._queuedEvt;G._queuedEvt=null;
+await triggerEvent(qEvt);
 }
 
 // ===== AI EVENT =====
@@ -1413,9 +1439,9 @@ const btn=document.createElement('button');btn.className='btn-big';btn.textConte
 }
 
 function advanceEvt(){G.evtIdx++;
-const queued=_evtQueue.shift();
-if(queued){triggerEvent(queued);preloadNextEvent().catch(()=>{})}
-else{triggerEvent()}}
+G._queuedEvt=_evtQueue.shift()||null;
+if(G._queuedEvt)preloadNextEvent().catch(()=>{});
+nextEvent()}
 
 function consumeFromQueue(){
 if(_evtQueue.length>0)return _evtQueue.shift();
