@@ -13,3 +13,6 @@ package-lock.json
 # Temp files
 game/_*.js
 *.log
+
+# Wrangler
+worker/.wrangler/
