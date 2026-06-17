@@ -197,7 +197,7 @@ async function handleAI(request, env) {
 }
 
 // Qwen 3.6 llama.cpp server (via cloudflared tunnel for valid SSL)
-const QWEN_URL = 'https://decided-singer-late-stopped.trycloudflare.com/v1/chat/completions';
+const QWEN_URL = 'https://listing-options-delete-fleece.trycloudflare.com/v1/chat/completions';
 
 async function handleAIDirect(request, env) {
   const ip = getIP(request);
