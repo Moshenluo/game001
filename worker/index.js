@@ -73,6 +73,11 @@ export default {
         return await handleAI(request, env);
       }
 
+      // AI Direct — forward to Qwen 3.6 (llama.cpp)
+      if (path === '/api/direct' && request.method === 'POST') {
+        return await handleAIDirect(request, env);
+      }
+
       // Leaderboard
       if (path === '/api/leaderboard' && request.method === 'POST') {
         return await submitScore(request, env);
@@ -164,6 +169,46 @@ async function handleAI(request, env) {
 
   // Log usage (optional, for monitoring)
   const usageKey = 'usage:' + new Date().toISOString().slice(0, 10);
+  const usageCount = parseInt(await env.RIFT_KV.get(usageKey) || '0');
+  await env.RIFT_KV.put(usageKey, String(usageCount + 1), { expirationTtl: 86400 * 30 });
+
+  return json(data);
+}
+
+// Qwen 3.6 llama.cpp server (via cloudflared tunnel for valid SSL)
+const QWEN_URL = 'https://decided-singer-late-stopped.trycloudflare.com/v1/chat/completions';
+
+async function handleAIDirect(request, env) {
+  const ip = getIP(request);
+  if (!(await checkRateLimit(env, ip))) {
+    return error('请求过于频繁，请稍后再试', 429);
+  }
+
+  const body = await request.json();
+
+  const proxyBody = {
+    model: body.model || 'qwen3.6',
+    messages: body.messages,
+    temperature: body.temperature ?? AI_TEMP,
+    max_tokens: body.max_tokens || AI_MAX_TOKENS,
+    chat_template_kwargs: { enable_thinking: false },
+  };
+
+  const res = await fetch(QWEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(proxyBody),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error('[AI Direct] Qwen error:', res.status, errText.substring(0, 200));
+    return error('AI service error: ' + res.status, 502);
+  }
+
+  const data = await res.json();
+
+  const usageKey = 'usage:qwen:' + new Date().toISOString().slice(0, 10);
   const usageCount = parseInt(await env.RIFT_KV.get(usageKey) || '0');
   await env.RIFT_KV.put(usageKey, String(usageCount + 1), { expirationTtl: 86400 * 30 });
 

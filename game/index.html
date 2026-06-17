@@ -187,12 +187,17 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div id="trans" class="trans"></div>
 <span class="gear" onclick="toggleSettings()">⚙️</span>
 <div class="modal-bg" id="settingsModal"><div class="modal">
-<h3>⚙️ API 设置</h3>
-<label>Worker 代理地址 <span style="color:var(--grn);font-size:.8em">(推荐，留空则需填写API Key)</span></label><input id="cfgWorker" placeholder="https://rift-of-fate.xxx.workers.dev">
-<label>API 地址</label><input id="cfgUrl" value="https://api.deepseek.com/chat/completions">
-<label>API Key</label><input id="cfgKey" placeholder="请输入你的 API Key" type="password">
-<label>模型</label><input id="cfgModel" value="deepseek-chat">
-<label>温度 (0-1)</label><input id="cfgTemp" value="0.85" type="number" step="0.05" min="0" max="2">
+<h3>⚙️ AI 设置</h3>
+<label>AI 模型</label><select id="cfgModel" style="width:100%;padding:8px 12px;background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:6px;color:var(--t1);font-size:.95em">
+<option value="qwen3.6">Qwen 3.6 (自建)</option>
+<option value="deepseek">DeepSeek</option>
+</select>
+<div style="margin:10px 0;padding:10px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--bdr)">
+<div style="display:flex;align-items:center;gap:8px">
+<button class="btn-sm btn-ok" onclick="checkAIConnection()" id="aiTestBtn">🔌 测试AI连接</button>
+<span id="aiTestResult" style="font-size:.85em;color:var(--t3)"></span>
+</div>
+</div>
 <div class="btn-row"><button class="btn-sm btn-no" onclick="toggleSettings()">取消</button><button class="btn-sm btn-ok" onclick="saveSettings()">保存</button></div>
 </div></div>
 <!-- Leaderboard Modal -->
@@ -240,7 +245,8 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <button class="title-btn" onclick="showLoadDialog()">📂 续玩存档</button>
 <button class="title-btn" onclick="showAchievementsPanel()">🏅 成就</button>
 </div>
-<p style="color:var(--t3);font-size:.75em;margin-top:16px">DeepSeek AI 实时驱动 · 觉醒系统 · 限时技能 · 背包收集 · 互动战斗</p>
+<p style="color:var(--t3);font-size:.75em;margin-top:16px">AI 实时驱动 · 觉醒系统 · 限时技能 · 背包收集 · 互动战斗</p>
+<div id="aiStatusBadge" style="margin-top:6px;font-size:.75em;padding:4px 12px;border-radius:6px;display:inline-block;background:rgba(255,255,255,.05);color:var(--t3)">🔌 AI: 检测中...</div>
 <div id="workerBadge" style="margin-top:8px;font-size:.75em;padding:4px 12px;border-radius:6px;display:none"></div>
 </div>
 <!-- Awakening -->
@@ -324,28 +330,20 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 
 <script>
 // ===== CONFIG =====
-// Worker proxy URL — set this to your Cloudflare Worker URL after deployment
-// Players can play without their own API key when this is configured
 let WORKER_URL='https://rift-of-fate.1411795718.workers.dev';
-let CFG={url:'https://api.deepseek.com/chat/completions',key:'',model:'deepseek-chat',temp:0.85};
-// Load saved settings from localStorage
-try{const saved=JSON.parse(localStorage.getItem('rift_cfg')||'{}');if(saved.url)CFG.url=saved.url;if(saved.key)CFG.key=saved.key;if(saved.model)CFG.model=saved.model;if(saved.temp)CFG.temp=saved.temp;
+let CFG={model:'qwen3.6',temp:0.85};
+try{const saved=JSON.parse(localStorage.getItem('rift_cfg')||'{}');if(saved.model)CFG.model=saved.model;if(saved.temp)CFG.temp=saved.temp;
 if(saved.workerUrl)WORKER_URL=saved.workerUrl}catch(e){}
-// Player ID for save/load/achievements
+// Qwen → Worker /api/direct (via cloudflared tunnel), DeepSeek → Worker /api/ai
+function getAIEndpoint(){return CFG.model==='deepseek'?WORKER_URL+'/api/ai':WORKER_URL+'/api/direct'}
 let PLAYER_ID=localStorage.getItem('rift_player_id')||'';
 function toggleSettings(){
 const m=document.getElementById('settingsModal');m.classList.toggle('on');
 if(m.classList.contains('on')){
-document.getElementById('cfgUrl').value=CFG.url;
-document.getElementById('cfgKey').value=CFG.key;
 document.getElementById('cfgModel').value=CFG.model;
-document.getElementById('cfgTemp').value=CFG.temp;
-document.getElementById('cfgWorker').value=WORKER_URL;
 }}
-function saveSettings(){CFG.url=document.getElementById('cfgUrl').value;CFG.key=document.getElementById('cfgKey').value;CFG.model=document.getElementById('cfgModel').value;CFG.temp=parseFloat(document.getElementById('cfgTemp').value)||0.85;
-WORKER_URL=document.getElementById('cfgWorker').value.trim();
-try{localStorage.setItem('rift_cfg',JSON.stringify({url:CFG.url,key:CFG.key,model:CFG.model,temp:CFG.temp,workerUrl:WORKER_URL}))}catch(e){}
-const kn=document.getElementById('keyNotice');if(kn)kn.remove();
+function saveSettings(){CFG.model=document.getElementById('cfgModel').value;
+try{localStorage.setItem('rift_cfg',JSON.stringify({model:CFG.model,temp:CFG.temp,workerUrl:WORKER_URL}))}catch(e){}
 toggleSettings()}
 
 // ===== UTILITY =====
@@ -772,17 +770,14 @@ abyss:{name:'深渊领主',emoji:'👿',hp:200,atk:30,def:14,min:5}
 let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:20,kills:0,bossKills:0,npcKills:0,evts:0,aiEvts:0,preEvts:0,dmgDealt:0,healing:0,crits:0,dodges:0,aiSkills:0,totalSkills:0,isBoss:false,maxSlot:9,nextSkillLv:10,immortalUsed:false,themes:[],tempBuffs:{},region:null,aiMonsters:[],regionsVisited:[],gold:0,totalGold:0,currentAgeMonth:192,lifespanMonths:480,breakthroughTier:0,breakthroughPending:false,starKills:{},deathNarrative:'',aiMaps:[],currentMapData:null};
 
 // ===== AI API =====
-// Check if worker proxy is available
+// Check if worker proxy is available (for leaderboard/achievements/save only)
 function isWorkerAvailable(){return WORKER_URL&&WORKER_URL.includes('workers.dev')&&!WORKER_URL.includes('YOUR-SUBDOMAIN')&&!WORKER_URL.includes('xxx')}
 
 async function callAI(prompt,timeout=20000){
 try{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
-const useWorker=isWorkerAvailable();
-const targetUrl=useWorker?(WORKER_URL+'/api/ai'):CFG.url;
 const headers={'Content-Type':'application/json'};
-if(!useWorker&&CFG.key)headers['Authorization']='Bearer '+CFG.key;
-const res=await fetch(targetUrl,{method:'POST',headers,
+const res=await fetch(getAIEndpoint(),{method:'POST',headers,
 body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:2000}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok){throw new Error('API HTTP '+res.status)}
@@ -797,16 +792,34 @@ if(!jsonStr)throw new Error('No JSON');const parsed=JSON.parse(jsonStr);return p
 async function callAIText(prompt,timeout=15000){
 try{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
-const useWorker=isWorkerAvailable();
-const targetUrl=useWorker?(WORKER_URL+'/api/ai'):CFG.url;
 const headers={'Content-Type':'application/json'};
-if(!useWorker&&CFG.key)headers['Authorization']='Bearer '+CFG.key;
-const res=await fetch(targetUrl,{method:'POST',headers,
+const res=await fetch(getAIEndpoint(),{method:'POST',headers,
 body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是游戏叙事作家，用中文写出富有诗意和沉浸感的文字。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:500}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok)throw new Error('API HTTP '+res.status);
 const data=await res.json();return data.choices?.[0]?.message?.content||'';
 }catch(e){console.error('[AI Text] FAIL:',e.message);return ''}
+}
+
+// AI connectivity test
+async function checkAIConnection(){
+const btn=$('aiTestBtn');const result=$('aiTestResult');
+const testModel=document.getElementById('cfgModel')?.value||CFG.model;
+const testEndpoint=testModel==='deepseek'?WORKER_URL+'/api/ai':WORKER_URL+'/api/direct';
+btn.disabled=true;btn.textContent='⏳ 测试中...';result.textContent='正在连接...';result.style.color='var(--t3)';
+try{
+const headers={'Content-Type':'application/json'};
+const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),15000);
+const res=await fetch(testEndpoint,{method:'POST',headers,
+body:JSON.stringify({model:testModel,messages:[{role:'user',content:'回复OK两个字母'}],temperature:0,max_tokens:10}),signal:ctrl.signal});
+clearTimeout(timer);
+if(!res.ok)throw new Error('HTTP '+res.status);
+const data=await res.json();
+const reply=data.choices?.[0]?.message?.content||'';
+if(reply){result.innerHTML='✅ <span style="color:var(--grn)">连接成功!</span> 模型: '+testModel+' | 回复: '+reply.slice(0,30);result.style.color='var(--grn)'}
+else throw new Error('空回复');
+}catch(e){result.innerHTML='❌ <span style="color:var(--red)">连接失败: '+e.message+'</span>';result.style.color='var(--red)'}
+btn.disabled=false;btn.textContent='🔌 测试AI连接';
 }
 
 // ===== AWAKENING =====
@@ -1578,6 +1591,9 @@ const bb=document.createElement('button');bb.className='btn-sm btn-no';bb.style.
 showMain();
 })}
 
+// Global battle log function (used by both runBattle and battleWin)
+function addL(t,c='ls'){const log=$('bLog');if(!log)return;const d=document.createElement('div');d.className=c;d.innerHTML=t;log.appendChild(d);log.scrollTop=log.scrollHeight}
+
 async function runBattle(enemy, isBreakthrough){
 const log=$('bLog'),p=G.p;let turn=0;
 passiveEngine.init(G.awk?.passiveMechanics);
@@ -1592,7 +1608,6 @@ _battleCard.classList.add(_bgCls);
 let pShield=0,pDefBuff=0,pDefDur=0,pReflect=0,pRefDur=0,pEvade=false,pAtkBuff=0,pAtkDur=0,pHot=0,pHotDur=0,pCritB=0,pCritDur=0;
 let eDot=0,eDotDur=0,focusNext=false,atkCount=0,skipEnemyTurn=false,paralyzed=false;
 let eAtkBuff=0,eAtkDur=0,eDefBuff=0,eDefDur=0,eSkillCD={};
-function addL(t,c='ls'){const d=document.createElement('div');d.className=c;d.innerHTML=t;log.appendChild(d);log.scrollTop=log.scrollHeight}
 function showDmgPopup(text, type, targetId) {
 const target = $(targetId || 'bEH');
 if (!target) return;
@@ -1724,7 +1739,8 @@ if(isNaN(p.hp))p.hp=1;if(isNaN(enemy.hp))enemy.hp=0;
 // Phase 1: Turn start
 p.en=Math.min(bEffMaxEn,p.en+8);
 if(pHotDur>0){const h=pHot;p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`🌸 回春 +${h} HP`,'lp');pHotDur--}
-if(eDotDur>0){enemy.hp-=eDot;addL(`☠️ 持续伤害 ${eDot}`,'lp');eDotDur--}
+if(eDotDur>0){enemy.hp-=eDot;addL(`☠️ 持续伤害 ${eDot}`,'lp');eDotDur--;
+if(enemy.hp<=0){addL(`☠️ 敌人被持续伤害击杀!`,'ls');updBU();break}}
 // Skills are permanent - no round-based expiration
 // Awakening HP regen
 const _peRegen = passiveEngine.getVal('hp_regen');
@@ -2824,19 +2840,30 @@ badge.style.background='rgba(224,64,80,.12)';badge.style.color='var(--red)';badg
 }
 }
 
+async function checkAIStatus(){
+const badge=$('aiStatusBadge');if(!badge)return;
+badge.textContent='🔌 AI: 检测中...';badge.style.background='rgba(255,255,255,.05)';badge.style.color='var(--t3)';
+try{
+const headers={'Content-Type':'application/json'};
+const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),15000);
+const res=await fetch(getAIEndpoint(),{method:'POST',headers,
+body:JSON.stringify({model:CFG.model,messages:[{role:'user',content:'回复OK'}],temperature:0,max_tokens:5}),signal:ctrl.signal});
+clearTimeout(timer);
+if(!res.ok)throw new Error('HTTP '+res.status);
+const data=await res.json();
+const reply=data.choices?.[0]?.message?.content||'';
+if(reply){
+badge.innerHTML='✅ AI: <b style="color:var(--grn)">在线</b> · '+CFG.model;
+badge.style.background='rgba(64,192,112,.12)';badge.style.color='var(--grn)';
+}else throw new Error('空回复');
+}catch(e){
+badge.innerHTML='❌ AI: <b style="color:var(--red)">离线</b> · '+e.message+' · <a href="#" onclick="toggleSettings();return false" style="color:var(--blu)">检查设置</a>';
+badge.style.background='rgba(224,64,80,.12)';badge.style.color='var(--red)';
+}
+}
+
 // ===== START =====
 async function startGame(diff){
-// Check API key before starting — skip if Worker proxy is available
-if(!isWorkerAvailable()&&(!CFG.key||!CFG.key.trim())){
-const modal=document.getElementById('settingsModal');
-modal.classList.add('on');
-const notice=document.createElement('div');notice.id='keyNotice';
-notice.style.cssText='background:rgba(224,64,80,.12);border:1px solid var(--redd);border-radius:8px;padding:10px;margin-bottom:12px;text-align:center;color:var(--red);font-size:.9em';
-notice.innerHTML='⚠️ 请先输入 API Key 才能开始游戏<br><span style="font-size:.8em;color:var(--t3)">可在 <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:var(--blu)">platform.deepseek.com</a> 免费获取</span>';
-const h3=modal.querySelector('h3');if(h3)h3.after(notice);
-return;
-}
-const kn=document.getElementById('keyNotice');if(kn)kn.remove();
 G.diff=diff;G.dc=DIFF[diff];
 await showTrans('命运正在觉醒...',1500);showScr('awkScr');
 $('awkWrap').innerHTML=`<div style="color:var(--gold);font-size:1.4em;margin-bottom:10px">觉 醒</div>
@@ -2845,6 +2872,7 @@ $('awkWrap').innerHTML=`<div style="color:var(--gold);font-size:1.4em;margin-bot
 }
 // Check worker status on page load
 checkWorkerStatus();
+checkAIStatus();
 </script>
 </body>
 </html>
