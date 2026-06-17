@@ -102,7 +102,124 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .skawk-card{background:var(--bgc);border:2px solid var(--bdr);border-radius:12px;padding:20px;width:220px;cursor:pointer;transition:all .3s;text-align:center}.skawk-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 8px 30px rgba(240,192,64,.2)}
 .skawk-card .sk-emoji{font-size:2.5em;margin-bottom:8px}.skawk-card .sk-name{color:var(--gold);font-size:1.1em;font-weight:bold;margin-bottom:6px}.skawk-card .sk-desc{font-size:.8em;color:var(--t2);margin-bottom:8px;line-height:1.5}
 .skawk-card .sk-info{font-size:.75em;color:var(--t3);line-height:1.6}
-@media(max-width:600px){.dg{grid-template-columns:1fr}.bent{flex-direction:column}.t-logo{font-size:2em}.bag-grid{grid-template-columns:repeat(4,1fr)}.ba-btn{min-width:70px;padding:10px 4px;font-size:.85em}.reg-grid{grid-template-columns:1fr!important}}
+/* ========== RESPONSIVE DESIGN ========== */
+@media(max-width:768px){
+  .scr{padding:12px;padding-top:8px}
+  .t-logo{font-size:2.2em;letter-spacing:3px}
+  .t-sub{font-size:.95em;margin-bottom:24px}
+  .dg{grid-template-columns:1fr;max-width:400px}
+  .dc{padding:16px}
+  .dc h3{font-size:1.15em}
+  .gear{top:10px;right:10px;font-size:1.3em}
+  .modal{max-width:95vw;padding:16px}
+  .ghdr{padding:6px 0;margin-bottom:6px}
+  .ghdr .li{font-size:1em}
+  .ghdr .ec{font-size:.8em}
+  .pbar{padding:10px 12px;margin-bottom:8px}
+  .pstats .nm{font-size:.95em}
+  .srow{gap:8px;font-size:.8em}
+  .ep{gap:6px;margin-bottom:8px}
+  .edot{width:10px;height:10px}
+  .bag-btn{padding:5px 10px;font-size:.8em;margin-bottom:6px}
+  .earea{padding-bottom:12px}
+  .ecard{padding:16px;border-radius:10px}
+  .etitle{font-size:1.2em;margin-bottom:8px}
+  .edesc{font-size:.92em;line-height:1.6;margin-bottom:14px;min-height:40px}
+  .echbtn{padding:12px 14px;font-size:.88em;border-radius:8px}
+  .eres{padding:14px}
+  .eres .rt{font-size:.92em;margin-bottom:8px}
+  .eres .rf{font-size:.82em}
+  /* Battle */
+  .bent{flex-direction:column;gap:10px}
+  .be{padding:12px}
+  .be .bem{font-size:2.5em;margin-bottom:4px}
+  .be .ben{font-size:.95em;margin-bottom:6px}
+  .bvs{font-size:1.2em}
+  .blog{max-height:180px;padding:10px;font-size:.8em;line-height:1.6}
+  .ba-wrap{gap:6px}
+  .ba-btn{min-width:60px;padding:10px 6px;font-size:.82em;border-radius:8px}
+  .ba-btn .ba-icon{font-size:1.3em;margin-bottom:2px}
+  .ba-btn .ba-sub{font-size:.65em}
+  .ba-sub-btn{padding:8px 12px;font-size:.85em}
+  /* Bag */
+  .bag-grid{grid-template-columns:repeat(4,1fr);gap:6px}
+  .bag-slot{padding:8px 4px;min-height:60px}
+  .bag-slot .bi{font-size:1.3em}
+  .bag-slot .bn{font-size:.65em}
+  /* Region picker */
+  .reg-grid{grid-template-columns:1fr!important;gap:8px}
+  .reg-card{padding:12px}
+  .reg-card .rg-icon{font-size:1.5em;margin-bottom:4px}
+  .reg-card .rg-name{font-size:1em}
+  .reg-card .rg-desc{font-size:.75em}
+  /* Awakening */
+  .awk-circle{width:180px;height:180px}
+  .awk-inner{width:130px;height:130px}
+  .awk-circle.spinning::before{width:200px;height:200px}
+  .awk-card{padding:20px;max-width:95vw}
+  .awk-card .emoji{font-size:3em}
+  .awk-card .name{font-size:1.3em}
+  /* Skill/Awk cards */
+  .skawk-cards{gap:10px}
+  .skawk-card{width:160px;padding:14px}
+  .skawk-card .sk-emoji{font-size:2em}
+  .skawk-card .sk-name{font-size:1em}
+  .skawk-card .sk-desc{font-size:.75em}
+  /* Game over */
+  .go-t{font-size:2em}
+  .go-box{min-width:auto;padding:16px 20px}
+  /* Status effects */
+  .sfx-container{margin:0 -16px}
+  .sfx-badge{font-size:.68em;padding:2px 6px}
+  .sfx-row{padding:2px 8px}
+  /* Leaderboard */
+  .lb-panel{padding:14px}
+  .lb-table{font-size:.78em}
+  /* Achievements */
+  .ach-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+  .ach-card{padding:8px}
+  .ach-toast{padding:10px 18px;max-width:90vw}
+  /* Misc */
+  .btn-big{padding:12px 28px;font-size:1em}
+  .trans{font-size:1.3em}
+  .skbar{gap:4px}
+  .skt{font-size:.7em;padding:2px 6px}
+}
+/* Extra small screens */
+@media(max-width:380px){
+  .scr{padding:8px}
+  .t-logo{font-size:1.8em}
+  .ecard{padding:12px}
+  .echbtn{padding:10px 12px;font-size:.82em}
+  .ba-btn{min-width:52px;padding:8px 4px;font-size:.78em}
+  .bag-grid{grid-template-columns:repeat(3,1fr)}
+  .awk-circle{width:150px;height:150px}
+  .awk-inner{width:110px;height:110px}
+  .skawk-card{width:140px;padding:10px}
+  .go-box{padding:12px}
+  .modal{padding:12px}
+}
+/* Touch-friendly: ensure tap targets are at least 44px */
+@media(hover:none) and (pointer:coarse){
+  .echbtn{min-height:44px}
+  .ba-btn{min-height:48px}
+  .bag-slot{min-height:60px}
+  .ba-sub-btn{min-height:44px}
+  .dc{min-height:60px}
+  .btn-big{min-height:48px}
+  .btn-sm{min-height:40px;padding:8px 16px}
+  .bag-btn{min-height:40px}
+  .gear{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+  .reg-card{min-height:80px}
+}
+/* Landscape phone */
+@media(max-height:500px) and (orientation:landscape){
+  .scr{padding:8px}
+  .blog{max-height:120px}
+  .be .bem{font-size:2em}
+  .awk-circle{width:140px;height:140px}
+  .awk-inner{width:100px;height:100px}
+}
 .reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:640px;margin:16px 0}
 .reg-card{background:var(--bgc);border:2px solid var(--bdr);border-radius:12px;padding:16px;cursor:pointer;transition:all .3s;text-align:left}
 .reg-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px var(--shd)}
@@ -491,99 +608,7 @@ const passiveEngine = {
   listAll() { return { effects: [...this._effects], penalties: [...this._penalties] }; }
 };
 
-const PRESET_EVENTS=[
-// === adventure ===
-{theme:"adventure",title:"迷雾森林",description:"浓雾弥漫的森林中，远处传来低沉的吟唱声，脚下落叶窸窣作响。",choices:[{label:"循着吟唱声前进",result:"你发现了一位隐居的老法师，他传授了你一招强力技能。",effects:{atk:3}},{label:"在雾中谨慎探索",result:"你在树林中找到了有用的草药，恢复了体力。",effects:{heal:15}},{label:"转身离开森林",result:"你安全离开了，路上捡到了些补给。",effects:{heal:5,item:'hpPot'}}]},
-{theme:"adventure",title:"悬崖吊桥",description:"前方是深不见底的峡谷，唯一的通道是一座摇摇欲坠的吊桥。",choices:[{label:"大胆冲过吊桥",result:"你飞速冲过吊桥，肾上腺素让力量暴增！",effects:{atk:4,damage:8}},{label:"小心翼翼地通过",result:"你慢慢走过吊桥，在桥中央捡到了一颗宝石。",effects:{def:2,heal:10,item:'gemStone'}},{label:"寻找其他路线",result:"你绕了远路，在另一条小路上发现了补给包。",effects:{heal:20}}]},
-{theme:"adventure",title:"流浪剑客",description:"路口站着一位身穿破旧斗篷的剑客，手持寒光长剑，目光锐利。",choices:[{label:"向他发起挑战",result:"激烈切磋后你赢得了尊重，他教了你一招剑术。",effects:{atk:5,damage:10}},{label:"邀请他同行一段",result:"他分享了战斗经验和旅途见闻。",effects:{def:2,atk:2}},{label:"礼貌地绕开",result:"你避开了可能的危险继续前行。",effects:{}}]},
-{theme:"adventure",title:"地下暗河",description:"你发现了一条地下暗河的入口，水声轰鸣，隐约能看到河对岸有光。",choices:[{label:"游泳渡河",result:"冰冷的河水让你几乎冻僵，但对岸发现了珍贵矿石。",effects:{damage:12,item:'gemStone',atk:2}},{label:"沿河岸探索",result:"你在河岸的洞穴中找到了一些有用的物资。",effects:{heal:10,item:'hpPot'}},{label:"原路返回",result:"你决定不冒险，保存体力继续前进。",effects:{heal:5}}]},
-// === ruins ===
-{theme:"ruins",title:"坍塌神殿",description:"古老的神殿矗立面前，祭坛上的蓝色火焰从未熄灭，散发幽蓝光芒。",choices:[{label:"触摸祭坛火焰",result:"蓝色火焰包裹全身，远古力量注入体内。",effects:{atk:5,damage:10}},{label:"搜索神殿侧厅",result:"在废墟中找到了牧师留下的治疗圣水。",effects:{heal:25,item:'hpPot'}},{label:"研读墙壁铭文",result:"铭文记载了古代防御术，你领悟了精髓。",effects:{def:4}}]},
-{theme:"ruins",title:"古代图书馆",description:"半坍塌的图书馆里，尘封的书籍中蕴含古老知识，有些书页还在微微发光。",choices:[{label:"翻阅发光的书籍",result:"书中记载了战斗秘技，攻击能力提升。",effects:{atk:4}},{label:"搜索防御类书籍",result:"找到了古代护甲设计图。",effects:{def:4}},{label:"收集所有能带的书",result:"带了一些书上路慢慢研读。",effects:{atk:2,def:2,heal:5}}]},
-{theme:"ruins",title:"废弃的炼金工坊",description:"一间布满蜘蛛网的炼金工坊，架子上摆满了瓶瓶罐罐，有些还在冒泡。",choices:[{label:"搜索有价值的药剂",result:"你找到了一些还能用的药剂！",effects:{item:'hpPotL',item2:'atkPot'}},{label:"研究炼金配方",result:"你学会了一种简易强化配方。",effects:{atk:3,def:1}},{label:"小心离开不碰任何东西",result:"有些瓶子看起来很不稳定...你明智地离开了。",effects:{heal:5}}]},
-// === tomb ===
-{theme:"tomb",title:"无名剑圣之墓",description:"你发现了一座被藤蔓覆盖的古墓，石碑上刻着一位传奇剑圣的名号。墓门半开，里面隐约传来金属碰撞声。",choices:[{label:"进入墓中探索",result:"你在墓中遭遇了守护机关，但最终找到了剑圣遗留的武器心得。",effects:{atk:6,damage:15,item:'skullTrophy'}},{label:"在墓前祭拜",result:"你恭敬地祭拜，恍惚间似乎得到了剑圣的指点。",effects:{atk:3,heal:10}},{label:"只做简单搜索",result:"你在墓外找到了一些供品和钱币。",effects:{heal:8,item:'hpPot'}}]},
-{theme:"tomb",title:"将军的地下陵墓",description:"一座宏伟的地下陵墓，石壁上刻满了战争壁画。棺椁前的石台上放着将军的遗物。",choices:[{label:"打开棺椁",result:"棺中涌出黑色毒气，但你在里面发现了将军的战甲碎片。",effects:{damage:18,def:5,item:'gemStone'}},{label:"研究壁画学习战术",result:"壁画中的阵法让你领悟了防御之道。",effects:{def:4,heal:5}},{label:"取走石台上的遗物",result:"你拿走了一把古剑和一面盾牌。",effects:{atk:3,def:2}}]},
-{theme:"tomb",title:"法师塔的废墟",description:"曾经辉煌的大法师之塔已成废墟，但残余的魔法阵仍在闪烁。地下室似乎藏着法师的研究资料。",choices:[{label:"深入地下室",result:"你触发了残存的魔法陷阱，但也找到了法师的能量水晶。",effects:{damage:12,item:'enCrystal',atk:3}},{label:"收集残破的魔法书",result:"你找到了几页有用的咒语。",effects:{atk:2,item:'magicEss'}},{label:"在废墟中休息",result:"残存的魔法意外地治愈了你的伤口。",effects:{heal:20}}]},
-{theme:"tomb",title:"远古英雄的墓室",description:"一座被封印千年的墓室出现在你面前。石棺旁摆放着英雄生前的战甲和圣物，散发着微弱的金光。",choices:[{label:"开启石棺",result:"石棺中的英雄遗骸已化为尘土，但他的圣物依然散发着力量。你获得了一件远古圣物。",effects:{damage:15,item:'phoenixFeather',atk:3}},{label:"只取走祭台上的供品",result:"你恭敬地取走了祭台上的物品，没有惊扰亡者。",effects:{item:'chainMail',heal:10}},{label:"在墓前默哀后离开",result:"你向远古英雄致敬，离开时感觉身上多了一层祝福。",effects:{heal:15,def:2,luck:1}}]},
-// === duel ===
-{theme:"duel",title:"路遇劫匪",description:"三个蒙面人从树丛中跳出，手持利刃拦住了你的去路。为首者冷笑着说：留下财物还是留下命？",choices:[{label:"拔剑迎战",result:"你以一敌三，虽然受了伤但最终将他们击退，缴获了他们的赃款。",effects:{atk:3,damage:12,item:'hpPot',gold:20}},{label:"只和首领单挑",result:"你提议单挑来决定胜负，经过一番苦战你赢了。",effects:{atk:4,damage:8,gold:10}},{label:"交出一些财物",result:"你丢出一些金币趁他们抢夺时溜走。",effects:{damage:5,heal:5,goldCost:15}}]},
-{theme:"duel",title:"武斗大会",description:"城镇正在举办武斗大会，胜者可以获得丰厚的奖品。擂台上已经有人叫嚣着挑战所有路人。",choices:[{label:"参加武斗大会",result:"你过五关斩六将，虽然最后惜败但获得了不错的名次奖励。",effects:{atk:4,damage:15,item:'berserk'}},{label:"只挑战一场",result:"你赢了一场比赛就退出了，拿到了小奖品。",effects:{atk:2,heal:10,item:'hpPot'}},{label:"在场边观战学习",result:"你观察了各种战斗风格，颇有收获。",effects:{def:2,atk:1}}]},
-{theme:"duel",title:"复仇的赏金猎人",description:"一个赏金猎人找到了你，声称你头上的悬赏金已经足够他退休了。他不会轻易放弃。",choices:[{label:"正面对决",result:"一场惊心动魄的决斗，你险胜对手，获得了他的装备。",effects:{atk:5,damage:18,item:'atkPot',item2:'defPot'}},{label:"用计谋脱身",result:"你设了个圈套让猎人中计，虽然有些卑鄙但有效。",effects:{atk:2,def:2,damage:5}},{label:"说服他放弃",result:"你说服他悬赏金并不值得冒生命危险，他勉强同意了。",effects:{heal:10}}]},
-// === mystery ===
-{theme:"mystery",title:"时间裂缝",description:"空气中突然出现了一道扭曲的裂缝，你透过裂缝看到了另一个世界的自己——那个你似乎走了完全不同的道路。",choices:[{label:"伸手触摸裂缝",result:"两个世界的能量交汇，你感到力量在暴走，身体忽强忽弱。",effects:{atk:6,def:-2,damage:8}},{label:"观察另一个自己",result:"你从另一个自己的战斗方式中学到了东西。",effects:{def:3,atk:2}},{label:"远离裂缝",result:"裂缝很快消失了，但留下了几块奇异的结晶。",effects:{item:'magicEss',heal:5}}]},
-{theme:"mystery",title:"预言石碑",description:"路边矗立着一块古老的石碑，上面的文字似乎在描述你未来的命运。文字在月光下若隐若现。",choices:[{label:"仔细研读预言",result:"预言描述了一场即将到来的危机，你提前做好了心理准备。",effects:{def:4,luck:2}},{label:"尝试破译隐藏文字",result:"你发现石碑背面刻着一段咒语，念出后身体产生了奇异的变化。",effects:{atk:3,item:'awkShard'}},{label:"无视预言继续前行",result:"有些事不知道反而更好。",effects:{heal:10}}]},
-{theme:"mystery",title:"幽灵商队",description:"月色朦胧中，一支透明的商队从你面前飘过。领头的幽灵商人向你招手，他展示的货物闪烁着诡异的光。",choices:[{label:"和幽灵交易",result:"你用生命力换取了一件诡异的宝物。",effects:{damage:15,item:'berserk',atk:3}},{label:"只是看看不买",result:"你从幽灵的商品中获得了一些灵感。",effects:{def:2,heal:5}},{label:"攻击幽灵商队",result:"你挥剑斩向幽灵，剑刃穿过虚空...但你捡到了一些散落的灵质。",effects:{item:'magicEss',damage:5}}]},
-// === merchant ===
-{theme:"merchant",title:"旅行商人",description:"一位戴着宽檐帽的商人拦住了去路，马车上堆满稀奇古怪的物品。他笑眯眯地报出了价格。",choices:[{label:"购买力量药剂（15💰）",result:"喝下后感觉力量充盈。",effects:{atk:4,goldCost:15}},{label:"购买防护装备（12💰）",result:"选了一件轻便护甲。",effects:{def:3,heal:5,goldCost:12}},{label:"购买回复药水（8💰）",result:"商人的药水看起来不错。",effects:{heal:15,item:'hpPot',goldCost:8}}]},
-{theme:"merchant",title:"黑市赌局",description:"暗巷中有人摆了赌局，庄家摇着骰子，旁边围了一圈看热闹的人。入场需要交一些金币。",choices:[{label:"豪赌一把（20💰）",result:"手气不错！赢得了一份珍贵战利品和丰厚奖金。",effects:{atk:6,def:2,gold:40,goldCost:20}},{label:"小赌怡情（8💰）",result:"小赢了一把，赚了点零花钱。",effects:{heal:15,atk:1,gold:15,goldCost:8}},{label:"不参与赌博",result:"你明智地走开了。",effects:{heal:5}}]},
-{theme:"merchant",title:"神秘的药剂师",description:"一位穿着长袍的药剂师在路边支了个摊，上面摆满了五颜六色的瓶瓶罐罐。她声称可以用物易物。",choices:[{label:"用生命换攻击药剂",result:"你献出了一些血液，换来了一瓶强力的攻击秘药。",effects:{damage:10,atk:5,item:'atkPot'}},{label:"交换治疗药剂",result:"你用自己的材料换了几瓶治疗药水。",effects:{item:'hpPot',item2:'hpPot',heal:10}},{label:"只是聊聊天",result:"药剂师分享了一些有趣的药剂知识。",effects:{heal:8,def:1}}]},
-// === curse ===
-{theme:"curse",title:"血之契约",description:"一纸泛黄的契约飘到面前，用鲜血写着古老文字，承诺给予力量但代价不菲。",choices:[{label:"签下血之契约",result:"契约化为火焰融入身体，获得了力量但也承受了反噬。",effects:{atk:8,damage:20}},{label:"尝试修改契约",result:"你巧妙地加入了有利条款。",effects:{atk:4,damage:8}},{label:"烧毁契约",result:"灰烬中飘出灵魂碎片，化为治疗能量。",effects:{heal:18}}]},
-{theme:"curse",title:"诅咒之泉",description:"一潭漆黑的泉水散发着不祥的气息。传说饮用诅咒之泉可以获得超越常人的力量，但副作用同样可怕。",choices:[{label:"饮下诅咒之水",result:"黑暗的力量涌入全身，你变强了但也更脆弱了。",effects:{atk:7,damage:12,def:-2}},{label:"用瓶子装一些带走",result:"也许以后会有用途。",effects:{item:'berserk'}},{label:"净化泉水",result:"你释放出光芒净化了泉水，净化后的水反而有治愈效果。",effects:{heal:25,def:2}}]},
-// === blessing ===
-{theme:"blessing",title:"星辰之力",description:"夜空中一颗流星划过，坠落在面前，散发温暖的金色光芒。",choices:[{label:"吸收星辰之力",result:"金色能量涌入全身，变得更强了。",effects:{atk:4,def:2,heal:10}},{label:"将力量注入武器",result:"武器闪烁着星光。",effects:{atk:6}},{label:"化为护盾",result:"星光在周身形成保护罩。",effects:{def:5,heal:8}}]},
-{theme:"blessing",title:"精灵的祝福",description:"一只受伤的小精灵跌落在你面前，它用恳求的眼神看着你。帮助它或许会带来好运。",choices:[{label:"治愈小精灵",result:"精灵恢复后欢快地飞舞，在你身上施加了祝福。",effects:{heal:15,luck:3,def:2}},{label:"收留小精灵",result:"精灵跟着你走了一段路，不断给你带来好运。",effects:{luck:2,item:'hpPot',heal:10}},{label:"帮它指路",result:"你帮精灵指明了回家的方向，它留下一颗发光的种子作为谢礼。",effects:{item:'magicEss'}}]},
-// === trap ===
-{theme:"trap",title:"地刺陷阱",description:"脚下石板突然下沉，四周墙壁射出尖锐地刺！必须迅速反应。",choices:[{label:"向前翻滚躲避",result:"成功避开大部分地刺，只受了轻伤。",effects:{damage:8,atk:1}},{label:"举起护盾防御",result:"挡住了大部分攻击。",effects:{damage:5,def:2}},{label:"原地跳起",result:"跳起避开地刺，落地时发现了宝箱。",effects:{damage:3,heal:10,item:'atkPot'}}]},
-{theme:"trap",title:"毒气房间",description:"房间门突然关闭，墙壁小孔开始释放绿色毒气。",choices:[{label:"暴力破门",result:"你用尽全力撞开了门。",effects:{damage:15,atk:2}},{label:"寻找通风口",result:"你找到了隐藏的通风口。",effects:{damage:6,heal:5}},{label:"用布捂住口鼻等待",result:"耐心等待毒气消散。",effects:{damage:4,def:1}}]},
-// === treasure ===
-{theme:"treasure",title:"隐秘宝箱",description:"在一面看似普通的墙壁后面，你发现了一个布满灰尘的宝箱。锁已经锈蚀，但箱内似乎有东西在发光。",choices:[{label:"直接打开宝箱",result:"宝箱中触发了一个小机关，但里面的宝物和金币值得这点代价。",effects:{damage:8,item:'hpPotL',item2:'gemStone',gold:30}},{label:"仔细检查后打开",result:"你小心地拆除了机关，安全地取出了宝物。",effects:{item:'hpPot',atk:2,def:1,gold:15}},{label:"把整个宝箱带走",result:"宝箱太重了，你只带走了一些散落的小物件和钱币。",effects:{item:'ironOre',item2:'ironOre',heal:5,gold:10}}]},
-{theme:"treasure",title:"沉船的宝藏",description:"河岸边搁浅着一艘古老的沉船，船舱中似乎还保存着当年的货物。",choices:[{label:"深入船舱搜索",result:"你在即将坍塌的船舱中找到了珍贵的货物。",effects:{damage:10,item:'gemStone',item2:'ancientCoin'}},{label:"只在甲板搜索",result:"甲板上散落着一些有用的补给品。",effects:{item:'hpPot',heal:10}},{label:"拆船板当柴烧",result:"你在船板中发现了一些藏在夹层里的东西。",effects:{item:'magicEss',heal:5}}]},
-{theme:"treasure",title:"铸剑师的遗产",description:"你偶然发现了一座废弃的锻造坊，炉火早已熄灭，但工具架上的武器依然闪烁着寒光。",choices:[{label:"挑选一把武器",result:"你从架上取下了一把精良的长剑，握在手中感觉力量充盈。",effects:{item:'steelSword',atk:2}},{label:"搜索锻造材料",result:"你找到了一些稀有的锻造材料和一件皮甲。",effects:{item:'leatherArmor',item2:'ironOre',def:2}},{label:"只带走工具",result:"锻造工具虽重但价值不菲。",effects:{item:'ironSword',heal:5}}]},
-// === stranger ===
-{theme:"stranger",title:"受伤的旅者",description:"路边躺着一个身受重伤的旅者，他紧紧攥着一个包裹，看到你后露出了警惕的目光。",choices:[{label:"救治旅者",result:"旅者感激涕零，将包裹中的一些物资分给了你。",effects:{heal:10,item:'hpPot',def:2}},{label:"询问发生了什么",result:"旅者讲述了前方的危险，你做好了准备。",effects:{def:3,atk:2}},{label:"趁他不注意拿走包裹",result:"包裹里有一些值钱的物品，但你感到些许愧疚。",effects:{item:'gemStone',atk:2,damage:3}}]},
-{theme:"stranger",title:"疯狂的学者",description:"一位头发凌乱的学者拦住你，兴奋地展示他的最新发明——一台可以强化人体的机器。他需要一个测试对象。",choices:[{label:"自愿当测试对象",result:"机器嗡嗡作响后，你感到身体产生了变化...大部分是好的。",effects:{atk:5,def:3,damage:12}},{label:"帮他改进机器",result:"你提出了一些建议，学者给了你一份报酬。",effects:{atk:2,def:2,item:'magicEss'}},{label:"婉拒离开",result:"你不想冒这个险。",effects:{heal:5}}]},
-{theme:"stranger",title:"失忆的老战士",description:"一位白发苍苍的老战士坐在路边，他忘记了自己的名字，但身体上的伤疤诉说着曾经的辉煌战绩。",choices:[{label:"帮他恢复记忆",result:"在你们的对话中，他逐渐回忆起了战斗技巧并传授给你。",effects:{atk:4,def:3}},{label:"给他食物和水",result:"老战士感激地给你讲了一些战场的生存经验。",effects:{def:4,heal:10}},{label:"和他切磋一番",result:"虽然年老但经验丰富，你在交手中受益匪浅。",effects:{atk:3,damage:5,def:2}}]},
-// === gamble ===
-{theme:"gamble",title:"命运之轮",description:"一个神秘的转盘出现在面前，上面刻着各种符文。转盘旁站着一个蒙面人，他示意你可以转动转盘。",choices:[{label:"大力转动转盘",result:"指针停在了金色区域！你获得了意外的奖赏。",effects:{atk:5,luck:3,item:'enCrystal'}},{label:"轻轻一转",result:"指针停在了蓝色区域，还算不错。",effects:{heal:15,def:2}},{label:"拒绝转动",result:"蒙面人笑了笑消失了，地上留下了一些钱币。",effects:{heal:8}}]},
-{theme:"gamble",title:"骰子恶魔",description:"一个长着犄角的小恶魔出现在面前，它手里摇着两颗骰子，提议和你玩一个游戏：掷出的点数决定你的命运。",choices:[{label:"和恶魔玩",result:"你掷出了高点数！恶魔不情愿地交出了它的宝物。",effects:{atk:6,item:'berserk',damage:5}},{label:"只赌小的",result:"你赢了个小彩头。",effects:{heal:12,atk:1}},{label:"拒绝并攻击恶魔",result:"恶魔尖叫着逃跑了，留下了些硫磺结晶。",effects:{item:'magicEss',damage:3}}]},
-// === disaster ===
-{theme:"disaster",title:"山洪暴发",description:"暴雨倾盆而下，山洪从高处汹涌而来。你只有几秒钟做出反应！",choices:[{label:"向高处奔跑",result:"你拼命跑上了高坡，虽然筋疲力尽但安全了。",effects:{damage:8,atk:2}},{label:"抱住大树",result:"大树在洪水中摇摇欲坠但最终挺住了。",effects:{damage:12,def:2}},{label:"跳入水中顺流而下",result:"你被洪水冲了很远，在下游发现了一些被冲刷出来的宝物。",effects:{damage:18,item:'gemStone',atk:3}}]},
-{theme:"disaster",title:"陨石坠落",description:"天空中一道火光划过，一颗小型陨石朝着你的方向坠落！冲击波即将袭来。",choices:[{label:"全力奔跑躲避",result:"你勉强跑出了冲击范围，但被碎石击中受了些伤。",effects:{damage:10,def:2}},{label:"躲入最近的掩体",result:"掩体挡住了大部分冲击，你发现陨石碎片中有稀有矿石。",effects:{damage:5,item:'ironOre',item2:'gemStone'}},{label:"用技能抵挡冲击",result:"你释放能量形成护盾，成功挡住了冲击波。",effects:{damage:3,atk:3}}]},
-// === Expanded events (with checks & new effects) ===
-// adventure
-{theme:"adventure",title:"裂隙猎人",description:"一位自称裂隙猎人的女子出现在你面前，她手持一把散发蓝光的弩，正在追踪某种裂隙中的异兽。她提议合作。",choices:[{label:"与她联手猎杀",result:"经过激烈的战斗，你们成功猎杀了异兽，她分给你一部分战利品。",effects:{atk:3,gold:25,item:'monsterMat'}},{label:"提议比试箭术",result:"你和她进行了一场友好的箭术比试，从中学到了不少。",check:{stat:"lk",dc:12,type:"roll"},success:{atk:2,luck:2,item:'gemStone'},failure:{damage:5}},{label:"婉拒离开",result:"你不想卷入别人的狩猎，礼貌地告别。",effects:{heal:8}}]},
-{theme:"adventure",title:"断桥上的赌注",description:"一座年久失修的石桥横跨深渊，桥中央站着一个神秘人。他提出：如果你能通过他的考验，就告诉你前方的秘密。",choices:[{label:"接受力量考验",result:"你成功推开了巨石！",check:{stat:"atk",dc:14,type:"roll"},success:{atk:5,gold:30,item:'steelSword'},failure:{damage:15,atkLoss:1}},{label:"接受智慧考验",result:"你解开了谜题。",check:{stat:"def",dc:12,type:"roll"},success:{def:4,item:'enCrystal'},failure:{damage:8}},{label:"绕道而行",result:"你不想冒险，找了另一条路。",effects:{heal:5}}]},
-{theme:"adventure",title:"古战场遗迹",description:"你踏入了一片古老的战场遗址，地面上散落着锈蚀的武器和残破的旗帜。空气中似乎还残留着战争的怨念。",choices:[{label:"搜索指挥官的帐篷",result:"你在帐篷中找到了一份战略地图和一把精良武器。",effects:{atk:4,item:'ironSword',gold:15}},{label:"收集散落的武器",result:"你收集了一些还能用的武器和材料。",effects:{item:'ironOre',item2:'ironOre',atk:1}},{label:"为亡灵祈祷",result:"你为战死者祈祷，感到一股温暖的祝福。",effects:{heal:20,def:2,luck:1}}]},
-// ruins
-{theme:"ruins",title:"被封印的宝库",description:"一扇刻满符文的石门后是远古宝库，但封印需要强大的力量才能打开。石门上的符文似乎在考验来者。",choices:[{label:"用蛮力破开封印",result:"你爆发出惊人的力量！",check:{stat:"atk",dc:16,type:"roll"},success:{atk:4,item:'gemStone',item2:'gemStone',gold:50},failure:{damage:20,atkLoss:2}},{label:"研究符文找到机关",result:"你仔细观察符文的排列规律。",check:{stat:"level",dc:8,type:"threshold"},success:{item:'ancientCoin',item2:'enCrystal',def:2},failure:{damage:10}},{label:"放弃离开",result:"封印太强了，不值得冒险。",effects:{heal:5}}]},
-{theme:"ruins",title:"机关密室",description:"你进入了一间布满机关的密室。地板上的石板、墙壁上的箭孔、天花板上的落石——每一步都可能是致命的。",choices:[{label:"凭借直觉穿越",result:"你的直觉带你安全通过了！",check:{stat:"lk",dc:13,type:"roll"},success:{item:'treasMap',atk:3,gold:20},failure:{damage:25,defLoss:1}},{label:"小心翼翼地破解机关",result:"你耐心地逐个解除机关，虽然耗时但安全。",effects:{def:3,item:'ironOre'}},{label:"原路返回",result:"这太危险了，不值得。",effects:{heal:8}}]},
-{theme:"ruins",title:"失落的祭坛",description:"一座被藤蔓覆盖的祭坛矗立在废墟中央，祭坛上的水晶球散发着微弱的光芒。触摸它可能会带来祝福，也可能是诅咒。",choices:[{label:"触摸水晶球",result:"水晶球中的能量涌入你的身体！",check:{stat:"lk",dc:10,type:"roll"},success:{atk:3,def:2,luck:2},failure:{curse:2,damage:10}},{label:"取走水晶球",result:"你小心地将水晶球取下，它的光芒照亮了隐藏的宝箱。",effects:{item:'enCrystal',gold:15}},{label:"只是观察记录",result:"你记录了祭坛的构造，或许以后有用。",effects:{def:2}}]},
-// tomb
-{theme:"tomb",title:"盗墓者的困境",description:"你在一座古墓中遇到了另一群盗墓者，他们被困在了陷阱中。为首者请求你的帮助，承诺分享战利品。",choices:[{label:"帮助他们脱困",result:"你成功解救了他们，他们信守承诺分给你一部分收获。",effects:{gold:30,item:'hpPot',def:2}},{label:"趁机搜刮他们的营地",result:"你趁他们被困偷了他们的物资...但被发现了。",effects:{item:'gemStone',gold:20,curse:2}},{label:"不管他们继续探索",result:"你继续深入古墓，发现了更多宝藏。",effects:{damage:15,item:'chainMail',gold:10}}]},
-{theme:"tomb",title:"不死守卫",description:"古墓的甬道中站着一具全身铠甲的亡灵守卫，他的剑上闪烁着幽蓝色的光。他似乎在等待一个挑战者。",choices:[{label:"与亡灵守卫战斗",result:"一场激烈的战斗！",check:{stat:"atk",dc:15,type:"roll"},success:{atk:5,item:'skullTrophy',gold:25},failure:{damage:20,defLoss:2}},{label:"寻找绕行通道",result:"你找到了一条隐蔽的侧通道。",effects:{damage:8,item:'hpPot'}},{label:"向亡灵致敬后离开",result:"你的敬意让亡灵放下了武器，他让开了路。",effects:{heal:10,def:2}}]},
-// duel
-{theme:"duel",title:"暗影刺客",description:"一个身穿黑色紧身衣的刺客从暗处现身，他的匕首上涂着剧毒。有人出钱要你的命，但他给你一个选择的机会。",choices:[{label:"与刺客决斗",result:"你与刺客展开了生死对决！",check:{stat:"atk",dc:14,type:"roll"},success:{atk:4,item:'shadowDagger',gold:20},failure:{damage:18,curse:3}},{label:"用金钱买命",result:"你出了更高的价钱让刺客反水。",effects:{goldCost:30,atk:2}},{label:"用计逃脱",result:"你扔出烟雾弹趁机逃跑。",effects:{damage:8,heal:5}}]},
-{theme:"duel",title:"竞技场邀请",description:"一个华丽的竞技场出现在前方，门卫递给你一封邀请函。今晚有一场特别的比赛，胜者可以获得传说中的装备。",choices:[{label:"参加冠军赛",result:"你在冠军赛中遭遇了强大的对手！",check:{stat:"atk",dc:16,type:"roll"},success:{atk:6,item:'berserkerAxe',gold:40},failure:{damage:25,defLoss:1}},{label:"参加普通赛",result:"你在普通赛中取得了不错的成绩。",effects:{atk:3,damage:10,gold:15}},{label:"只当观众",result:"你观看了一场精彩的比赛，学到了不少。",effects:{def:2,atk:1}}]},
-// mystery
-{theme:"mystery",title:"镜中世界",description:"一面古老的铜镜映出了你的倒影，但倒影的动作和你不完全一致。它似乎在邀请你进入镜中世界。",choices:[{label:"进入镜中世界",result:"你穿越镜面来到了一个颠倒的世界！",check:{stat:"lk",dc:14,type:"roll"},success:{atk:4,def:3,item:'voidCloak'},failure:{damage:15,xpLoss:0.2}},{label:"与倒影对话",result:"你从倒影中获得了另一个世界的知识。",effects:{atk:2,def:2}},{label:"打碎铜镜",result:"铜镜碎裂的瞬间释放出一股能量。",effects:{damage:5,atk:3,item:'magicEss'}}]},
-{theme:"mystery",title:"遗忘之塔",description:"一座被时间遗忘的高塔矗立在平原上，塔顶传来微弱的歌声。塔门上没有锁，但门框上刻着：入此门者，将失去一段记忆。",choices:[{label:"进入高塔",result:"你在塔中获得了强大的力量，但代价是一段记忆...",effects:{atk:5,xpLoss:0.15,item:'awkShard'}},{label:"只在底层搜索",result:"你在塔底找到了一些有价值的物品。",effects:{item:'ironOre',item2:'gemStone',heal:10}},{label:"远离高塔",result:"歌声渐渐远去，你继续前行。",effects:{heal:8}}]},
-// merchant
-{theme:"merchant",title:"炼金术士的交易",description:"一位老炼金术士向你展示了他最新的发明——一种可以永久增强体质的药剂。但他需要的不是金币，而是你身上的某种东西。",choices:[{label:"用经验换力量",result:"你献出了一部分修炼经验，换来了永久的力量提升。",effects:{xpLoss:0.25,atk:6}},{label:"用金币购买材料",result:"你用金币购买了炼金材料。",effects:{goldCost:20,item:'magicEss',item2:'ironOre'}},{label:"学习炼金术",result:"你花时间学习了基础炼金术。",effects:{def:2,atk:2,heal:5}}]},
-{theme:"merchant",title:"走私商人的宝库",description:"一个走私商人悄悄向你展示了他的秘密仓库。里面有各种稀有物品，但价格不菲。",choices:[{label:"购买稀有装备",result:"你选中了一件精良的装备。",effects:{item:'chainMail',goldCost:25}},{label:"购买稀有药剂",result:"你买了一些珍贵的药剂。",effects:{item:'berserk',item2:'purifyWater',goldCost:18}},{label:"只是看看",result:"你记住了这个地点，以后可能有用。",effects:{heal:5,luck:1}}]},
-// curse
-{theme:"curse",title:"贪婪的诅咒",description:"你踩到了一个隐藏的陷阱，一个古老的诅咒笼罩了你。诅咒给了你两个选择：失去财富或者失去力量。",choices:[{label:"献出金币解除诅咒",result:"你交出了大量金币，诅咒消散了。",effects:{goldSteal:0.4,heal:10}},{label:"用意志力抵抗诅咒",result:"你集中精神对抗诅咒！",check:{stat:"def",dc:15,type:"roll"},success:{def:3,luck:2},failure:{curse:3,atkLoss:2}},{label:"接受诅咒的代价",result:"诅咒刻入了你的身体，但你变得更坚韧了。",effects:{damage:15,def:4}}]},
-{theme:"curse",title:"亡灵的诅咒",description:"一个被你不慎惊扰的亡灵发出了诅咒。黑色的雾气缠绕在你身上，你感到力量在流失。",choices:[{label:"与亡灵战斗解除诅咒",result:"你与亡灵展开了殊死搏斗！",check:{stat:"atk",dc:13,type:"roll"},success:{atk:3,item:'skullTrophy',heal:10},failure:{damage:20,curse:2}},{label:"用圣光净化",result:"你释放出净化之光。",effects:{damage:10,heal:15,def:2}},{label:"逃跑",result:"你拼命逃离了亡灵的领地。",effects:{damage:12,heal:5}}]},
-// blessing
-{theme:"blessing",title:"大地母亲的恩赐",description:"你在一棵巨大的古树下休息，树干上浮现出一张慈祥的面孔。大地母亲认可了你的善行，决定赐予你祝福。",choices:[{label:"请求力量祝福",result:"温暖的能量涌入你的身体。",effects:{atk:5,heal:20}},{label:"请求防护祝福",result:"一层金色的光芒包裹了你。",effects:{def:5,heal:15,maxHp:10}},{label:"请求幸运祝福",result:"你感到命运的线在轻轻拨动。",effects:{luck:3,item:'luckyCoin'}}]},
-{theme:"blessing",title:"神泉水",description:"你发现了一处隐秘的神泉，泉水散发着淡淡的金光。传说饮用神泉水可以洗涤身心。",choices:[{label:"饮用神泉水",result:"清甜的泉水让你焕然一新。",effects:{heal:30,def:2,luck:1}},{label:"用神泉水净化装备",result:"你用泉水洗涤了身上的装备。",effects:{heal:15,atk:2,def:2}},{label:"装满水瓶带走",result:"你装了一些泉水以备不时之需。",effects:{item:'hpPotL',heal:10}}]},
-// trap
-{theme:"trap",title:"连锁陷阱",description:"你触发了一个连锁陷阱！地面板砖下沉，两侧墙壁开始缓缓合拢，同时天花板上开始落下石块。",choices:[{label:"全力冲刺突围",result:"你拼尽全力向前冲！",check:{stat:"atk",dc:13,type:"roll"},success:{damage:5,atk:2,gold:15},failure:{damage:25,defLoss:1}},{label:"寻找机关停止陷阱",result:"你在墙壁合拢前找到了隐藏的机关。",effects:{damage:10,def:3}},{label:"用物品撑住墙壁",result:"你用一根铁棒撑住了墙壁争取到时间。",effects:{damage:15,item:'rope',heal:5}}]},
-{theme:"trap",title:"幻术迷宫",description:"你误入了一个幻术迷宫，四周的景色不断变换，每一条路看起来都一样。你需要找到真正的出口。",choices:[{label:"凭感觉找到出口",result:"你相信自己的直觉！",check:{stat:"lk",dc:12,type:"roll"},success:{item:'gemStone',atk:2,heal:10},failure:{damage:12,xpLoss:0.1}},{label:"冷静分析路径",result:"你仔细观察幻术的破绽。",check:{stat:"level",dc:6,type:"threshold"},success:{def:3,item:'enCrystal'},failure:{damage:8}},{label:"暴力破坏幻术",result:"你释放出强大的能量打碎了幻术屏障。",effects:{damage:8,atk:3}}]},
-// treasure
-{theme:"treasure",title:"远古宝箱",description:"你发现了一个被强大魔法封印的远古宝箱。封印上有三种不同的解除方式，每一种都有不同的风险。",choices:[{label:"用力量强行破封",result:"你爆发出惊人的力量！",check:{stat:"atk",dc:15,type:"roll"},success:{atk:4,item:'dragonPlate',gold:40},failure:{damage:20,atkLoss:2}},{label:"用幸运尝试巧合",result:"你随手拨弄封印...",check:{stat:"lk",dc:14,type:"roll"},success:{item:'ancientCoin',item2:'gemStone',gold:30},failure:{damage:10}},{label:"仔细研究封印",result:"你花了很长时间研究封印的结构，最终安全地打开了宝箱。",effects:{item:'hpPotL',def:2,gold:15}}]},
-{theme:"treasure",title:"商队遗骸",description:"你发现了一支被劫的商队遗骸，马车翻倒在路边，货物散落一地。大部分贵重物品已经被劫匪拿走，但或许还有遗漏。",choices:[{label:"仔细搜索每辆马车",result:"你在暗格中找到了被遗漏的贵重物品。",effects:{item:'chainMail',gold:20,item2:'hpPot'}},{label:"只搜索武器箱",result:"你找到了一些武器和防具。",effects:{item:'steelSword',heal:5}},{label:"埋葬死者后离开",result:"你为死者举行了简单的葬礼，离开时在地上捡到了一枚古币。",effects:{item:'ancientCoin',heal:10,luck:1}}]},
-// stranger
-{theme:"stranger",title:"流浪的铁匠",description:"一位流浪铁匠在路边支起了铁砧，他声称可以用你带来的材料打造装备。他的手艺看起来相当精湛。",choices:[{label:"用铁矿石打造武器",result:"铁匠挥锤如飞，打造出了一把精良的武器。",effects:{requireItem:'ironOre',item:'steelSword',atk:3}},{label:"请他修理装备",result:"铁匠帮你强化了现有的装备。",effects:{def:3,heal:10}},{label:"只是聊聊天",result:"铁匠分享了很多有趣的旅途见闻。",effects:{atk:1,def:1,heal:5}}]},
-{theme:"stranger",title:"神秘的占卜师",description:"一位戴着面纱的占卜师在路边摆了个摊位。她说可以免费为你占卜一次命运，但结果可能会让你不安。",choices:[{label:"接受占卜",result:"占卜师揭示了你的命运走向！",check:{stat:"lk",dc:11,type:"roll"},success:{luck:3,item:'awkShard',atk:2},failure:{damage:5,curse:1}},{label:"询问前方的危险",result:"占卜师警告了你前方的一些危险。",effects:{def:3,heal:10}},{label:"婉拒离开",result:"你不太相信占卜这种东西。",effects:{heal:5}}]},
-// gamble
-{theme:"gamble",title:"地下赌场",description:"你误入了一个地下赌场，这里灯火通明，人声鼎沸。一个赌徒向你发出挑战：赢家通吃。",choices:[{label:"接受高额赌局",result:"你把一切都押上了赌桌！",check:{stat:"lk",dc:15,type:"roll"},success:{gold:60,item:'berserk',atk:3},failure:{goldSteal:0.3,damage:10}},{label:"只玩小额游戏",result:"你玩了几把小的，有赢有输。",effects:{gold:10,heal:5}},{label:"出老千",result:"你试图作弊...但被发现了！",effects:{damage:15,atk:2,defLoss:1}}]},
-{theme:"gamble",title:"命运的硬币",description:"你在路边捡到了一枚奇异的硬币，一面是天使一面是恶魔。硬币似乎有自己的意志，邀请你抛一次来决定命运。",choices:[{label:"抛出天使面",result:"硬币在空中旋转...",check:{stat:"lk",dc:10,type:"roll"},success:{heal:25,luck:2,atk:2},failure:{damage:15,defLoss:1}},{label:"抛出恶魔面",result:"硬币散发出暗红色的光芒。",check:{stat:"lk",dc:10,type:"roll"},success:{atk:6,item:'berserk'},failure:{curse:2,damage:10}},{label:"收起硬币不抛",result:"你把硬币收了起来，也许以后有用。",effects:{item:'luckyCoin'}}]},
-// disaster
-{theme:"disaster",title:"地震裂隙",description:"脚下的大地突然剧烈颤抖，一道巨大的裂隙正在向你延伸！你必须在大地塌陷前做出选择。",choices:[{label:"跳过裂隙",result:"你纵身一跃！",check:{stat:"atk",dc:12,type:"roll"},success:{atk:3,gold:20,item:'gemStone'},failure:{damage:20,defLoss:1}},{label:"向高处跑",result:"你拼命跑向高地。",effects:{damage:10,heal:5}},{label:"跳入裂隙深处",result:"你跳入了裂隙...发现了一个隐藏的洞穴。",effects:{damage:18,item:'ancientCoin',atk:4}}]},
-{theme:"disaster",title:"暴风雪突袭",description:"一场突如其来的暴风雪将能见度降到了零。温度急剧下降，你必须尽快找到庇护所。",choices:[{label:"在风雪中寻找洞穴",result:"你在几乎冻僵前找到了一个洞穴。",effects:{damage:15,def:2,item:'ironOre'}},{label:"搭建临时庇护所",result:"你用随身的材料搭建了一个简易庇护所。",effects:{damage:8,heal:5,def:1}},{label:"运气好的话冲过去",result:"你决定冲过暴风雪区域！",check:{stat:"lk",dc:13,type:"roll"},success:{damage:5,atk:3,heal:10},failure:{damage:25,curse:1}}]}
-];
+
 
 const PRESET_SKILLS=[
 {name:'烈焰弹',cat:'damage',emoji:'🔥',desc:'发射灼热火焰造成高额伤害',cd:3,cost:15,dmg:15},{name:'雷霆一击',cat:'damage',emoji:'⚡',desc:'召唤雷电劈向敌人',cd:4,cost:20,dmg:20},
@@ -956,7 +981,7 @@ G.p={hp:s.hp,maxHp:s.hp,atk:s.atk,def:s.def,en:s.energy,maxEn:s.energy,cr:s.crit
 G.currentAgeMonth=START_AGE*12;
 G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
 G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
-_preloadedEvent=null;_preloadPromise=null;_preloadedMonsters={};
+_evtQueue=[];_fillPromise=null;_preloadedMonsters={};
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
 G.skCD={};G.bag=[];G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';
 await showTrans('踏入命运裂隙...',1200);showRegionPicker();
@@ -1148,7 +1173,10 @@ else if(G.region&&REGIONS[G.region]){const rg=REGIONS[G.region];regEl.textConten
 regEl.style.background=rg.cls==='rg-wild'?'rgba(64,160,96,.15)':rg.cls==='rg-town'?'rgba(240,192,64,.12)':rg.cls==='rg-ruin'?'rgba(160,80,224,.12)':rg.cls==='rg-dark'?'rgba(224,64,80,.12)':'rgba(64,128,224,.12)';
 regEl.style.color=rg.cls==='rg-wild'?'#60c080':rg.cls==='rg-town'?'var(--gold)':rg.cls==='rg-ruin'?'var(--pur)':rg.cls==='rg-dark'?'var(--red)':'var(--blu)'}
 else{regEl.style.display='none'}
-updateUI();nextEvent();
+updateUI();
+// Batch preload events for this month
+_evtQueue=[];preloadNextEvent().catch(()=>{});
+nextEvent();
 }
 
 async function nextEvent(){
@@ -1166,17 +1194,25 @@ await triggerEvent();
 }
 
 // ===== AI EVENT =====
-async function triggerEvent(){
+async function triggerEvent(queuedEvent){
 G.evts++;const area=$('evtArea');
-// Check preloaded event cache first
-if(_preloadedEvent){
-const evt=_preloadedEvent;_preloadedEvent=null;
+// Check queue first (instant delivery)
+if(queuedEvent){
 G.aiEvts++;
+normalizePreloadedEvent(queuedEvent);
+area.innerHTML='<div class="loading" style="padding:40px;text-align:center">⚡ 事件已就绪!</div>';
+await sleep(200);
+renderEvent(queuedEvent,true);
+return;
+}
+// Check if queue has events (fallback when advanceEvt couldn't pass directly)
+if(_evtQueue.length>0){
+const evt=_evtQueue.shift();G.aiEvts++;
 normalizePreloadedEvent(evt);
 area.innerHTML='<div class="loading" style="padding:40px;text-align:center">⚡ 事件已就绪!</div>';
-await sleep(300);
+await sleep(200);
 renderEvent(evt,true);
-preloadNextEvent();
+preloadNextEvent().catch(()=>{});
 return;
 }
 area.innerHTML='<div class="loading" style="padding:40px;text-align:center">'+pickTransitText()+'</div>';
@@ -1249,7 +1285,11 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 
 只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":12,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
 let evt=await callAI(prompt,20000),isAI=true;
-if(!evt||!evt.title||!evt.choices||!evt.choices.length){evt=pick(PRESET_EVENTS);isAI=false;G.preEvts++;console.warn('[Event] AI fail, preset:',evt.title)}else{G.aiEvts++}
+if(!evt||!evt.title||!evt.choices||!evt.choices.length){
+console.warn('[Event] AI returned invalid event, showing retry');
+area.innerHTML='<div class="ecard fi" style="text-align:center"><div class="etitle" style="color:var(--t3)">命运之线暂时中断...</div><div class="edesc" style="color:var(--t2);font-size:.9em">AI 叙事者暂时失去了灵感，请稍后重试</div><button class="btn-big" onclick="triggerEvent()" style="margin-top:12px">重新连接命运</button></div>';
+return}
+G.aiEvts++;
 if(isAI&&evt.theme&&!G.themes.includes(evt.theme))G.themes.push(evt.theme);
 (evt.choices||[]).forEach(ch=>{const ef=ch.effects||{};
 if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
@@ -1372,20 +1412,41 @@ if(G.p.hp<=0){res.innerHTML='<div style="color:var(--red)">你倒下了...</div>
 const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.onclick=function(){advanceEvt()};res.appendChild(btn);$('evtArea').appendChild(res);btn.scrollIntoView({behavior:'smooth',block:'center'})}
 }
 
-function advanceEvt(){G.evtIdx++;nextEvent()}
+function advanceEvt(){G.evtIdx++;
+const queued=_evtQueue.shift();
+if(queued){triggerEvent(queued);preloadNextEvent().catch(()=>{})}
+else{triggerEvent()}}
 
-// ===== AI PRELOAD SYSTEM =====
-// Pre-generates AI events/maps/monsters during player idle time (battle, reading, choosing)
-let _preloadedEvent=null;
-let _preloadPromise=null;
+function consumeFromQueue(){
+if(_evtQueue.length>0)return _evtQueue.shift();
+return null}
+
+// ===== AI EVENT QUEUE (Batch Preload) =====
+// Pre-generates AI events in batches during player idle time
+let _evtQueue=[];
+let _fillPromise=null;
 let _preloadedMonsters={};
+const EVT_QUEUE_SIZE=3;
 
 async function preloadNextEvent(){
-if(_preloadPromise)return;
-const nextIdx=G.evtIdx+1;
-if(nextIdx>=5)return;// month will end
-if(nextIdx===4&&G.isBoss)return;// boss battle, no event needed
-_preloadPromise=(async()=>{
+if(_fillPromise)return;
+const need=EVT_QUEUE_SIZE-_evtQueue.length;
+if(need<=0)return;
+const startIdx=G.evtIdx+_evtQueue.length+1;
+if(startIdx>=5)return;
+_fillPromise=_fillQueue(startIdx,need);
+await _fillPromise.catch(()=>{});
+_fillPromise=null}
+
+async function _fillQueue(startIdx,need){
+const count=Math.min(need,5-startIdx);
+const tasks=[];
+for(let i=0;i<count;i++){tasks.push(_genPreloadEvent(startIdx+i).catch(e=>{console.warn('[Preload]',e);return null}))}
+const results=await Promise.all(tasks);
+for(const r of results){if(r)_evtQueue.push(r)}
+console.log('[Preload] Queue filled:',_evtQueue.length,'events')}
+
+async function _genPreloadEvent(nextIdx){
 try{
 const p=G.p;const luckH=p.lk>=15?'幸运值较高，偏向积极':p.lk>=8?'幸运值一般':'幸运值较低，增加风险';
 const rhythm=['前期铺垫','探索展开','中期转折','压力升级','高潮对决'][nextIdx]||'随机';
@@ -1451,11 +1512,26 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":12,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
 const evt=await callAI(prompt,20000);
 if(evt&&evt.title&&evt.choices&&evt.choices.length){
-evt._preloaded=true;_preloadedEvent=evt;
-console.log('[Preload] Event cached:',evt.title);
-}}catch(e){console.warn('[Preload] Event preload failed:',e)}
-})();
-_preloadPromise.finally(()=>{_preloadPromise=null});
+const maxDmg=G.month<=4?.12:G.month<=12?.2:.3;
+evt.choices.forEach(ch=>{const ef=ch.effects||{};
+if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
+if(ef.damage)ef.damage=cl(Math.round(ef.damage),0,Math.floor(p.maxHp*.6));
+if(ef.atk)ef.atk=cl(Math.round(ef.atk),-5,3+Math.floor(G.month*.5));
+if(ef.def)ef.def=cl(Math.round(ef.def),-5,2+Math.floor(G.month*.3));
+if(ef.atkLoss)ef.atkLoss=cl(Math.round(Number(ef.atkLoss)),1,5);
+if(ef.defLoss)ef.defLoss=cl(Math.round(Number(ef.defLoss)),1,5);
+if(ef.goldSteal)ef.goldSteal=cl(Number(ef.goldSteal),0.05,0.5);
+if(ef.xpLoss)ef.xpLoss=cl(Number(ef.xpLoss),0.05,0.4);
+if(ef.curse)ef.curse=cl(Math.round(Number(ef.curse)),1,5);
+if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
+if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold));
+ch.effects=ef});
+evt._isPreloaded=true;evt._slot=nextIdx;
+if(evt.theme&&!G.themes.includes(evt.theme))G.themes.push(evt.theme);
+console.log('[Preload] Event ready:',evt.title);
+return evt}
+return null}
+catch(e){console.warn('[Preload] gen failed:',e);return null}
 }
 
 function normalizePreloadedEvent(evt){
@@ -2359,7 +2435,7 @@ G.currentAgeMonth++;// Age by 1 game-month (12 game-months = 1 year)
 // Check lifespan (age-based)
 if(!isAlive()){await showTrans(`${getAgeYears()}岁${getAgeMonths()}月 — 大限已至`);gameOver('lifespan');return}
 // Reset preload cache for new month and regenerate AI maps
-_preloadedEvent=null;_preloadPromise=null;_preloadedMonsters={};
+_evtQueue=[];_fillPromise=null;_preloadedMonsters={};
 // Show loading while AI generates maps
 showScr('regScr');
 $('regSub').textContent=`${getAgeYears()}岁${getAgeMonths()}月 — 正在探索新区域...`;
