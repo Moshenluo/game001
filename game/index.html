@@ -884,7 +884,7 @@ const headers={'Content-Type':'application/json'};
 const res=await fetch(getAIEndpoint(),{method:'POST',headers,
 body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:2000}),signal:ctrl.signal});
 clearTimeout(timer);
-if(!res.ok){throw new Error('API HTTP '+res.status)}
+if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
 let jsonStr=null;const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
 if(!jsonStr){let d=0,s=-1,e=-1;for(let i=0;i<text.length;i++){if(text[i]==='{'){if(d===0)s=i;d++}else if(text[i]==='}'){d--;if(d===0&&s>=0){e=i+1;break}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
@@ -900,7 +900,7 @@ const headers={'Content-Type':'application/json'};
 const res=await fetch(getAIEndpoint(),{method:'POST',headers,
 body:JSON.stringify({model:CFG.model,messages:[{role:'system',content:'你是游戏叙事作家，用中文写出富有诗意和沉浸感的文字。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:500}),signal:ctrl.signal});
 clearTimeout(timer);
-if(!res.ok)throw new Error('API HTTP '+res.status);
+if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();return data.choices?.[0]?.message?.content||'';
 }catch(e){console.error('[AI Text] FAIL:',e.message);return ''}
 }
@@ -917,7 +917,7 @@ const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),15000);
 const res=await fetch(testEndpoint,{method:'POST',headers,
 body:JSON.stringify({model:testModel,messages:[{role:'user',content:'回复OK两个字母'}],temperature:0,max_tokens:10}),signal:ctrl.signal});
 clearTimeout(timer);
-if(!res.ok)throw new Error('HTTP '+res.status);
+if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();
 const reply=data.choices?.[0]?.message?.content||'';
 if(reply){result.innerHTML='✅ <span style="color:var(--grn)">连接成功!</span> 模型: '+testModel+' | 回复: '+reply.slice(0,30);result.style.color='var(--grn)'}
@@ -3088,7 +3088,7 @@ const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),15000);
 const res=await fetch(getAIEndpoint(),{method:'POST',headers,
 body:JSON.stringify({model:CFG.model,messages:[{role:'user',content:'回复OK'}],temperature:0,max_tokens:5}),signal:ctrl.signal});
 clearTimeout(timer);
-if(!res.ok)throw new Error('HTTP '+res.status);
+if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();
 const reply=data.choices?.[0]?.message?.content||'';
 if(reply){
