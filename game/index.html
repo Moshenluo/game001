@@ -39,11 +39,24 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 @keyframes awkCounterSpin{0%{transform:rotate(0)}50%{transform:rotate(-720deg)}100%{transform:rotate(-1440deg)}}
 @keyframes awkBurst{0%{transform:scale(1);opacity:1}60%{transform:scale(1.3);opacity:.8}100%{transform:scale(0);opacity:0}}
 @keyframes awkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.awk-circle.spinning{animation:awkSpinFast 2.5s cubic-bezier(.4,0,.2,1) forwards;pointer-events:none}
-.awk-circle.spinning .awk-inner{animation:awkCounterSpin 2.5s cubic-bezier(.4,0,.2,1) forwards}
-.awk-circle.spinning::before{width:250px;height:250px;border:2px dashed var(--gold);animation:spin 1s linear infinite;opacity:.8}
-.awk-circle.spinning::after{animation:spin .8s linear infinite;border-color:rgba(240,192,64,.5)}
 .awk-circle.burst{animation:awkBurst .6s ease-out forwards;pointer-events:none}
+/* Awakening particle system */
+.awk-particle{position:absolute;width:var(--sz,6px);height:var(--sz,6px);background:var(--pc,var(--gold));border-radius:50%;pointer-events:none;top:50%;left:50%;margin-left:calc(var(--sz,6px) / -2);margin-top:calc(var(--sz,6px) / -2);animation:awkOrbit var(--dur,3s) linear infinite;animation-delay:var(--del,0s);box-shadow:0 0 6px var(--pc,var(--gold));opacity:0;z-index:0}
+@keyframes awkOrbit{0%{transform:rotate(var(--a,0deg)) translateX(var(--d,130px));opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:rotate(calc(var(--a,0deg) + 360deg)) translateX(var(--d,130px));opacity:0}}
+.awk-circle{--awk-color:var(--gold)}
+.awk-circle.s1{border-color:var(--awk-color);box-shadow:0 0 30px color-mix(in srgb,var(--awk-color) 40%,transparent);animation:awkBreathe 1s ease-in-out infinite}
+.awk-circle.s1::before{border-color:color-mix(in srgb,var(--awk-color) 30%,transparent)}
+.awk-circle.s1::after{border-color:color-mix(in srgb,var(--awk-color) 40%,transparent)}
+.awk-circle.s2{border-color:var(--awk-color);box-shadow:0 0 60px color-mix(in srgb,var(--awk-color) 60%,transparent),0 0 120px color-mix(in srgb,var(--awk-color) 20%,transparent);animation:awkSpinFast 2s cubic-bezier(.4,0,.2,1) forwards}
+.awk-circle.s2 .awk-inner{animation:awkCounterSpin 2s cubic-bezier(.4,0,.2,1) forwards}
+.awk-circle.s2::before{border:2px dashed var(--awk-color);animation:spin .8s linear infinite;opacity:.9}
+.awk-circle.s2::after{animation:spin .6s linear reverse infinite;border-color:color-mix(in srgb,var(--awk-color) 60%,transparent)}
+.awk-glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--awk-color,var(--gold)) 25%,transparent),transparent 70%);animation:awkGlowPulse 1.5s ease-in-out infinite alternate;pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%);z-index:-1}
+@keyframes awkGlowPulse{from{transform:translate(-50%,-50%) scale(.8);opacity:.3}to{transform:translate(-50%,-50%) scale(1.2);opacity:.7}}
+.awk-burst-particle{position:absolute;border-radius:50%;pointer-events:none;animation:awkBurstFly .8s ease-out forwards}
+@keyframes awkBurstFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--bx,0),var(--by,0)) scale(0);opacity:0}}
+.awk-flash{position:fixed;top:0;left:0;right:0;bottom:0;background:white;opacity:0;pointer-events:none;z-index:9999;animation:awkFlash .4s ease-out}
+@keyframes awkFlash{0%{opacity:.7}100%{opacity:0}}
 .awk-card{background:var(--bg2);border:2px solid var(--gold);border-radius:16px;padding:28px;max-width:400px;width:100%;text-align:center;animation:awkCardIn .8s cubic-bezier(.2,.8,.3,1.2)}
 @keyframes awkCardIn{0%{opacity:0;transform:scale(.7) translateY(30px)}60%{opacity:1;transform:scale(1.03) translateY(-5px)}100%{transform:scale(1) translateY(0)}}
 .awk-card .emoji{font-size:4em;margin-bottom:8px;animation:awkFloat 3s ease-in-out infinite}.awk-card .name{font-size:1.6em;color:var(--gold);font-weight:bold}.awk-card .title{font-size:1em;color:var(--t2);margin-bottom:12px}
@@ -51,13 +64,18 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .awk-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;text-align:left;font-size:.85em;margin:12px 0}.awk-card .stats .sl{color:var(--t3)}.awk-card .stats .sv{color:var(--t1);font-weight:bold}
 .btn-big{background:linear-gradient(135deg,var(--goldd),var(--gold));color:#111;border:none;border-radius:10px;padding:14px 40px;font-size:1.1em;font-weight:bold;cursor:pointer;margin-top:18px;transition:all .3s}.btn-big:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(240,192,64,.3)}
 #gameScr{justify-content:flex-start;padding-top:10px;overflow-y:auto}
-.ghdr{width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bdr);margin-bottom:10px}
-.ghdr .li{font-size:1.1em;color:var(--gold)}.ghdr .ec{color:var(--t2);font-size:.9em}
+.ghdr{width:100%;padding:8px 0;border-bottom:1px solid var(--bdr);margin-bottom:8px}
+.ghdr-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.88em}
+.ghdr-item{color:var(--t2);white-space:nowrap}
+.ghdr-item.gold{color:var(--gold)}
+.ghdr-badges{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
+.ghdr-badge{padding:2px 8px;border-radius:6px;font-size:.75em;color:var(--t3)}
+.ghdr-badge.bt{background:rgba(224,64,80,.2);color:var(--red);border:1px solid var(--redd);cursor:pointer}
 .pbar{width:100%;background:var(--bg2);border-radius:10px;padding:14px 18px;margin-bottom:10px;border:1px solid var(--bdr)}
 .pstats{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.pstats .nm{font-weight:bold;color:var(--gold);font-size:1.05em}.pstats .lv{background:var(--bgc);padding:2px 10px;border-radius:8px;font-size:.85em;color:var(--t2)}
 .srow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.85em;margin-bottom:4px}
 .si .sl{color:var(--t3);margin-right:3px}.si .sv{font-weight:bold}
-.sv.hp{color:var(--grn)}.sv.atk{color:var(--red)}.sv.def{color:var(--blu)}.sv.en{color:var(--pur)}.sv.cr{color:var(--org)}.sv.lk{color:var(--gold)}
+.sv.hp{color:var(--grn)}.sv.atk{color:var(--red)}.sv.def{color:var(--blu)}.sv.en{color:var(--pur)}.sv.cr{color:var(--org)}.sv.lk{color:var(--gold)}.sv.spd{color:#0cc}
 .bar-w{width:100%;height:8px;background:#1a1a2e;border-radius:4px;overflow:hidden;margin-top:4px;position:relative}
 .bar-hp{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1),background .4s;background:linear-gradient(90deg,var(--grn),#60d060);box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}.bar-hp.mid{background:linear-gradient(90deg,var(--gold),#e0c060)}.bar-hp.low{background:linear-gradient(90deg,var(--red),#e06060);animation:pulse 1.5s infinite}
 .bar-en{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,#6060e0,var(--pur));box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
@@ -65,8 +83,8 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .skt{background:var(--bgc);border:1px solid var(--bdr);border-radius:6px;padding:3px 8px;font-size:.75em;color:var(--t2);cursor:default;position:relative}.skt .life{font-size:.65em;color:var(--org);margin-left:4px}.skt.cd{opacity:.5}.skt.empty{border-style:dashed;opacity:.3}
 .skt:hover .sktip{display:block}.sktip{display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:10px;width:200px;z-index:20;font-size:1.1em;line-height:1.5;text-align:left}
 .ep{display:flex;gap:8px;margin-bottom:12px}.edot{width:12px;height:12px;border-radius:50%;background:var(--bdr);transition:background .3s}.edot.done{background:var(--grn)}.edot.cur{background:var(--gold);box-shadow:0 0 8px rgba(240,192,64,.5)}.edot.boss{border:2px solid var(--red)}
-.bag-btn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:6px 14px;color:var(--t1);cursor:pointer;font-size:.85em;margin-bottom:8px;transition:all .2s}.bag-btn:hover{background:var(--bgch);border-color:var(--gold)}
-.earea{width:100%;flex:1;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding-bottom:20px}
+/* toolbar replaces bag-btn */
+.earea{width:100%;flex:1;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding-bottom:70px}
 .ecard{width:100%;background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 2px 16px rgba(0,0,0,.15)}
 .etag{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:12px;font-size:.8em;margin-bottom:10px}.etag .ai-badge{background:var(--pur);color:#fff;font-size:.7em;padding:1px 6px;border-radius:4px;font-weight:bold;animation:pulse 2s infinite}.etag .pre-badge{background:var(--t3);color:#fff;font-size:.7em;padding:1px 6px;border-radius:4px}
 .etitle{font-size:1.4em;color:var(--gold);margin-bottom:12px}.edesc{font-size:1em;color:var(--t1);line-height:1.7;margin-bottom:18px;min-height:50px}
@@ -78,6 +96,15 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .echbtn .check-badge{display:inline-block;font-size:.78em;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:normal}
 .eres{background:var(--bgc);border:1px solid var(--bdr);border-radius:10px;padding:18px;margin-top:10px;text-align:center;animation:fadeIn .5s}.eres .rt{font-size:1em;margin-bottom:12px;line-height:1.6}.eres .rf{font-size:.9em;color:var(--t2)}.rf .pos{color:var(--grn)}.rf .neg{color:var(--red)}
 .barea{width:100%;display:flex;flex-direction:column;gap:14px}
+.atb-wrap{display:flex;gap:6px;align-items:center;margin:4px 0}
+.atb-label{font-size:.7em;color:var(--t3);width:32px;text-align:right;flex-shrink:0}
+.atb-bar{flex:1;height:12px;background:#111;border-radius:6px;overflow:hidden;border:1px solid var(--bdr)}
+.atb-fill{height:100%;border-radius:6px;transition:width .15s linear}
+.atb-fill.pl{background:linear-gradient(90deg,#2080e0,#40c0ff);box-shadow:0 0 6px rgba(64,192,255,.3)}
+.atb-fill.en{background:linear-gradient(90deg,#c04040,#e06060);box-shadow:0 0 6px rgba(224,96,96,.3)}
+.atb-fill.ready{animation:atbPulse .4s ease-in-out infinite alternate}
+.atb-spd{font-size:.6em;color:var(--t3);width:24px;text-align:left;flex-shrink:0}
+@keyframes atbPulse{from{filter:brightness(1)}to{filter:brightness(1.5)}}
 .bent{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
 .be{flex:1;background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:16px;text-align:center;transition:border-color .3s,box-shadow .3s}.be .bem{font-size:3em;margin-bottom:6px}.be .ben{font-weight:bold;font-size:1.05em;margin-bottom:8px}.be.pl .ben{color:var(--gold)}.be.en .ben{color:var(--red)}.be.pl{border-color:rgba(240,192,64,.25)}.be.en{border-color:rgba(224,64,80,.25)}
 .bvs{font-size:1.5em;color:var(--red);font-weight:bold;align-self:center;flex-shrink:0;text-shadow:0 0 12px rgba(224,64,80,.3)}
@@ -138,9 +165,9 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .dc h3{font-size:1.15em}
   .gear{top:10px;right:10px;font-size:1.3em}
   .modal{max-width:95vw;padding:16px}
-  .ghdr{padding:6px 0;margin-bottom:6px}
-  .ghdr .li{font-size:1em}
-  .ghdr .ec{font-size:.8em}
+  .ghdr{padding:5px 0;margin-bottom:5px}
+  .ghdr-row{font-size:.78em;gap:4px}
+  .ghdr-badges{margin-top:3px}
   .pbar{padding:10px 12px;margin-bottom:8px}
   .pstats{flex-wrap:wrap;gap:4px}
   .pstats .nm{font-size:.95em}
@@ -150,7 +177,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .ep{gap:6px;margin-bottom:8px}
   .edot{width:10px;height:10px}
   .bag-btn{padding:5px 10px;font-size:.8em;margin-bottom:6px}
-  .earea{padding-bottom:12px}
+  .earea{padding-bottom:70px}
   .ecard{padding:16px;border-radius:10px}
   .etag{font-size:.75em;padding:2px 10px}
   .etitle{font-size:1.15em;margin-bottom:8px}
@@ -195,7 +222,6 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .awk-inner{width:130px;height:130px}
   .awk-circle::before{width:210px;height:210px}
   .awk-circle::after{width:230px;height:230px;font-size:.6em;letter-spacing:8px}
-  .awk-circle.spinning::before{width:210px;height:210px}
   .awk-card{padding:20px;max-width:95vw}
   .awk-card .emoji{font-size:3em}
   .awk-card .name{font-size:1.3em}
@@ -263,7 +289,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .dc{min-height:60px}
   .btn-big{min-height:48px}
   .btn-sm{min-height:40px;padding:8px 16px}
-  .bag-btn{min-height:40px}
+  .tb-btn{min-height:48px}
   .gear{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
   .reg-card{min-height:80px}
 }
@@ -356,8 +382,14 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .ach-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--bg2);border:2px solid var(--gold);border-radius:12px;padding:12px 24px;z-index:2000;animation:fadeIn .5s;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5)}
 .ach-toast .at-title{color:var(--gold);font-weight:bold;font-size:1em}
 .ach-toast .at-desc{color:var(--t2);font-size:.8em;margin-top:4px}
+/* Bottom Toolbar */
+.toolbar{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(10,10,18,.95);border-top:1px solid var(--bdr);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:100;padding:4px 0 max(4px,env(safe-area-inset-bottom))}
+.tb-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 4px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:.72em;transition:all .2s;min-height:44px;justify-content:center}
+.tb-btn:hover,.tb-btn:active{color:var(--gold);background:rgba(255,215,0,.05)}
+.tb-icon{font-size:1.4em;line-height:1}
+.tb-label{font-size:.85em;line-height:1}
+.tb-count{font-size:.7em;color:var(--t3);line-height:1}
 /* Save/Load */
-.save-btn{background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:4px 12px;color:var(--t2);cursor:pointer;font-size:.8em;transition:all .2s}.save-btn:hover{border-color:var(--gold);color:var(--gold)}
 .save-modal{background:var(--bg2);border:1px solid var(--gold);border-radius:12px;padding:20px;max-width:400px;width:90%;text-align:center}
 .save-code{font-family:monospace;font-size:1.4em;color:var(--gold);background:var(--bgc);padding:10px 20px;border-radius:8px;border:2px dashed var(--bdr);margin:10px 0;letter-spacing:2px;user-select:all;cursor:pointer}
 .title-btns{display:flex;gap:10px;margin-top:12px;justify-content:center}
@@ -457,12 +489,16 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <!-- Game -->
 <div id="gameScr" class="scr">
 <div class="ghdr">
-<div id="uiAge" style="color:var(--gold);font-size:.95em">🕐 <span id="uiAgeY">16</span>岁<span id="uiAgeM">0</span>月 / 寿至<span id="uiLifespan">51</span>岁</div>
-<div class="ec">📅 第 <span id="uiMonth">1</span> 月 | 事件 <span id="uiEvt">1</span>/5</div>
-<div style="color:var(--gold);font-size:.9em">💰 <span id="uiGold">0</span></div>
-<div id="uiBTBadge" style="display:none;background:rgba(224,64,80,.2);color:var(--red);padding:3px 10px;border-radius:8px;font-size:.8em;border:1px solid var(--redd);cursor:pointer" onclick="showBreakthroughScreen()">⚡ 突破!</div>
-<div id="uiDiff" style="padding:3px 12px;border-radius:8px;font-size:.85em"></div>
-<div id="uiRegion" style="padding:3px 12px;border-radius:8px;font-size:.85em;display:none"></div>
+<div class="ghdr-row">
+<span class="ghdr-item gold">🕐 <span id="uiAgeY">16</span>岁<span id="uiAgeM">0</span>月<span style="color:var(--t3);font-size:.85em"> / <span id="uiLifespan">51</span>岁</span></span>
+<span class="ghdr-item">📅 <span id="uiMonth">1</span>月 · <span id="uiEvt">1</span>/5</span>
+<span class="ghdr-item gold">💰 <span id="uiGold">0</span></span>
+</div>
+<div class="ghdr-badges">
+<span id="uiBTBadge" class="ghdr-badge bt" style="display:none" onclick="showBreakthroughScreen()">⚡ 突破!</span>
+<span id="uiDiff" class="ghdr-badge"></span>
+<span id="uiRegion" class="ghdr-badge" style="display:none"></span>
+</div>
 </div>
 <div class="pbar">
 <div class="pstats"><span class="nm" id="uiName">冒险者</span><span class="lv" id="uiLvBox">Lv.<span id="uiLv">1</span> <span id="uiTitle" style="color:var(--org);font-size:.85em">初觉者</span> | 怪物Lv.<span id="uiMLv">1</span></span></div>
@@ -474,6 +510,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <span class="si"><span class="sl">暴击</span><span class="sv cr" id="uiCR">5%/×1.5</span></span>
 <span class="si"><span class="sl">闪避</span><span class="sv" id="uiDG">3%</span></span>
 <span class="si"><span class="sl">幸运</span><span class="sv lk" id="uiLK">5</span></span>
+<span class="si"><span class="sl">速度</span><span class="sv spd" id="uiSPD">10</span></span>
 </div>
 <div class="bar-w"><div class="bar-hp" id="barHP" style="width:100%"></div></div>
 <div class="bar-w" style="margin-top:3px"><div class="bar-en" id="barEN" style="width:100%"></div></div>
@@ -481,11 +518,14 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="skbar" id="skBar"></div>
 <div class="debuff-bar" id="debuffBar"></div>
 </div>
-<button class="bag-btn" onclick="openBag()">🎒 背包 (<span id="bagCount">0</span>/<span id="bagMax">20</span>)</button>
-<button class="save-btn" onclick="openBestiary()" style="margin-left:6px">📖 图鉴</button>
-<button class="save-btn" onclick="openSaveModal()" style="margin-left:6px">💾 存档</button>
 <div class="ep" id="evtProg"></div>
 <div class="earea" id="evtArea"></div>
+</div>
+<!-- Bottom Toolbar -->
+<div class="toolbar" id="toolbar" style="display:none">
+<button class="tb-btn" onclick="openBag()"><span class="tb-icon">🎒</span><span class="tb-label">背包</span><span class="tb-count" id="bagCount2">0/20</span></button>
+<button class="tb-btn" onclick="openBestiary()"><span class="tb-icon">📖</span><span class="tb-label">图鉴</span></button>
+<button class="tb-btn" onclick="openSaveModal()"><span class="tb-icon">💾</span><span class="tb-label">存档</span></button>
 </div>
 <!-- Skill Awakening -->
 <div id="skAwkScr" class="scr">
@@ -575,7 +615,7 @@ const shuf=a=>{let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.
 const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
 const $=id=>document.getElementById(id);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');const tb=$('toolbar');if(tb)tb.style.display=(id==='gameScr')?'flex':'none'}
 async function showTrans(t,d=800){const o=$('trans');o.textContent=t;o.classList.add('on');await sleep(d);o.classList.remove('on');await sleep(300)}
 
 // ===== PRESET DATA =====
@@ -585,37 +625,37 @@ const DIRS=['flame','frost','storm','shadow','life','holy','blood','void'];
 const DIR_DESC={flame:'爆发输出，灼烧',frost:'控制减速，护盾',storm:'连锁打击，高频',shadow:'暴击暗杀，诡秘',life:'生命续航，回复',holy:'净化增益，均衡',blood:'吸血狂战，高风险',void:'能量增幅，技能流'};
 const PRESET_AWK={
 flame:[
-{name:'灰烬行者',title:'不灭之焰',emoji:'🔥',passiveType:'positive',passiveName:'不灭余烬',passiveDesc:'HP归零时不死，以1HP存活+3回合ATK+50%+免疫(每战限1次)',mechanics:{effects:[{type:'immortal',value:1,condition:null},{type:'on_lethal_atk_buff',value:0.5,condition:{duration:3}}],penalties:[]},stats:{hp:85,atk:10,def:4,energy:48,critRate:0.06,critDamage:1.5,dodgeRate:0.03,luck:4},affinity:'survival',narrative:'坚韧不拔，浴火重生'},
-{name:'烈焰君主',title:'灼热王座',emoji:'👑',passiveType:'dual_edge',passiveName:'焚天之怒',passiveDesc:'攻击附加ATK×5%灼烧(3回合)，但自身每回合受2%maxHP灼烧',mechanics:{effects:[{type:'dot_apply',value:0.05,condition:{dotDur:3}}],penalties:[{type:'self_burn',value:0.02,condition:'per_turn'}]},stats:{hp:90,atk:13,def:3,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'霸道炽热，焚尽一切'},
-{name:'熔岩铸师',title:'大地之锤',emoji:'🔨',passiveType:'none',passiveName:'无',passiveDesc:'无特殊能力，天生体魄超群',mechanics:{},stats:{hp:125,atk:14,def:7,energy:58,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:7},affinity:'mixed',narrative:'朴实刚健，以力服人'}
+{name:'灰烬行者',title:'不灭之焰',emoji:'🔥',passiveType:'positive',passiveName:'不灭余烬',passiveDesc:'HP归零时不死，以1HP存活+3回合ATK+50%+免疫(每战限1次)',mechanics:{effects:[{type:'immortal',value:1,condition:null},{type:'on_lethal_atk_buff',value:0.5,condition:{duration:3}}],penalties:[]},stats:{hp:85,atk:10,def:4,energy:48,critRate:0.06,critDamage:1.5,dodgeRate:0.03,luck:4,speed:8},affinity:'survival',narrative:'坚韧不拔，浴火重生'},
+{name:'烈焰君主',title:'灼热王座',emoji:'👑',passiveType:'dual_edge',passiveName:'焚天之怒',passiveDesc:'攻击附加ATK×5%灼烧(3回合)，但自身每回合受2%maxHP灼烧',mechanics:{effects:[{type:'dot_apply',value:0.05,condition:{dotDur:3}}],penalties:[{type:'self_burn',value:0.02,condition:'per_turn'}]},stats:{hp:90,atk:13,def:3,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:5,speed:12},affinity:'damage',narrative:'霸道炽热，焚尽一切'},
+{name:'熔岩铸师',title:'大地之锤',emoji:'🔨',passiveType:'none',passiveName:'无',passiveDesc:'无特殊能力，天生体魄超群',mechanics:{},stats:{hp:125,atk:14,def:7,energy:58,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:7,speed:6},affinity:'mixed',narrative:'朴实刚健，以力服人'}
 ],frost:[
-{name:'永冻之王',title:'绝对零度',emoji:'❄️',passiveType:'dual_edge',passiveName:'冰封领域',passiveDesc:'受击15%冻结敌人1回合，但DEF-10%',mechanics:{effects:[{type:'freeze_chance',value:0.15,condition:null}],penalties:[{type:'def_mult',value:-0.1,condition:null}]},stats:{hp:95,atk:10,def:5,energy:52,critRate:0.06,critDamage:1.6,dodgeRate:0.04,luck:5},affinity:'survival',narrative:'冰冷威严，万物冻结'},
-{name:'冰棱裁决者',title:'寒霜法庭',emoji:'⚖️',passiveType:'positive',passiveName:'冰甲裁决',passiveDesc:'每战斗开始获得maxHP×10%护盾',mechanics:{effects:[{type:'shield',value:0.1,condition:null}],penalties:[]},stats:{hp:85,atk:10,def:5,energy:50,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:4},affinity:'survival',narrative:'公正冷酷，裁决一切'},
-{name:'霜语幽灵',title:'无声寒息',emoji:'👻',passiveType:'none',passiveName:'无',passiveDesc:'无特殊能力，天赋异禀',mechanics:{},stats:{hp:110,atk:12,def:6,energy:55,critRate:0.07,critDamage:1.6,dodgeRate:0.05,luck:6},affinity:'mixed',narrative:'幽灵般寂静'}
+{name:'永冻之王',title:'绝对零度',emoji:'❄️',passiveType:'dual_edge',passiveName:'冰封领域',passiveDesc:'受击15%冻结敌人1回合，但DEF-10%',mechanics:{effects:[{type:'freeze_chance',value:0.15,condition:null}],penalties:[{type:'def_mult',value:-0.1,condition:null}]},stats:{hp:95,atk:10,def:5,energy:52,critRate:0.06,critDamage:1.6,dodgeRate:0.04,luck:5,speed:7},affinity:'survival',narrative:'冰冷威严，万物冻结'},
+{name:'冰棱裁决者',title:'寒霜法庭',emoji:'⚖️',passiveType:'positive',passiveName:'冰甲裁决',passiveDesc:'每战斗开始获得maxHP×10%护盾',mechanics:{effects:[{type:'shield',value:0.1,condition:null}],penalties:[]},stats:{hp:85,atk:10,def:5,energy:50,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:4,speed:8},affinity:'survival',narrative:'公正冷酷，裁决一切'},
+{name:'霜语幽灵',title:'无声寒息',emoji:'👻',passiveType:'none',passiveName:'无',passiveDesc:'无特殊能力，天赋异禀',mechanics:{},stats:{hp:110,atk:12,def:6,energy:55,critRate:0.07,critDamage:1.6,dodgeRate:0.05,luck:6,speed:10},affinity:'mixed',narrative:'幽灵般寂静'}
 ],storm:[
-{name:'雷帝',title:'万雷之主',emoji:'⚡',passiveType:'dual_edge',passiveName:'雷霆之躯',passiveDesc:'每3次攻击触发雷击(ATK×50%无视防御)，但受击10%被麻痹',mechanics:{effects:[{type:'chain_strike',value:3,condition:{chainDmg:0.5}}],penalties:[{type:'paralyze',value:0.1,condition:null}]},stats:{hp:88,atk:12,def:4,energy:50,critRate:0.10,critDamage:2.0,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'雷霆万钧，天罚降临'},
-{name:'风暴之眼',title:'暴风中心',emoji:'🌪️',passiveType:'positive',passiveName:'暴风护体',passiveDesc:'闪避率+8%，闪避后下次攻击必暴',mechanics:{effects:[{type:'dodge_bonus',value:0.08,condition:null},{type:'crit_after_dodge',value:1,condition:null}],penalties:[]},stats:{hp:82,atk:11,def:4,energy:48,critRate:0.08,critDamage:1.8,dodgeRate:0.08,luck:5},affinity:'damage',narrative:'如暴风般不可预测'},
-{name:'紫电狂徒',title:'连锁闪电',emoji:'💜',passiveType:'none',passiveName:'无',passiveDesc:'纯粹的力量与速度',mechanics:{},stats:{hp:115,atk:13,def:6,energy:56,critRate:0.06,critDamage:1.5,dodgeRate:0.04,luck:7},affinity:'mixed',narrative:'狂野不羁，电光火石'}
+{name:'雷帝',title:'万雷之主',emoji:'⚡',passiveType:'dual_edge',passiveName:'雷霆之躯',passiveDesc:'每3次攻击触发雷击(ATK×50%无视防御)，但受击10%被麻痹',mechanics:{effects:[{type:'chain_strike',value:3,condition:{chainDmg:0.5}}],penalties:[{type:'paralyze',value:0.1,condition:null}]},stats:{hp:88,atk:12,def:4,energy:50,critRate:0.10,critDamage:2.0,dodgeRate:0.03,luck:5,speed:14},affinity:'damage',narrative:'雷霆万钧，天罚降临'},
+{name:'风暴之眼',title:'暴风中心',emoji:'🌪️',passiveType:'positive',passiveName:'暴风护体',passiveDesc:'闪避率+8%，闪避后下次攻击必暴',mechanics:{effects:[{type:'dodge_bonus',value:0.08,condition:null},{type:'crit_after_dodge',value:1,condition:null}],penalties:[]},stats:{hp:82,atk:11,def:4,energy:48,critRate:0.08,critDamage:1.8,dodgeRate:0.08,luck:5,speed:13},affinity:'damage',narrative:'如暴风般不可预测'},
+{name:'紫电狂徒',title:'连锁闪电',emoji:'💜',passiveType:'none',passiveName:'无',passiveDesc:'纯粹的力量与速度',mechanics:{},stats:{hp:115,atk:13,def:6,energy:56,critRate:0.06,critDamage:1.5,dodgeRate:0.04,luck:7,speed:11},affinity:'mixed',narrative:'狂野不羁，电光火石'}
 ],shadow:[
-{name:'暗影君王',title:'暗影统帅',emoji:'👤',passiveType:'dual_edge',passiveName:'暗影统御',passiveDesc:'击杀召唤分身(3回合ATK×20%额外伤害)，但每分身DEF-10%',mechanics:{effects:[{type:'summon',value:3,condition:{summonDmg:0.2}}],penalties:[{type:'def_per_summon',value:-0.1,condition:null}]},stats:{hp:95,atk:11,def:5,energy:50,critRate:0.10,critDamage:1.7,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'王者气质，统帅暗影军团'},
-{name:'影之镰刀',title:'灵魂收割',emoji:'🌙',passiveType:'dual_edge',passiveName:'灵魂收割',passiveDesc:'暴击时回复伤害30%HP，非暴击受3%maxHP惩罚',mechanics:{effects:[{type:'crit_heal',value:0.3,condition:null}],penalties:[{type:'miss_self_pct',value:0.03,condition:null}]},stats:{hp:85,atk:13,def:3,energy:45,critRate:0.22,critDamage:2.3,dodgeRate:0.03,luck:4},affinity:'damage',narrative:'冷酷收割，每一击都是赌注'},
-{name:'死神契约',title:'向死而生',emoji:'💀',passiveType:'dual_edge',passiveName:'濒死狂舞',passiveDesc:'HP<50%时ATK+40%暴击+25%，HP>70%时ATK-20%能量回复减半',mechanics:{effects:[{type:'low_hp_atk',value:0.4,condition:{threshold:0.5}},{type:'low_hp_crit',value:0.25,condition:{threshold:0.5}}],penalties:[{type:'high_hp_atk',value:-0.2,condition:{threshold:0.7}},{type:'high_hp_en_regen',value:-0.5,condition:{threshold:0.7}}]},stats:{hp:100,atk:10,def:4,energy:55,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:6},affinity:'mixed',narrative:'疯狂绝望，向死而生'}
+{name:'暗影君王',title:'暗影统帅',emoji:'👤',passiveType:'dual_edge',passiveName:'暗影统御',passiveDesc:'击杀召唤分身(3回合ATK×20%额外伤害)，但每分身DEF-10%',mechanics:{effects:[{type:'summon',value:3,condition:{summonDmg:0.2}}],penalties:[{type:'def_per_summon',value:-0.1,condition:null}]},stats:{hp:95,atk:11,def:5,energy:50,critRate:0.10,critDamage:1.7,dodgeRate:0.03,luck:5,speed:10},affinity:'damage',narrative:'王者气质，统帅暗影军团'},
+{name:'影之镰刀',title:'灵魂收割',emoji:'🌙',passiveType:'dual_edge',passiveName:'灵魂收割',passiveDesc:'暴击时回复伤害30%HP，非暴击受3%maxHP惩罚',mechanics:{effects:[{type:'crit_heal',value:0.3,condition:null}],penalties:[{type:'miss_self_pct',value:0.03,condition:null}]},stats:{hp:85,atk:13,def:3,energy:45,critRate:0.22,critDamage:2.3,dodgeRate:0.03,luck:4,speed:13},affinity:'damage',narrative:'冷酷收割，每一击都是赌注'},
+{name:'死神契约',title:'向死而生',emoji:'💀',passiveType:'dual_edge',passiveName:'濒死狂舞',passiveDesc:'HP<50%时ATK+40%暴击+25%，HP>70%时ATK-20%能量回复减半',mechanics:{effects:[{type:'low_hp_atk',value:0.4,condition:{threshold:0.5}},{type:'low_hp_crit',value:0.25,condition:{threshold:0.5}}],penalties:[{type:'high_hp_atk',value:-0.2,condition:{threshold:0.7}},{type:'high_hp_en_regen',value:-0.5,condition:{threshold:0.7}}]},stats:{hp:100,atk:10,def:4,energy:55,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:6,speed:9},affinity:'mixed',narrative:'疯狂绝望，向死而生'}
 ],life:[
-{name:'万木之灵',title:'生命之源',emoji:'🌳',passiveType:'positive',passiveName:'万物生长',passiveDesc:'每回合回复3%maxHP',mechanics:{effects:[{type:'hp_regen',value:0.03,condition:null}],penalties:[]},stats:{hp:90,atk:9,def:5,energy:52,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:6},affinity:'survival',narrative:'温暖慈爱，万物生长'},
-{name:'生命编织者',title:'命运织线',emoji:'🧬',passiveType:'dual_edge',passiveName:'生命编织',passiveDesc:'治疗效果+50%，但受伤+10%',mechanics:{effects:[{type:'heal_amplify',value:0.5,condition:null}],penalties:[{type:'damage_taken',value:0.1,condition:null}]},stats:{hp:95,atk:10,def:4,energy:50,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:5},affinity:'support',narrative:'精密编织命运'},
-{name:'翠灵祭司',title:'大地祝福',emoji:'🍀',passiveType:'none',passiveName:'无',passiveDesc:'天生幸运儿',mechanics:{},stats:{hp:110,atk:11,def:6,energy:55,critRate:0.06,critDamage:1.5,dodgeRate:0.04,luck:10},affinity:'mixed',narrative:'祥和自然'}
+{name:'万木之灵',title:'生命之源',emoji:'🌳',passiveType:'positive',passiveName:'万物生长',passiveDesc:'每回合回复3%maxHP',mechanics:{effects:[{type:'hp_regen',value:0.03,condition:null}],penalties:[]},stats:{hp:90,atk:9,def:5,energy:52,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:6,speed:7},affinity:'survival',narrative:'温暖慈爱，万物生长'},
+{name:'生命编织者',title:'命运织线',emoji:'🧬',passiveType:'dual_edge',passiveName:'生命编织',passiveDesc:'治疗效果+50%，但受伤+10%',mechanics:{effects:[{type:'heal_amplify',value:0.5,condition:null}],penalties:[{type:'damage_taken',value:0.1,condition:null}]},stats:{hp:95,atk:10,def:4,energy:50,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:5,speed:8},affinity:'support',narrative:'精密编织命运'},
+{name:'翠灵祭司',title:'大地祝福',emoji:'🍀',passiveType:'none',passiveName:'无',passiveDesc:'天生幸运儿',mechanics:{},stats:{hp:110,atk:11,def:6,energy:55,critRate:0.06,critDamage:1.5,dodgeRate:0.04,luck:10,speed:9},affinity:'mixed',narrative:'祥和自然'}
 ],holy:[
-{name:'光辉圣者',title:'神圣审判',emoji:'✨',passiveType:'dual_edge',passiveName:'圣光裁决',passiveDesc:'对HP>70%敌人伤害+30%，自身HP<30%伤害-20%',mechanics:{effects:[{type:'conditional_dmg',value:0.3,condition:{enemyHpAbove:0.7}}],penalties:[{type:'low_self_dmg',value:-0.2,condition:{threshold:0.3}}]},stats:{hp:92,atk:11,def:5,energy:50,critRate:0.06,critDamage:1.6,dodgeRate:0.03,luck:5},affinity:'support',narrative:'庄严神圣，审判邪恶'},
-{name:'黎明使者',title:'破晓之光',emoji:'🌅',passiveType:'positive',passiveName:'黎明祝福',passiveDesc:'每场前3回合ATK+15%',mechanics:{effects:[{type:'early_battle_atk',value:0.15,condition:{duration:3}}],penalties:[]},stats:{hp:85,atk:10,def:4,energy:48,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:5},affinity:'support',narrative:'希望之光，驱散黑暗'},
-{name:'破晓之盾',title:'不动壁垒',emoji:'🛡️',passiveType:'none',passiveName:'无',passiveDesc:'坚如磐石',mechanics:{},stats:{hp:120,atk:10,def:8,energy:55,critRate:0.04,critDamage:1.4,dodgeRate:0.04,luck:6},affinity:'survival',narrative:'坚不可摧'}
+{name:'光辉圣者',title:'神圣审判',emoji:'✨',passiveType:'dual_edge',passiveName:'圣光裁决',passiveDesc:'对HP>70%敌人伤害+30%，自身HP<30%伤害-20%',mechanics:{effects:[{type:'conditional_dmg',value:0.3,condition:{enemyHpAbove:0.7}}],penalties:[{type:'low_self_dmg',value:-0.2,condition:{threshold:0.3}}]},stats:{hp:92,atk:11,def:5,energy:50,critRate:0.06,critDamage:1.6,dodgeRate:0.03,luck:5,speed:9},affinity:'support',narrative:'庄严神圣，审判邪恶'},
+{name:'黎明使者',title:'破晓之光',emoji:'🌅',passiveType:'positive',passiveName:'黎明祝福',passiveDesc:'每场前3回合ATK+15%',mechanics:{effects:[{type:'early_battle_atk',value:0.15,condition:{duration:3}}],penalties:[]},stats:{hp:85,atk:10,def:4,energy:48,critRate:0.05,critDamage:1.5,dodgeRate:0.03,luck:5,speed:10},affinity:'support',narrative:'希望之光，驱散黑暗'},
+{name:'破晓之盾',title:'不动壁垒',emoji:'🛡️',passiveType:'none',passiveName:'无',passiveDesc:'坚如磐石',mechanics:{},stats:{hp:120,atk:10,def:8,energy:55,critRate:0.04,critDamage:1.4,dodgeRate:0.04,luck:6,speed:6},affinity:'survival',narrative:'坚不可摧'}
 ],blood:[
-{name:'血月领主',title:'猩红之月',emoji:'🩸',passiveType:'dual_edge',passiveName:'血之渴望',passiveDesc:'伤害15%转为HP，但每回合流失1%maxHP',mechanics:{effects:[{type:'lifesteal',value:0.15,condition:null}],penalties:[{type:'hp_loss',value:0.01,condition:'per_turn'}]},stats:{hp:95,atk:13,def:4,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'嗜血残暴，以血为食'},
-{name:'猩红收割者',title:'血色审判',emoji:'⚰️',passiveType:'dual_edge',passiveName:'死亡标记',passiveDesc:'击杀后ATK+20%持续3层，但满血时ATK-15%',mechanics:{effects:[{type:'kill_buff',value:0.2,condition:{duration:3}}],penalties:[{type:'full_hp_atk',value:-0.15,condition:null}]},stats:{hp:88,atk:12,def:4,energy:48,critRate:0.10,critDamage:2.0,dodgeRate:0.03,luck:5},affinity:'damage',narrative:'死亡使者，收割灵魂'},
-{name:'血契亡魂',title:'不死血奴',emoji:'💉',passiveType:'none',passiveName:'无',passiveDesc:'不死的躯体',mechanics:{},stats:{hp:120,atk:12,def:6,energy:54,critRate:0.06,critDamage:1.5,dodgeRate:0.03,luck:6},affinity:'mixed',narrative:'不死不灭'}
+{name:'血月领主',title:'猩红之月',emoji:'🩸',passiveType:'dual_edge',passiveName:'血之渴望',passiveDesc:'伤害15%转为HP，但每回合流失1%maxHP',mechanics:{effects:[{type:'lifesteal',value:0.15,condition:null}],penalties:[{type:'hp_loss',value:0.01,condition:'per_turn'}]},stats:{hp:95,atk:13,def:4,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:5,speed:11},affinity:'damage',narrative:'嗜血残暴，以血为食'},
+{name:'猩红收割者',title:'血色审判',emoji:'⚰️',passiveType:'dual_edge',passiveName:'死亡标记',passiveDesc:'击杀后ATK+20%持续3层，但满血时ATK-15%',mechanics:{effects:[{type:'kill_buff',value:0.2,condition:{duration:3}}],penalties:[{type:'full_hp_atk',value:-0.15,condition:null}]},stats:{hp:88,atk:12,def:4,energy:48,critRate:0.10,critDamage:2.0,dodgeRate:0.03,luck:5,speed:13},affinity:'damage',narrative:'死亡使者，收割灵魂'},
+{name:'血契亡魂',title:'不死血奴',emoji:'💉',passiveType:'none',passiveName:'无',passiveDesc:'不死的躯体',mechanics:{},stats:{hp:120,atk:12,def:6,energy:54,critRate:0.06,critDamage:1.5,dodgeRate:0.03,luck:6,speed:8},affinity:'mixed',narrative:'不死不灭'}
 ],void:[
-{name:'星辰织者',title:'星河之手',emoji:'🌌',passiveType:'dual_edge',passiveName:'星辰之力',passiveDesc:'能量上限+30%技能伤害+15%，但普攻-25%',mechanics:{effects:[{type:'energy_max_bonus',value:0.3,condition:null},{type:'skill_dmg_mult',value:0.15,condition:null}],penalties:[{type:'norm_dmg_mult',value:-0.25,condition:null}]},stats:{hp:85,atk:9,def:4,energy:65,critRate:0.06,critDamage:1.6,dodgeRate:0.03,luck:7},affinity:'energy',narrative:'神秘深邃，操纵星辰'},
-{name:'虚空漫步者',title:'维度行者',emoji:'🕳️',passiveType:'positive',passiveName:'维度跃迁',passiveDesc:'每场15%概率闪避所有攻击',mechanics:{effects:[{type:'full_evade',value:0.15,condition:null}],penalties:[]},stats:{hp:88,atk:10,def:4,energy:55,critRate:0.05,critDamage:1.5,dodgeRate:0.06,luck:6},affinity:'energy',narrative:'超脱维度'},
-{name:'命运赌徒',title:'运气之王',emoji:'🎲',passiveType:'dual_edge',passiveName:'命运骰子',passiveDesc:'所有随机效果×2，负面效果也×2',mechanics:{effects:[{type:'all_random_mult',value:2,condition:null}],penalties:[{type:'all_neg_mult',value:2,condition:null}]},stats:{hp:90,atk:11,def:4,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:10},affinity:'mixed',narrative:'赌徒心态，一切皆赌'}
+{name:'星辰织者',title:'星河之手',emoji:'🌌',passiveType:'dual_edge',passiveName:'星辰之力',passiveDesc:'能量上限+30%技能伤害+15%，但普攻-25%',mechanics:{effects:[{type:'energy_max_bonus',value:0.3,condition:null},{type:'skill_dmg_mult',value:0.15,condition:null}],penalties:[{type:'norm_dmg_mult',value:-0.25,condition:null}]},stats:{hp:85,atk:9,def:4,energy:65,critRate:0.06,critDamage:1.6,dodgeRate:0.03,luck:7,speed:10},affinity:'energy',narrative:'神秘深邃，操纵星辰'},
+{name:'虚空漫步者',title:'维度行者',emoji:'🕳️',passiveType:'positive',passiveName:'维度跃迁',passiveDesc:'每场15%概率闪避所有攻击',mechanics:{effects:[{type:'full_evade',value:0.15,condition:null}],penalties:[]},stats:{hp:88,atk:10,def:4,energy:55,critRate:0.05,critDamage:1.5,dodgeRate:0.06,luck:6,speed:12},affinity:'energy',narrative:'超脱维度'},
+{name:'命运赌徒',title:'运气之王',emoji:'🎲',passiveType:'dual_edge',passiveName:'命运骰子',passiveDesc:'所有随机效果×2，负面效果也×2',mechanics:{effects:[{type:'all_random_mult',value:2,condition:null}],penalties:[{type:'all_neg_mult',value:2,condition:null}]},stats:{hp:90,atk:11,def:4,energy:50,critRate:0.08,critDamage:1.8,dodgeRate:0.03,luck:10,speed:11},affinity:'mixed',narrative:'赌徒心态，一切皆赌'}
 ]};
 
 // === Passive Effect Engine ===
@@ -723,7 +763,10 @@ const PRESET_SKILLS=[
 {name:'闪避步',cat:'survival',emoji:'💨',desc:'极速闪避下一次攻击',cd:2,cost:8,evade:true},{name:'治愈术',cat:'survival',emoji:'💚',desc:'调动生命能量恢复体力',cd:3,cost:15,healAmt:25},
 {name:'战吼',cat:'support',emoji:'📯',desc:'震撼战吼提升攻击力',cd:4,cost:15,atkBuff:6,dur:3},{name:'吸血斩',cat:'support',emoji:'🩸',desc:'攻击时吸取敌人生命力',cd:3,cost:12,steal:0.3,dmg:10},
 {name:'幸运星',cat:'support',emoji:'⭐',desc:'提升暴击率',cd:5,cost:20,critBoost:0.3,dur:4},{name:'回春术',cat:'survival',emoji:'🌸',desc:'持续恢复生命值',cd:4,cost:15,hot:8,dur:3},
-{name:'聚能',cat:'energy',emoji:'🌀',desc:'回复大量能量',cd:3,cost:0,energyGain:25}
+{name:'聚能',cat:'energy',emoji:'🌀',desc:'回复大量能量',cd:3,cost:0,energyGain:25},
+{name:'疾风步',cat:'support',emoji:'💨',desc:'提升速度5点持续全场',cd:4,cost:10,speedBuff:5},
+{name:'闪击',cat:'damage',emoji:'⚡',desc:'必定先手的快速攻击',cd:3,cost:18,dmg:12,firstStrike:true},
+{name:'迟缓术',cat:'support',emoji:'🐌',desc:'降低敌人行动速度',cd:3,cost:12,slowChance:0.6}
 ];
 
 // Immersive transition texts (replaces "AI正在..." loading messages)
@@ -821,10 +864,10 @@ const BOSSES=[
 ];
 
 const DIFF={
-easy:{name:'简单',color:'var(--grn)',eHp:.8,eAtk:.7,reward:1.3,heal:1.3,dropB:10,skillLife:1.3,boss:2,init:{hp:120,atk:10,def:5,en:60,cr:.08,cd:1.6,dg:.05,lk:8}},
-normal:{name:'普通',color:'var(--blu)',eHp:1,eAtk:1,reward:1,heal:1,dropB:0,skillLife:1,boss:2.5,init:{hp:100,atk:10,def:5,en:50,cr:.05,cd:1.5,dg:.03,lk:5}},
-hard:{name:'困难',color:'var(--org)',eHp:1.3,eAtk:1.4,reward:1.2,heal:.85,dropB:-5,skillLife:.8,boss:3,init:{hp:90,atk:10,def:4,en:50,cr:.05,cd:1.5,dg:.03,lk:4}},
-hell:{name:'地狱',color:'var(--red)',eHp:1.6,eAtk:1.8,reward:1.5,heal:.7,dropB:-10,skillLife:.6,boss:4,init:{hp:80,atk:12,def:3,en:45,cr:.03,cd:1.4,dg:.02,lk:3}}
+easy:{name:'简单',color:'var(--grn)',eHp:.8,eAtk:.7,reward:1.3,heal:1.3,dropB:10,skillLife:1.3,boss:2,dmgMul:0.8,healMul:1.2,init:{hp:120,atk:10,def:5,en:60,cr:.08,cd:1.6,dg:.05,lk:8}},
+normal:{name:'普通',color:'var(--blu)',eHp:1,eAtk:1,reward:1,heal:1,dropB:0,skillLife:1,boss:2.5,dmgMul:1,healMul:1,init:{hp:100,atk:10,def:5,en:50,cr:.05,cd:1.5,dg:.03,lk:5}},
+hard:{name:'困难',color:'var(--org)',eHp:1.3,eAtk:1.4,reward:1.2,heal:.85,dropB:-5,skillLife:.8,boss:3,dmgMul:1.2,healMul:0.85,init:{hp:90,atk:10,def:4,en:50,cr:.05,cd:1.5,dg:.03,lk:4}},
+hell:{name:'地狱',color:'var(--red)',eHp:1.6,eAtk:1.8,reward:1.5,heal:.7,dropB:-10,skillLife:.6,boss:4,dmgMul:1.4,healMul:0.7,init:{hp:80,atk:12,def:3,en:45,cr:.03,cd:1.4,dg:.02,lk:3}}
 };
 const THEME_CN={adventure:'冒险',ruins:'遗迹',merchant:'商人',curse:'诅咒',blessing:'祝福',trap:'陷阱',battle:'战斗',milestone:'里程碑',tomb:'古墓',duel:'对决',mystery:'奇闻',disaster:'天灾',treasure:'宝藏',stranger:'路人',gamble:'赌局'};
 const CAT_CN={damage:'伤害',survival:'生存',support:'辅助',energy:'能量'};
@@ -1165,18 +1208,69 @@ btn.disabled=false;btn.textContent='🔌 测试AI连接';
 }
 
 // ===== AWAKENING =====
+// === Awakening Particle System ===
+function addAwkParticles(container, count, color, opts) {
+  const rect = container.getBoundingClientRect();
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'awk-particle';
+    const angle = (360 / count) * i + (opts?.randomAngle ? Math.random() * 30 : 0);
+    const size = opts?.size || (3 + Math.random() * 5);
+    const dist = opts?.dist || (rect.width * 0.6 + Math.random() * 20);
+    const dur = opts?.dur || (2.5 + Math.random() * 2);
+    p.style.cssText = `--a:${angle}deg;--d:${dist}px;--sz:${size}px;--pc:${color};--dur:${dur}s;--del:${(Math.random() * dur).toFixed(1)}s`;
+    container.appendChild(p);
+  }
+}
+function addAwkGlow(container, color) {
+  const glow = document.createElement('div');
+  glow.className = 'awk-glow';
+  container.style.setProperty('--awk-color', color);
+  container.appendChild(glow);
+}
+function burstAwkParticles(container, count, color) {
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'awk-burst-particle';
+    const angle = Math.random() * 360 * Math.PI / 180;
+    const dist = 80 + Math.random() * 150;
+    const size = 4 + Math.random() * 8;
+    p.style.cssText = `width:${size}px;height:${size}px;background:${color};left:50%;top:50%;margin-left:${-size/2}px;margin-top:${-size/2}px;--bx:${Math.cos(angle)*dist}px;--by:${Math.sin(angle)*dist}px;box-shadow:0 0 8px ${color}`;
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 900);
+  }
+}
+function triggerAwkFlash() {
+  const flash = document.createElement('div');
+  flash.className = 'awk-flash';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 500);
+}
+
 async function doAwaken(){
-const c=$('awkCircle');c.classList.add('spinning');
+const c=$('awkCircle');
 const wrap=$('awkWrap');
-const st=document.createElement('div');st.style.cssText='color:var(--pur);font-size:1em;margin-top:16px;text-align:center';st.className='loading';st.innerHTML='✦ 正在连接命运之线...';wrap.appendChild(st);
+const st=document.createElement('div');st.style.cssText='color:var(--pur);font-size:1em;margin-top:16px;text-align:center';st.className='loading';st.innerHTML='✦ 命运之线正在连接...';wrap.appendChild(st);
 const dir=pick(DIRS),dirCN=DIR_NAMES[dir],dirDesc=DIR_DESC[dir];
+const dirColor=DIR_COLORS[dir]||'#f0c040';
+// Stage 1: Startup — particles + glow
+c.style.setProperty('--awk-color',dirColor);
+c.classList.add('s1');
+addAwkGlow(c, dirColor);
+addAwkParticles(c, 6, dirColor, {dist:130,dur:3,size:5});
+await sleep(600);
+// Stage 2: Condensing — intensify
+c.classList.remove('s1');c.classList.add('s2');
+c.querySelectorAll('.awk-particle').forEach(p=>p.remove());
+addAwkParticles(c, 10, dirColor, {dist:120,dur:1.5,size:4,randomAngle:true});
+st.innerHTML='✦ 命运正在凝聚...';st.style.color=dirColor;
 const prompt=`你是Roguelike游戏《命运裂隙》的觉醒系统。在「${dirCN}」方向内创造一个完全独特的觉醒体。
 【方向】${dirCN}(${dir}) 特征:${dirDesc} 【难度】${G.dc.name}
 规则:1.名字3-6字有创意 2.被动从dual_edge(双刃)/positive(纯正面)/none(无被动高属性)中选一 3.被动机制有创意 4.emoji代表核心特征
 5.被动效果使用标准effects/penalties数组格式，每个效果:{type,value,condition}
-可用效果类型:shield,hp_regen,lifesteal,dot_apply,chain_strike,crit_boost,crit_heal,dodge_bonus,full_evade,freeze_chance,skill_dmg_mult,heal_amplify,immortal,low_hp_atk,low_hp_crit,early_battle_atk,energy_max_bonus,kill_buff,conditional_dmg,counter_attack,reflect,crit_after_dodge,def_mult
-可用惩罚类型:self_burn,hp_loss,damage_taken,paralyze,norm_dmg_mult,miss_self_pct,high_hp_atk,high_hp_en_regen
-请只输出JSON:{"name":"","title":"","direction":"${dir}","emoji":"","description":"2-3句","passiveType":"","passiveName":"","passiveDescription":"","passiveMechanics":{"effects":[{"type":"效果类型","value":数值,"condition":条件或null}],"penalties":[{"type":"惩罚类型","value":数值,"condition":条件或null}]},"initialStats":{"hp":${R(80,120)},"atk":${R(8,14)},"def":${R(2,7)},"energy":${R(42,60)},"critRate":${(R(3,22)/100).toFixed(2)},"critDamage":${(R(130,260)/100).toFixed(2)},"dodgeRate":${(R(1,7)/100).toFixed(2)},"luck":${R(3,9)}},"skillAffinity":"damage|survival|support|energy|mixed","narrativeStyle":"叙事风格"}`;
+可用效果类型:shield,hp_regen,lifesteal,dot_apply,chain_strike,crit_boost,crit_heal,dodge_bonus,full_evade,freeze_chance,skill_dmg_mult,heal_amplify,immortal,low_hp_atk,low_hp_crit,early_battle_atk,energy_max_bonus,kill_buff,conditional_dmg,counter_attack,reflect,crit_after_dodge,def_mult,speed_boost,first_strike,low_hp_speed,speed_dmg
+可用惩罚类型:self_burn,hp_loss,damage_taken,paralyze,norm_dmg_mult,miss_self_pct,high_hp_atk,high_hp_en_regen,slow_speed
+请只输出JSON:{"name":"","title":"","direction":"${dir}","emoji":"","description":"2-3句","passiveType":"","passiveName":"","passiveDescription":"","passiveMechanics":{"effects":[{"type":"效果类型","value":数值,"condition":条件或null}],"penalties":[{"type":"惩罚类型","value":数值,"condition":条件或null}]},"initialStats":{"hp":${R(80,120)},"atk":${R(8,14)},"def":${R(2,7)},"energy":${R(42,60)},"critRate":${(R(3,22)/100).toFixed(2)},"critDamage":${(R(130,260)/100).toFixed(2)},"dodgeRate":${(R(1,7)/100).toFixed(2)},"luck":${R(3,9)},"speed":${R(5,15)}},"skillAffinity":"damage|survival|support|energy|mixed","narrativeStyle":"叙事风格"}`;
 // Phase 1: Connect
 await sleep(600);st.innerHTML='✦ AI 正在编织觉醒命运...';
 let awk=null,isAI=false;
@@ -1192,7 +1286,7 @@ await sleep(600);
 const t=pick(PRESET_AWK[dir]);awk={name:t.name,title:t.title,direction:dir,emoji:t.emoji,description:'',passiveType:t.passiveType,passiveName:t.passiveName,passiveDescription:t.passiveDesc,passiveMechanics:t.mechanics,initialStats:{...t.stats},skillAffinity:t.affinity,narrativeStyle:t.narrative,_preset:true,_errDetail:errDetail};
 }else{isAI=true}
 const s=awk.initialStats||{};s.hp=cl(Math.round(s.hp||90),70,130);s.atk=cl(Math.round(s.atk||10),7,15);s.def=cl(Math.round(s.def||5),2,8);s.energy=cl(Math.round(s.energy||50),40,65);
-s.critRate=cl(parseFloat(s.critRate)||.05,.03,.25);s.critDamage=cl(parseFloat(s.critDamage)||1.5,1.3,2.8);s.dodgeRate=cl(parseFloat(s.dodgeRate)||.03,.01,.1);s.luck=cl(Math.round(s.luck||5),3,10);
+s.critRate=cl(parseFloat(s.critRate)||.05,.03,.25);s.critDamage=cl(parseFloat(s.critDamage)||1.5,1.3,2.8);s.dodgeRate=cl(parseFloat(s.dodgeRate)||.03,.01,.1);s.luck=cl(Math.round(s.luck||5),3,10);s.speed=cl(Math.round(s.speed||10),5,15);
 awk.initialStats=s;awk.direction=dir;awk.emoji=awk.emoji||'✦';awk.passiveType=['dual_edge','positive','none'].includes(awk.passiveType)?awk.passiveType:'none';
 awk.passiveName=awk.passiveName||'无';awk.passiveDescription=awk.passiveDescription||'无特殊能力';
 awk.skillAffinity=['damage','survival','support','energy','mixed'].includes(awk.skillAffinity)?awk.skillAffinity:'mixed';
@@ -1200,9 +1294,14 @@ awk.narrativeStyle=awk.narrativeStyle||'通用冒险';awk._isAI=isAI;G.awk=awk;
 if(st.parentNode)st.parentNode.removeChild(st);
 // Start background AI map generation while player views awakening card
 generateAIMaps();
-// Burst animation → card reveal
-c.classList.remove('spinning');c.classList.add('burst');
-await sleep(600);showAwkCard(awk);
+// Stage 3: Burst — flash + particles explosion
+triggerAwkFlash();
+burstAwkParticles(c, 16, dirColor);
+c.classList.remove('s1','s2');c.classList.add('burst');
+c.querySelectorAll('.awk-particle,.awk-glow').forEach(el=>el.remove());
+await sleep(700);
+// Stage 4: Card reveal
+showAwkCard(awk);
 }
 
 function showAwkCard(a){
@@ -1222,13 +1321,14 @@ wrap.innerHTML=`${pw}<div class="awk-card" style="border-color:${clr}"><div styl
 <div><span class="sl">暴击伤害 </span><span class="sv">×${a.initialStats.critDamage.toFixed(1)}</span></div>
 <div><span class="sl">闪避率 </span><span class="sv">${(a.initialStats.dodgeRate*100).toFixed(0)}%</span></div>
 <div><span class="sl">幸运 </span><span class="sv">${a.initialStats.luck}</span></div>
+<div><span class="sl">速度 </span><span class="sv spd">${a.initialStats.speed||10}</span></div>
 </div><button class="btn-big" onclick="confirmAwk()">确认觉醒，进入裂隙</button></div>`;
 }
 
 async function confirmAwk(){
 const a=G.awk,s=a.initialStats;
 const dir=a.direction;
-G.p={hp:s.hp,maxHp:s.hp,atk:s.atk,def:s.def,en:s.energy,maxEn:s.energy,cr:s.critRate,cd:s.critDamage,dg:s.dodgeRate,lk:s.luck,skills:[],baseHp:s.hp,xp:0,level:1};
+G.p={hp:s.hp,maxHp:s.hp,atk:s.atk,def:s.def,en:s.energy,maxEn:s.energy,cr:s.critRate,cd:s.critDamage,dg:s.dodgeRate,lk:s.luck,spd:s.speed,skills:[],baseHp:s.hp,xp:0,level:1};
 G.currentAgeMonth=START_AGE*12;
 G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
 G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
@@ -1255,7 +1355,7 @@ const cap=G.breakthroughPending?nextBtLv:100;
 while(G.p.xp>=xpNeeded()&&G.p.level<cap&&G.p.level<100){
 G.p.xp-=xpNeeded();G.p.level++;
 G.p.maxHp+=8;G.p.atk+=2;G.p.def+=1;G.p.maxEn+=3;
-G.p.cr=Math.min(.8,G.p.cr+.005);G.p.cd+=.02;G.p.dg+=.003;G.p.lk=Math.min(30,G.p.lk+1);
+G.p.cr=Math.min(.8,G.p.cr+.005);G.p.cd+=.02;G.p.dg+=.003;G.p.lk=Math.min(30,G.p.lk+1);G.p.spd=Math.min(25,+(G.p.spd+0.5).toFixed(1));
 G.p.hp=G.p.maxHp;G.p.baseHp=G.p.maxHp;leveled=true;
 }
 // Trigger breakthrough notification (optional - player can choose when)
@@ -1382,6 +1482,8 @@ const totalDG=p.dg+bb.dodgeRate;
 $('uiDG').textContent=(totalDG*100).toFixed(1)+'%';
 const totalLK=p.lk+bb.luck;
 $('uiLK').innerHTML=totalLK+(bb.luck?`<span style="color:var(--org);font-size:.75em">(+${bb.luck})</span>`:'');
+const totalSPD=+(p.spd+(bb.spd||0)).toFixed(1);
+$('uiSPD').innerHTML=totalSPD+(bb.spd?`<span style="color:var(--org);font-size:.75em">(+${bb.spd})</span>`:'');
 const hpP=cl(p.hp/effMaxHp*100,0,100),hb=$('barHP');hb.style.width=hpP+'%';hb.className='bar-hp'+(hpP<25?' low':hpP<50?' mid':'');
 $('barEN').style.width=cl(p.en/effMaxEn*100,0,100)+'%';
 $('barXP').style.width=cl(p.xp/xpNeeded()*100,0,100)+'%';
@@ -1397,7 +1499,7 @@ if(bonusParts.length){let bonusEl=document.getElementById('bagBonusLine');
 if(!bonusEl){bonusEl=document.createElement('div');bonusEl.id='bagBonusLine';bonusEl.style.cssText='font-size:.75em;color:var(--org);margin-top:4px';$('skBar').parentNode.insertBefore(bonusEl,$('skBar'))}
 bonusEl.textContent='🎒 装备加成: '+bonusParts.join(' | ')}
 else{const bonusEl=document.getElementById('bagBonusLine');if(bonusEl)bonusEl.remove()}
-$('bagCount').textContent=G.bag.length;$('bagMax').textContent=G.bagMax;
+if($('bagCount2'))$('bagCount2').textContent=G.bag.length+'/'+G.bagMax;
 $('uiGold').textContent=G.gold;
 renderDebuffBar();
 const sb=$('skBar');sb.innerHTML='';
@@ -1844,13 +1946,13 @@ function removeFromBag(uid){G.bag=G.bag.filter(i=>i.uid!==uid);updateUI()}
 
 // Compute passive stat bonuses from equipment & relics in bag
 function getBagBonuses(){
-const b={atk:0,def:0,maxHp:0,maxEn:0,critRate:0,critDamage:0,dodgeRate:0,luck:0,lifesteal:0,hpRegen:0,killHeal:0,chainCount:0};
+const b={atk:0,def:0,maxHp:0,maxEn:0,critRate:0,critDamage:0,dodgeRate:0,luck:0,spd:0,lifesteal:0,hpRegen:0,killHeal:0,chainCount:0};
 G.bag.forEach(item=>{
 if((item.type==='equipment'||item.type==='relic')&&item.stats){
 const s=item.stats;
 if(s.atk)b.atk+=s.atk;if(s.def)b.def+=s.def;if(s.maxHp)b.maxHp+=s.maxHp;if(s.maxEn)b.maxEn+=s.maxEn;
 if(s.critRate)b.critRate+=s.critRate;if(s.critDamage)b.critDamage+=s.critDamage;
-if(s.dodgeRate)b.dodgeRate+=s.dodgeRate;if(s.luck)b.luck+=s.luck;
+if(s.dodgeRate)b.dodgeRate+=s.dodgeRate;if(s.luck)b.luck+=s.luck;if(s.speed||s.spd)b.spd+=(s.speed||s.spd);
 if(s.lifesteal)b.lifesteal+=s.lifesteal;if(s.hpRegen)b.hpRegen+=s.hpRegen;
 if(s.killHeal)b.killHeal+=s.killHeal;if(s.chainCount)b.chainCount+=s.chainCount;
 }});return b;
@@ -2124,7 +2226,7 @@ const rb=REGION_BOSSES[G.region];
 const bossHp=Math.floor(rb.hp*starScale*tierScale*diffScale*(dc.boss||1.5)*1.3);
 const bossAtk=Math.floor(rb.atk*starScale*tierScale*(dc.eAtk||1)*1.3);
 const bossDef=Math.floor(rb.def*starScale*0.9);
-return{name:rb.name,emoji:rb.emoji,hp:bossHp,maxHp:bossHp,atk:bossAtk,def:bossDef,
+return{name:rb.name,emoji:rb.emoji,hp:bossHp,maxHp:bossHp,atk:bossAtk,def:bossDef,spd:R(8,18),
 lv:monsterLv,isBoss:true,isElite:false,region:G.region,stars:monsterStar,tier:tierIdx,tierName,
 skills:[pick(MONSTER_SKILLS),pick(MONSTER_SKILLS.filter(s=>s.type!=='buff'))]};
 }
@@ -2132,7 +2234,7 @@ const avail=BOSSES.filter(b=>b.min<=G.month);const b=avail.length?avail[avail.le
 const bHp=Math.floor(b.hp*starScale*tierScale*diffScale*(dc.boss||1.5)*1.3);
 const bAtk=Math.floor(b.atk*starScale*tierScale*(dc.eAtk||1)*1.3);
 const bDef=Math.floor(b.def*starScale*0.9);
-return{name:b.name,emoji:b.emoji,hp:bHp,maxHp:bHp,atk:bAtk,def:bDef,lv:monsterLv,
+return{name:b.name,emoji:b.emoji,hp:bHp,maxHp:bHp,atk:bAtk,def:bDef,spd:R(8,18),lv:monsterLv,
 isBoss:true,isElite:false,stars:monsterStar,tier:tierIdx,tierName,
 skills:[pick(MONSTER_SKILLS),pick(MONSTER_SKILLS.filter(s=>s.type!=='buff'))]};
 }
@@ -2152,7 +2254,7 @@ const mDef=Math.floor((e.def||2)*starScale*tierScale*em);
 const mSkills=[];
 if(isElite){mSkills.push(pick(MONSTER_SKILLS));if(Math.random()<0.3)mSkills.push(pick(MONSTER_SKILLS))}
 const prefix=isElite?'精英 ':starBoost>=2?'危险 ':'';
-return{name:prefix+e.name,emoji:e.emoji,hp:mHp,maxHp:mHp,atk:mAtk,def:mDef,
+return{name:prefix+e.name,emoji:e.emoji,hp:mHp,maxHp:mHp,atk:mAtk,def:mDef,spd:isElite?R(7,16):R(5,15),
 key:e.id||'',lv:monsterLv,isBoss:false,isElite,region:G.region,stars:monsterStar,tier:tierIdx,tierName,skills:mSkills,isDangerous:starBoost>=2};
 }
 
@@ -2212,6 +2314,16 @@ ${starLabel}
 <div class="bar-w"><div class="bar-hp low" id="bEB" style="width:100%"></div></div>
 <div style="margin-top:4px;font-size:.8em;color:var(--t2)">攻击:${enemy.atk} 防御:${enemy.def}</div>
 ${skillLabel}</div></div></div>
+<div class="atb-wrap">
+<span class="atb-label" id="atbPLbl">${G.awk?G.awk.emoji:'🗡️'}</span>
+<div class="atb-bar"><div class="atb-fill pl" id="atbPBar" style="width:0%"></div></div>
+<span class="atb-spd" id="atbPSpd"></span>
+</div>
+<div class="atb-wrap">
+<span class="atb-label" id="atbELbl">${enemy.emoji}</span>
+<div class="atb-bar"><div class="atb-fill en" id="atbEBar" style="width:0%"></div></div>
+<span class="atb-spd" id="atbESpd"></span>
+</div>
 <div class="sfx-container" id="sfxBox">
 <div class="sfx-header"><span class="sfx-title">✦ 状态效果</span><span style="color:var(--t3);font-size:.9em">— 实时Buff/Debuff</span></div>
 <div class="sfx-row sfx-player" id="sfxPlayer"><span class="sfx-label">🗡️ 我方</span><span class="sfx-empty">暂无状态</span></div>
@@ -2278,6 +2390,7 @@ _battleCard.classList.add(_bgCls);
 let pShield=0,pDefBuff=0,pDefDur=0,pReflect=0,pRefDur=0,pEvade=false,pAtkBuff=0,pAtkDur=0,pHot=0,pHotDur=0,pCritB=0,pCritDur=0;
 let eDot=0,eDotDur=0,focusNext=false,atkCount=0,skipEnemyTurn=false,paralyzed=false;
 let eAtkBuff=0,eAtkDur=0,eDefBuff=0,eDefDur=0,eSkillCD={};
+const _diffDmg=G.dc.dmgMul||1;const _diffHeal=G.dc.healMul||1;
 function showDmgPopup(text, type, targetId) {
 const target = $(targetId || 'bEH');
 if (!target) return;
@@ -2339,6 +2452,13 @@ const _sbb=getBagBonuses();
 if(_sbb.hpRegen)pBuf+=`<span class="sfx-badge sfx-special">🪶回复${_sbb.hpRegen}/t</span>`;
 if(_sbb.chainCount)pBuf+=`<span class="sfx-badge sfx-special">👑雷冠/${_sbb.chainCount}</span>`;
 if(_sbb.lifesteal && !passiveEngine.getVal('lifesteal'))pBuf+=`<span class="sfx-badge sfx-special">🩸吸血</span>`;
+// Difficulty scaling badges
+if(_diffDmg>1)pBuf+=`<span class="sfx-badge sfx-debuff">⚔️受伤×${_diffDmg}</span>`;
+if(_diffHeal<1)pBuf+=`<span class="sfx-badge sfx-debuff">💚治疗×${_diffHeal}</span>`;
+// Awakening passive display
+if(G.awk&&G.awk.passiveName&&G.awk.passiveName!=='无'){
+const _awkClr=DIR_COLORS[G.awk.direction]||'var(--gold)';
+pBuf+=`<span class="sfx-badge sfx-special" style="border-color:${_awkClr};color:${_awkClr}">${G.awk.emoji||'✦'}${G.awk.passiveName}</span>`}
 // Enemy buffs/debuffs
 if(eDot>0&&eDotDur>0)eBuf+=`<span class="sfx-badge sfx-dot">☠️持续伤害${eDot}(${eDotDur}t)</span>`;
 if(skipEnemyTurn)eBuf+=`<span class="sfx-badge sfx-debuff">❄️冻结</span>`;
@@ -2352,6 +2472,8 @@ else{eBuf+=`<span class="sfx-badge sfx-special" style="color:${MONSTER_TIERS[ene
 pRow.innerHTML='<span class="sfx-label">🗡️ 我方</span>'+(pBuf||'<span class="sfx-empty">暂无状态</span>');
 eRow.innerHTML='<span class="sfx-label">👾 敌方</span>'+(eBuf||'<span class="sfx-empty">暂无状态</span>');
 }
+// Declare shared combat vars at function scope (used by tryMonsterSkill & while-loop)
+let pDef=0,effDG=0;
 // Monster skills helper
 function tryMonsterSkill(){
 try{
@@ -2363,7 +2485,7 @@ const sk=avail[R(0,avail.length-1)];const skIdx=enemy.skills.indexOf(sk);
 eSkillCD[skIdx]=R(2,4);
 addL(`${sk.emoji} ${enemy.name}使用「${sk.name}」!`,'le');
 // Helper: calc damage with shield
-function _skDmg(raw){let d=Math.max(1,raw-pDef+R(-2,2));if(pShield>0){const ab=Math.min(pShield,d);pShield-=ab;d-=ab}return Math.max(0,d)}
+function _skDmg(raw){let d=Math.max(1,raw-pDef+R(-2,2));d=Math.max(1,Math.floor(d*(_diffDmg||1)));if(pShield>0){const ab=Math.min(pShield,d);pShield-=ab;d-=ab}return Math.max(0,d)}
 if(sk.mult&&!sk.atkDebuff){let dmg=_skDmg(Math.floor(enemy.atk*(1+eAtkBuff)*sk.mult));
 p.hp-=dmg;addL(`  💥 造成 ${dmg} 伤害!`,'le')}
 else if(sk.dot){eDot=Math.floor(enemy.atk*sk.dotPct);eDotDur=sk.dotTurns||3;addL(`  ☠️ 附加持续伤害 ${eDot}/回合, ${eDotDur}回合`,'le');
@@ -2402,12 +2524,49 @@ const _bb0=getBagBonuses();
 const bEffMaxHp=p.maxHp+_bb0.maxHp;
 const bEffMaxEn=p.maxEn+_bb0.maxEn+Math.floor(p.maxEn*passiveEngine.getVal('energy_max_bonus'));
 
+// ATB (Active Time Battle) system
+const _bbAtb=getBagBonuses();
+let pBar=0,eBar=0;
+let effPSpd=+(p.spd||10)+(_bbAtb.spd||0);
+const _peSpdBoost=passiveEngine.getVal('speed_boost');
+if(_peSpdBoost)effPSpd+=_peSpdBoost;
+const _peFirstStrike=passiveEngine.getVal('first_strike');
+if(_peFirstStrike)pBar=80;
+const eSpd=+(enemy.spd||10);
+if($('atbPSpd'))$('atbPSpd').textContent=effPSpd.toFixed(0);
+if($('atbESpd'))$('atbESpd').textContent=eSpd.toFixed(0);
+addL(`⚡ 速度: ${effPSpd.toFixed(0)} vs ${eSpd.toFixed(0)}`,'ls');
+if(_diffDmg!==1||_diffHeal!==1){let _dMsg=`🎯 ${G.dc.name||G.diff}`;if(_diffDmg>1)_dMsg+=` 受伤×${_diffDmg}`;if(_diffDmg<1)_dMsg+=` 受伤×${_diffDmg}`;if(_diffHeal<1)_dMsg+=` 治疗×${_diffHeal}`;if(_diffHeal>1)_dMsg+=` 治疗×${_diffHeal}`;addL(_dMsg,'ls')}
+function _updATB(){
+const pFill=$('atbPBar'),eFill=$('atbEBar');
+if(pFill){pFill.style.width=Math.min(100,pBar)+'%';pFill.classList.toggle('ready',pBar>=90)}
+if(eFill){eFill.style.width=Math.min(100,eBar)+'%';eFill.classList.toggle('ready',eBar>=90)}
+}
+
 try{
 while(p.hp>0&&enemy.hp>0){
 turn++;await sleep(300);
 // NaN safety
 if(isNaN(p.hp))p.hp=1;if(isNaN(enemy.hp))enemy.hp=0;
-// Phase 1: Turn start
+// ATB tick: fill bars until someone is ready
+let _lowSpdOn=false;
+const _peLowSpd=passiveEngine.getVal('low_hp_speed');
+const _peLowSpdTh=passiveEngine.getCond('low_hp_speed')?.threshold||0.4;
+while(pBar<100&&eBar<100){
+let _tickSpd=effPSpd;
+if(_peLowSpd&&p.hp<bEffMaxHp*_peLowSpdTh){_tickSpd+=_peLowSpd;if(!_lowSpdOn){_lowSpdOn=true;addL(`💨 低生命速度提升!`,'lo')}}
+else{_lowSpdOn=false}
+pBar+=_tickSpd;eBar+=eSpd;_updATB();await sleep(150)}
+// Determine turn order
+let _playerTurn=pBar>=100;
+let _enemyTurn=eBar>=100;
+// If both ready, higher speed goes first; tie → player first
+if(_playerTurn&&_enemyTurn){if(eSpd>effPSpd){_playerTurn=false}else{_enemyTurn=false}}
+// Compute shared combat vars (available to all phases)
+const _bbShared=getBagBonuses();
+pDef=p.def+_bbShared.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
+effDG=p.dg+_bbShared.dodgeRate-getDebuffDodgeReduction();
+// Phase 1: Turn start (always runs)
 p.en=Math.min(bEffMaxEn,p.en+8);
 if(pHotDur>0){const h=pHot;p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`🌸 回春 +${h} HP`,'lp');pHotDur--}
 if(eDotDur>0){enemy.hp-=eDot;addL(`☠️ 持续伤害 ${eDot}`,'lp');eDotDur--;
@@ -2422,11 +2581,13 @@ if(G.debuffs && Object.keys(G.debuffs).length>0){tickDebuffsTurn(turn, bEffMaxHp
 if(checkFreezeSkip()){addL(`❄️ 你被冰冻，无法行动!`,'le');paralyzed=true}
 
 // Phase 2: Player action (include bag bonuses)
+if(_playerTurn){
 const _bb=getBagBonuses();
-let pAtk=p.atk+_bb.atk+pAtkBuff+Math.floor(G.tempBuffs.atk||0),pDef=p.def+_bb.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
+let pAtk=p.atk+_bb.atk+pAtkBuff+Math.floor(G.tempBuffs.atk||0);
+pDef=p.def+_bb.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
 // Curse debuff: -20% ATK per curse stack
 if(G.p.curse&&G.p.curse>0){pAtk=Math.floor(pAtk*0.8);if(turn===1)addL(`☠️ 诅咒: ATK-20% (${G.p.curse}场)`,'le')}
-const effMaxHp=p.maxHp+_bb.maxHp;const effCR=p.cr+_bb.critRate+(p.lk*.002);const effCD=p.cd+_bb.critDamage;const effDG=p.dg+_bb.dodgeRate-getDebuffDodgeReduction();
+const effMaxHp=p.maxHp+_bb.maxHp;const effCR=p.cr+_bb.critRate+(p.lk*.002);const effCD=p.cd+_bb.critDamage;
 let bagLifesteal=_bb.lifesteal;let bagHpRegen=_bb.hpRegen;
 atkCount++;let bloodSteal=0;
 const _peLS = passiveEngine.getVal('lifesteal');
@@ -2473,7 +2634,7 @@ if(pDefDur>0){pDefDur--;if(!pDefDur)pDefBuff=0}if(pRefDur>0){pRefDur--;if(!pRefD
 if(pAtkDur>0){pAtkDur--;if(!pAtkDur)pAtkBuff=0}if(pCritDur>0){pCritDur--;if(!pCritDur){pCritB=0;if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd;G.tempBuffs.cd=0}}}
 updBU();if(p.hp<=0){if(passiveEngine.has('immortal')&&!G.immortalUsed){G.immortalUsed=true;p.hp=1;const _peImBuf=passiveEngine.getVal('on_lethal_atk_buff');const _peImDur=passiveEngine.getCond('on_lethal_atk_buff')?.duration||3;if(_peImBuf){pAtkBuff+=Math.floor(p.atk*_peImBuf);pAtkDur=_peImDur}addL(`🔥 不灭余烬!`,'lo')}else break}
 }catch(e){console.error('[Battle] Paralyze turn error:',e);addL('⚠️ 回合异常，继续战斗','le');updBU()}
-continue;
+pBar=0;_updATB();continue;
 }
 const action=await waitForAction(_battleCountdown);
 if(!action||p.hp<=0||enemy.hp<=0)break;
@@ -2522,6 +2683,12 @@ if(_peChain && atkCount % _peChain === 0){
   const cd=Math.floor(pAtk*(passiveEngine.getCond('chain_strike')?.chainDmg||0.3));enemy.hp-=cd;G.dmgDealt+=cd;addL(`⚡ 雷击! ${cd} 无视防御`,'lo')}
 // Bag chain (thunderCrown relic)
 if(_bb.chainCount>0&&atkCount%_bb.chainCount===0){const bagChain=Math.floor(pAtk*0.25);enemy.hp-=bagChain;G.dmgDealt+=bagChain;addL(`👑 圣物雷击! ${bagChain} 无视防御`,'lo')}
+// Speed damage passive: bonus damage when faster
+const _peSpdDmg=passiveEngine.getVal('speed_dmg');
+if(_peSpdDmg&&effPSpd>eSpd){const spdBonus=Math.floor(_peSpdDmg*(effPSpd-eSpd));enemy.hp-=spdBonus;G.dmgDealt+=spdBonus;addL(`💨 速度优势 +${spdBonus}`,'lo')}
+// Slow enemy passive: chance to reduce enemy ATB bar
+const _peSlowEn=passiveEngine.getVal('slow_enemy');
+if(_peSlowEn&&Math.random()<_peSlowEn){eBar=Math.max(0,eBar-20);_updATB();addL(`🐌 减速敌人!`,'lo')}
 }
 else if(action.type==='skill'){
 const sk=action.skill;G.skCD[sk.id]=sk.cd;p.en-=sk.cost||0;
@@ -2537,7 +2704,7 @@ if(sk.dot){eDot=sk.dot;eDotDur=3}
 if(bloodSteal>0){const st=Math.floor(dmg*bloodSteal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st}
 if(sk.steal){const st=Math.floor(dmg*sk.steal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st;addL(`🩸 吸血 +${st}`,'lo')}
 }
-if(sk.healAmt){let h=Math.floor(sk.healAmt*G.dc.heal*(1+passiveEngine.getVal('heal_amplify')));if(p.hp>p.baseHp*1.5)h=Math.floor(h*.5);p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`💚 恢复 ${h} HP`,'lp');showDmgPopup('+'+h,'heal','bPH')}
+if(sk.healAmt){let h=Math.floor(sk.healAmt*G.dc.heal*_diffHeal*(1+passiveEngine.getVal('heal_amplify')));if(p.hp>p.baseHp*1.5)h=Math.floor(h*.5);p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`💚 恢复 ${h} HP`,'lp');showDmgPopup('+'+h,'heal','bPH')}
 if(sk.defBuff){pDefBuff=sk.defBuff;pDefDur=sk.dur||2;addL(`🛡️ 防御+${sk.defBuff}`,'ld')}
 if(sk.shield){pShield=sk.shield;addL(`🔮 护盾 ${sk.shield}`,'ld')}
 if(sk.reflect){pReflect=sk.reflect;pRefDur=sk.dur||3;addL(`🌿 反伤${Math.floor(sk.reflect*100)}%`,'ld')}
@@ -2546,6 +2713,12 @@ if(sk.atkBuff){pAtkBuff=sk.atkBuff;pAtkDur=sk.dur||3;addL(`📯 攻击+${sk.atkB
 if(sk.critBoost){pCritB=sk.critBoost;pCritDur=sk.dur||4;addL(`⭐ 暴击率提升`,'lp')}
 if(sk.hot){pHot=sk.hot;pHotDur=sk.dur||3}
 if(sk.energyGain){p.en=Math.min(bEffMaxEn,p.en+sk.energyGain);addL(`🌀 能量+${sk.energyGain}`,'lk')}
+// Speed buff skill: temporary speed boost
+if(sk.speedBuff){effPSpd+=sk.speedBuff;addL(`💨 速度+${sk.speedBuff}`,'lo');if(!G._skSpdBuff)G._skSpdBuff=0;G._skSpdBuff+=sk.speedBuff}
+// Slow enemy skill: reduce enemy ATB bar
+if(sk.slowChance&&Math.random()<sk.slowChance){eBar=Math.max(0,eBar-25);_updATB();addL(`🐌 减速敌人!`,'lo')}
+// First strike skill: extra guaranteed damage, bypasses dodge
+if(sk.firstStrike&&sk.dmg){const bonus=Math.floor(sk.dmg*0.3);enemy.hp-=bonus;G.dmgDealt+=bonus;addL(`⚡ 先手打击 +${bonus}`,'lo')}
 // skills are permanent - no round-based expiration
 }
 else if(action.type==='defend'){
@@ -2599,8 +2772,11 @@ await sleep(200);
 // Start preloading next event while waiting between turns
 preloadNextEvent();
 await sleep(300);
+pBar-=100;_updATB();
+} // end player turn
 
 // Phase 4: Enemy action (with monster skills)
+if(_enemyTurn){
 try{
 if(skipEnemyTurn){addL(`${enemy.emoji} ${enemy.name}被冻结，跳过行动`,'ls');skipEnemyTurn=false}
 else if(pEvade){addL(`💨 闪避了攻击!`,'lp');pEvade=false;G.dodges++;if(passiveEngine.has('crit_after_dodge'))focusNext=true}
@@ -2623,6 +2799,7 @@ if(_peEvade && Math.random()<_peEvade){addL(`🕳️ 维度闪避! 完全回避!
 if(eDmg>0){
 const _peDmgTaken = passiveEngine.getPenVal('damage_taken');
 if(_peDmgTaken)eDmg=Math.floor(eDmg*(1+_peDmgTaken));
+if(_diffDmg!==1)eDmg=Math.max(1,Math.floor(eDmg*_diffDmg));
 // IronSkin: reduce damage by 50% for first N turns
 if(G.tempBuffs.ironSkin&&G.tempBuffs.ironSkin>0){eDmg=Math.floor(eDmg*0.5);addL(`📜 铁皮卷轴: 伤害减半!`,'lcyan')}
 if(pShield>0){const ab=Math.min(pShield,eDmg);pShield-=ab;eDmg-=ab;addL(`🔮 护盾吸收 ${ab}`,'ld')}
@@ -2649,7 +2826,7 @@ const _peParalyze = passiveEngine.getPenVal('paralyze');
 if(_peParalyze && Math.random()<_peParalyze){addL(`⚡ 被麻痹! 下回合无法行动`,'le');paralyzed=true}
 // High HP energy regen penalty (死神契约)
 const _peHighEn = passiveEngine.getPenVal('high_hp_en_regen');
-if(_peHighEn && p.hp/effMaxHp > (passiveEngine.getPenCond('high_hp_en_regen')?.threshold||0.7)) {
+if(_peHighEn && p.hp/bEffMaxHp > (passiveEngine.getPenCond('high_hp_en_regen')?.threshold||0.7)) {
   p.en = Math.min(bEffMaxEn, Math.floor(p.en * (1 + _peHighEn)));
 }
 updBU();
@@ -2663,12 +2840,14 @@ G._reviveUsed=true;G._revivePending=false;p.hp=Math.floor(p.maxHp*0.3);addL(`�
 const rfIdx=G.bag.findIndex(bi=>bi.id==='reviveFeather');if(rfIdx>=0)removeFromBag(G.bag[rfIdx].uid);
 }else{break}
 }}catch(e){console.error('[Battle] Enemy action error:',e);addL('⚠️ 战斗异常，继续','le');updBU()}
+eBar-=100;_updATB();
+} // end enemy turn
 }
 await sleep(400);
 // Clear temp buffs and restore base stats
 if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd}
 if(G.tempBuffs.crit){}// pCritB was separate, p.cr unchanged
-G.tempBuffs={};
+G.tempBuffs={};G._skSpdBuff=0;
 if(p.hp>0){
 if(isBreakthrough){
 addL(`--- 突破成功! ---`,'ls');
