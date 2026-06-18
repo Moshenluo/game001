@@ -199,8 +199,8 @@ async function handleAI(request, env) {
   return json(data);
 }
 
-// Qwen 3.6 llama.cpp server (via cloudflared tunnel for valid SSL)
-const QWEN_URL = 'https://listing-options-delete-fleece.trycloudflare.com/v1/chat/completions';
+// Qwen 3.6 llama.cpp server (permanent named cloudflared tunnel)
+const QWEN_URL = 'https://qwen.mingyunliexi.online/v1/chat/completions';
 
 async function handleAIDirect(request, env) {
   const ip = getIP(request);
@@ -218,25 +218,35 @@ async function handleAIDirect(request, env) {
     chat_template_kwargs: { enable_thinking: false },
   };
 
-  const res = await fetch(QWEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(proxyBody),
-  });
+  try {
+    const res = await fetch(QWEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proxyBody),
+    });
 
-  if (!res.ok) {
-    const errText = await res.text();
-    console.error('[AI Direct] Qwen error:', res.status, errText.substring(0, 200));
-    return error('AI service error: ' + res.status, 502);
+    if (!res.ok) {
+      const errText = await res.text();
+      // Detect Sakura Frp compliance page or TLS errors
+      if (errText.includes('<!DOCTYPE') || errText.includes('SakuraFrp') || res.status === 530 || res.status === 526) {
+        return error('Qwen 公网暂不可用，请在设置中切换 DeepSeek 模型', 503);
+      }
+      console.error('[AI Direct] Qwen error:', res.status, errText.substring(0, 200));
+      return error('Qwen error: ' + res.status, 502);
+    }
+
+    const data = await res.json();
+
+    const usageKey = 'usage:qwen:' + new Date().toISOString().slice(0, 10);
+    const usageCount = parseInt(await env.RIFT_KV.get(usageKey) || '0');
+    await env.RIFT_KV.put(usageKey, String(usageCount + 1), { expirationTtl: 86400 * 30 });
+
+    return json(data);
+  } catch (e) {
+    // TLS error (self-signed cert) or connection refused
+    console.error('[AI Direct] Fetch failed:', e.message);
+    return error('Qwen 公网不可用，请切换 DeepSeek 或本地访问', 503);
   }
-
-  const data = await res.json();
-
-  const usageKey = 'usage:qwen:' + new Date().toISOString().slice(0, 10);
-  const usageCount = parseInt(await env.RIFT_KV.get(usageKey) || '0');
-  await env.RIFT_KV.put(usageKey, String(usageCount + 1), { expirationTtl: 86400 * 30 });
-
-  return json(data);
 }
 
 // ===== Leaderboard =====

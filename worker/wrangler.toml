@@ -2,6 +2,13 @@
 name = "rift-of-fate"
 main = "index.js"
 compatibility_date = "2024-01-01"
+workers_dev = true
+preview_urls = true
+
+# Custom domain (replaces blocked workers.dev)
+routes = [
+  { pattern = "api.mingyunliexi.online", custom_domain = true }
+]
 
 # KV Namespace binding (create with: wrangler kv:namespace create RIFT_KV)
 [[kv_namespaces]]
