@@ -1064,20 +1064,56 @@ clearTimeout(timer);
 if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
 if(!text)throw new Error('AI returned empty content');
-let jsonStr=null;const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
-if(!jsonStr){let d=0,s=-1,e=-1,openChar=null;for(let i=0;i<text.length;i++){const c=text[i];if(d===0&&(c==='{'||c==='[')){s=i;d=1;openChar=c;continue}if(d>0){if(c==='{'||c==='[')d++;else if((c==='}'&&openChar==='{')||(c===']'&&openChar==='[')){d--;if(d===0){e=i+1;break}}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
-function _repairJSON(str){str=str.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*$/gm,'');const firstChar=str.trim()[0];let inStr=false,q='';let out='';for(let i=0;i<str.length;i++){const c=str[i],p=i>0?str[i-1]:'';if(inStr){if(c===q&&p!=='\\'){out+='"';inStr=false}else{out+=c}continue}if(c==='"'||c==="'"){inStr=true;q=c;out+='"';continue}out+=c}str=out;str=str.replace(/(['"])?([a-zA-Z_]\w*)(['"])?\s*:/g,function(m,p1,k,p2){if(p1==='\"'||p1==="'")return m;return '"'+k+'":'});str=str.replace(/,(\s*[}\]])/g,'$1');try{return JSON.parse(str)}catch(_){return null}}
-if(!jsonStr)throw new Error('No JSON found in AI response');let parsed;try{parsed=JSON.parse(jsonStr)}catch(_){parsed=_repairJSON(jsonStr);if(!parsed)throw new Error('JSON parse failed after repair')}return parsed;
+// Extract JSON from response — try multiple strategies
+let jsonStr=null;
+// Strategy 1: markdown code block
+const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
+// Strategy 2: string-aware brace matching (handles { inside strings)
+if(!jsonStr){
+let inStr=false,esc=false,d=0,s=-1,e=-1;
+for(let i=0;i<text.length;i++){
+const c=text[i];
+if(esc){esc=false;continue}
+if(c==='\\'&&inStr){esc=true;continue}
+if(c==='"'){inStr=!inStr;continue}
+if(inStr)continue;
+if(c==='{'||c==='['){if(d===0)s=i;d++}
+else if(c==='}'||c===']'){d--;if(d===0&&s>=0){e=i+1;break}}
+}
+if(s>=0&&e>s)jsonStr=text.substring(s,e);
+}
+function _repairJSON(str){str=str.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*$/gm,'');const firstChar=str.trim()[0];let inS=false,q='';let out='';for(let i=0;i<str.length;i++){const c=str[i],p=i>0?str[i-1]:'';if(inS){if(c===q&&p!=='\\'){out+='"';inS=false}else{out+=c}continue}if(c==='"'||c==="'"){inS=true;q=c;out+='"';continue}out+=c}str=out;str=str.replace(/(['"])?([a-zA-Z_]\w*)(['"])?\s*:/g,function(m,p1,k,p2){if(p1==='\"'||p1==="'")return m;return '"'+k+'":'});str=str.replace(/,(\s*[}\]])/g,'$1');try{return JSON.parse(str)}catch(_){return null}}
+if(!jsonStr){console.warn('[AI] No JSON found. Raw response (500 chars):',text.substring(0,500));throw new Error('No JSON found in AI response')}
+let parsed;try{parsed=JSON.parse(jsonStr)}catch(_){parsed=_repairJSON(jsonStr);if(!parsed){console.warn('[AI] JSON repair failed. Extracted:',jsonStr.substring(0,300));throw new Error('JSON parse failed after repair')}}return parsed;
 }catch(e){clearTimeout(timer);throw e}
 };
-try{return await _doCall(_modelOverride||CFG.model)}catch(e){
+// Try primary model, then fallback with retry on JSON failure
+let _retryCount=0;
+const _tryCall=async(model)=>{
+try{return await _doCall(model)}catch(e){
+if(e.message.includes('No JSON')&&_retryCount<1){
+_retryCount++;
+console.log('[AI] JSON extraction failed, retrying with stricter prompt...');
+const strictPrompt='只输出纯JSON，不要任何解释、markdown或其他文字。直接以{开头}结尾。'+prompt.substring(0,prompt.length-100);
+try{
+const ctrl2=new AbortController();const timer2=setTimeout(()=>ctrl2.abort(),timeout);
+const res2=await fetch(getAIEndpoint(model),{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({model:model||CFG.model,messages:[{role:'user',content:strictPrompt}],temperature:0.3,max_tokens:4096}),signal:ctrl2.signal});
+clearTimeout(timer2);
+if(res2.ok){const d2=await res2.json();const t2=d2.choices?.[0]?.message?.content||'';
+if(t2){let j2=null;const cb2=t2.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb2)j2=cb2[1].trim();
+if(!j2){let inS=false,esc=false,d=0,s=-1,e=-1;for(let i=0;i<t2.length;i++){const c=t2[i];if(esc){esc=false;continue}if(c==='\\'&&inS){esc=true;continue}if(c==='"'){inS=!inS;continue}if(inS)continue;if(c==='{'||c==='['){if(d===0)s=i;d++}else if(c==='}'||c===']'){d--;if(d===0&&s>=0){e=i+1;break}}}if(s>=0&&e>s)j2=t2.substring(s,e)}
+if(j2){const p2=JSON.parse(j2);return p2}}
+}}catch(retryErr){console.warn('[AI] Retry also failed:',retryErr.message)}
+}
+throw e}};
+try{return await _tryCall(_modelOverride||CFG.model)}catch(e){
 const errMsg=e.name==='AbortError'?'timeout('+Math.round(timeout/1000)+'s)':e.message;
 console.warn('[AI] Call failed:',errMsg,'endpoint:',getAIEndpoint(_modelOverride||CFG.model),'model:',_modelOverride||CFG.model);
 window._lastAIErr=errMsg;
-// Auto-fallback: if primary model fails and we're not already overriding, always try DeepSeek
 if(!_modelOverride&&CFG.model!=='deepseek'){
 console.log('[AI] Auto-fallback to DeepSeek...');
-try{return await _doCall('deepseek')}catch(e2){
+try{return await _tryCall('deepseek')}catch(e2){
 const errMsg2=e2.name==='AbortError'?'timeout':e2.message;
 console.warn('[AI] Fallback also failed:',errMsg2);
 window._lastAIErr+=' → fallback: '+errMsg2;
