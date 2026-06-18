@@ -549,10 +549,13 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 
 <script>
 // ===== CONFIG =====
+let _isFileProto=location.protocol==='file:';
 let WORKER_URL=location.hostname==='localhost'||location.hostname==='127.0.0.1'?'http://localhost:3001':'https://api.mingyunliexi.online';
 let CFG={model:'qwen3.6',temp:0.85};
 try{const saved=JSON.parse(localStorage.getItem('rift_cfg')||'{}');if(saved.model)CFG.model=saved.model;if(saved.temp)CFG.temp=saved.temp;
-if(saved.workerUrl&&!saved.workerUrl.includes('workers.dev')&&!saved.workerUrl.includes('YOUR-SUBDOMAIN'))WORKER_URL=saved.workerUrl}catch(e){}
+if(saved.workerUrl&&!saved.workerUrl.includes('workers.dev')&&!saved.workerUrl.includes('YOUR-SUBDOMAIN')&&!saved.workerUrl.includes('xxx')){
+/* only use saved URL if it matches known valid patterns */
+if(saved.workerUrl.includes('mingyunliexi.online')||saved.workerUrl.includes('localhost'))WORKER_URL=saved.workerUrl}}catch(e){}
 // Qwen → Worker /api/direct (via cloudflared tunnel), DeepSeek → Worker /api/ai
 function getAIEndpoint(model){const m=model||CFG.model;return m==='deepseek'?WORKER_URL+'/api/ai':WORKER_URL+'/api/direct'}
 let PLAYER_ID=localStorage.getItem('rift_player_id')||'';
@@ -1051,24 +1054,34 @@ function isWorkerAvailable(){return WORKER_URL&&!WORKER_URL.includes('YOUR-SUBDO
 
 async function callAI(prompt,timeout=20000,_modelOverride){
 const _doCall=async(model)=>{
+const m=model||CFG.model;const ep=getAIEndpoint(m);
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
 const headers={'Content-Type':'application/json'};
-const res=await fetch(getAIEndpoint(model),{method:'POST',headers,
-body:JSON.stringify({model:model||CFG.model,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:4096}),signal:ctrl.signal});
+try{
+const res=await fetch(ep,{method:'POST',headers,
+body:JSON.stringify({model:m,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:4096}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
+if(!text)throw new Error('AI returned empty content');
 let jsonStr=null;const cb=text.match(/```(?:json)?\s*([\s\S]*?)```/);if(cb)jsonStr=cb[1].trim();
 if(!jsonStr){let d=0,s=-1,e=-1,openChar=null;for(let i=0;i<text.length;i++){const c=text[i];if(d===0&&(c==='{'||c==='[')){s=i;d=1;openChar=c;continue}if(d>0){if(c==='{'||c==='[')d++;else if((c==='}'&&openChar==='{')||(c===']'&&openChar==='[')){d--;if(d===0){e=i+1;break}}}}if(s>=0&&e>s)jsonStr=text.substring(s,e)}
 function _repairJSON(str){str=str.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*$/gm,'');const firstChar=str.trim()[0];let inStr=false,q='';let out='';for(let i=0;i<str.length;i++){const c=str[i],p=i>0?str[i-1]:'';if(inStr){if(c===q&&p!=='\\'){out+='"';inStr=false}else{out+=c}continue}if(c==='"'||c==="'"){inStr=true;q=c;out+='"';continue}out+=c}str=out;str=str.replace(/(['"])?([a-zA-Z_]\w*)(['"])?\s*:/g,function(m,p1,k,p2){if(p1==='\"'||p1==="'")return m;return '"'+k+'":'});str=str.replace(/,(\s*[}\]])/g,'$1');try{return JSON.parse(str)}catch(_){return null}}
-if(!jsonStr)throw new Error('No JSON');let parsed;try{parsed=JSON.parse(jsonStr)}catch(_){parsed=_repairJSON(jsonStr);if(!parsed)throw new Error('JSON parse failed after repair')}return parsed;
+if(!jsonStr)throw new Error('No JSON found in AI response');let parsed;try{parsed=JSON.parse(jsonStr)}catch(_){parsed=_repairJSON(jsonStr);if(!parsed)throw new Error('JSON parse failed after repair')}return parsed;
+}catch(e){clearTimeout(timer);throw e}
 };
 try{return await _doCall(_modelOverride||CFG.model)}catch(e){
-console.debug('[AI]',e.message);
-// Auto-fallback: if Qwen fails and we're not already using DeepSeek, retry with DeepSeek
-if(!_modelOverride&&CFG.model!=='deepseek'&&(e.message.includes('503')||e.message.includes('530')||e.message.includes('Qwen'))){
-console.log('[AI] Qwen failed, auto-fallback to DeepSeek');
-try{return await _doCall('deepseek')}catch(e2){console.debug('[AI fallback]',e2.message);return null}}
+const errMsg=e.name==='AbortError'?'timeout('+Math.round(timeout/1000)+'s)':e.message;
+console.warn('[AI] Call failed:',errMsg,'endpoint:',getAIEndpoint(_modelOverride||CFG.model),'model:',_modelOverride||CFG.model);
+window._lastAIErr=errMsg;
+// Auto-fallback: if primary model fails and we're not already overriding, always try DeepSeek
+if(!_modelOverride&&CFG.model!=='deepseek'){
+console.log('[AI] Auto-fallback to DeepSeek...');
+try{return await _doCall('deepseek')}catch(e2){
+const errMsg2=e2.name==='AbortError'?'timeout':e2.message;
+console.warn('[AI] Fallback also failed:',errMsg2);
+window._lastAIErr+=' → fallback: '+errMsg2;
+return null}}
 return null}
 }
 
@@ -1077,17 +1090,20 @@ async function callAIText(prompt,timeout=15000){
 const _doTextCall=async(model)=>{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
 const headers={'Content-Type':'application/json'};
+try{
 const res=await fetch(getAIEndpoint(model),{method:'POST',headers,
 body:JSON.stringify({model:model||CFG.model,messages:[{role:'system',content:'你是游戏叙事作家，用中文写出富有诗意和沉浸感的文字。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:500}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();return data.choices?.[0]?.message?.content||'';
+}catch(e){clearTimeout(timer);throw e}
 };
 try{return await _doTextCall(CFG.model)}catch(e){
-console.error('[AI Text] FAIL:',e.message);
-if(CFG.model!=='deepseek'&&(e.message.includes('503')||e.message.includes('530')||e.message.includes('Qwen'))){
-console.log('[AI Text] Qwen failed, auto-fallback to DeepSeek');
-try{return await _doTextCall('deepseek')}catch(e2){console.error('[AI Text fallback]',e2.message);return ''}}
+const errMsg=e.name==='AbortError'?'timeout':e.message;
+console.warn('[AI Text] FAIL:',errMsg);
+// Always try DeepSeek on any error when using non-DeepSeek model
+if(CFG.model!=='deepseek'){
+try{return await _doTextCall('deepseek')}catch(e2){console.warn('[AI Text fallback]',e2.message);return ''}}
 return ''}
 }
 
@@ -1133,9 +1149,11 @@ try{awk=await callAI(prompt,45000)}catch(e){}
 if(!awk||!awk.name){st.innerHTML='✦ 命运模糊不清... 重新凝聚...';await sleep(400);try{awk=await callAI(prompt,45000)}catch(e){}}
 // Phase 3: Resolve
 if(!awk||!awk.name){
-st.innerHTML='✦ AI无法连接，命运自行显现...';st.style.color='var(--org)';
+const errDetail=window._lastAIErr||'未知错误';
+console.warn('[Awaken] AI failed, using preset. Error:',errDetail,'WorkerURL:',WORKER_URL,'Model:',CFG.model,'Protocol:',location.protocol);
+st.innerHTML='✦ AI无法连接('+errDetail.slice(0,40)+')，命运自行显现...';st.style.color='var(--org)';
 await sleep(600);
-const t=pick(PRESET_AWK[dir]);awk={name:t.name,title:t.title,direction:dir,emoji:t.emoji,description:'',passiveType:t.passiveType,passiveName:t.passiveName,passiveDescription:t.passiveDesc,passiveMechanics:t.mechanics,initialStats:{...t.stats},skillAffinity:t.affinity,narrativeStyle:t.narrative,_preset:true};
+const t=pick(PRESET_AWK[dir]);awk={name:t.name,title:t.title,direction:dir,emoji:t.emoji,description:'',passiveType:t.passiveType,passiveName:t.passiveName,passiveDescription:t.passiveDesc,passiveMechanics:t.mechanics,initialStats:{...t.stats},skillAffinity:t.affinity,narrativeStyle:t.narrative,_preset:true,_errDetail:errDetail};
 }else{isAI=true}
 const s=awk.initialStats||{};s.hp=cl(Math.round(s.hp||90),70,130);s.atk=cl(Math.round(s.atk||10),7,15);s.def=cl(Math.round(s.def||5),2,8);s.energy=cl(Math.round(s.energy||50),40,65);
 s.critRate=cl(parseFloat(s.critRate)||.05,.03,.25);s.critDamage=cl(parseFloat(s.critDamage)||1.5,1.3,2.8);s.dodgeRate=cl(parseFloat(s.dodgeRate)||.03,.01,.1);s.luck=cl(Math.round(s.luck||5),3,10);
@@ -1154,7 +1172,7 @@ await sleep(600);showAwkCard(awk);
 function showAwkCard(a){
 const wrap=$('awkWrap'),ptL={dual_edge:'⚔️ 双刃被动',positive:'✨ 纯正面',none:'💪 无被动(高属性)'}[a.passiveType]||'无',clr=DIR_COLORS[a.direction]||'#f0c040';
 const aiT=a._isAI?'<span style="background:var(--pur);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px;animation:pulse 2s infinite">AI 生成</span>':'<span style="background:var(--t3);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px">预设模板</span>';
-const pw=!a._isAI?'<div style="background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:8px;margin:10px 0;font-size:.8em;color:var(--red)">⚠️ AI生成失败，使用了预设模板。检查API设置(⚙️)</div>':'';
+const pw=!a._isAI?'<div style="background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:8px;margin:10px 0;font-size:.8em;color:var(--red)">⚠️ AI生成失败，使用了预设模板。<br>原因: '+(a._errDetail||'未知')+'<br><a href="#" onclick="toggleSettings();return false" style="color:var(--blu)">打开设置(⚙️)</a> 切换模型为 DeepSeek 或检查网络</div>':'';
 wrap.innerHTML=`${pw}<div class="awk-card" style="border-color:${clr}"><div style="display:flex;justify-content:center;margin-bottom:6px">${aiT}</div>
 <div class="emoji">${a.emoji}</div><div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
 <div style="color:var(--t2);font-size:.85em;margin:8px 0">${a.description||''}</div>
@@ -3501,21 +3519,39 @@ badge.style.background='rgba(224,64,80,.12)';badge.style.color='var(--red)';badg
 async function checkAIStatus(){
 const badge=$('aiStatusBadge');if(!badge)return;
 badge.textContent='🔌 AI: 检测中...';badge.style.background='rgba(255,255,255,.05)';badge.style.color='var(--t3)';
-try{
-const headers={'Content-Type':'application/json'};
+const _testModel=async(model)=>{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),15000);
-const res=await fetch(getAIEndpoint(),{method:'POST',headers,
-body:JSON.stringify({model:CFG.model,messages:[{role:'user',content:'回复OK'}],temperature:0,max_tokens:5}),signal:ctrl.signal});
+try{
+const res=await fetch(getAIEndpoint(model),{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({model:model||CFG.model,messages:[{role:'user',content:'回复OK'}],temperature:0,max_tokens:5}),signal:ctrl.signal});
 clearTimeout(timer);
 if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();
 const reply=data.choices?.[0]?.message?.content||'';
-if(reply){
+if(!reply)throw new Error('空回复');
+return reply;
+}catch(e){clearTimeout(timer);throw e}
+};
+try{
+const reply=await _testModel(CFG.model);
 badge.innerHTML='✅ AI: <b style="color:var(--grn)">在线</b> · '+CFG.model;
 badge.style.background='rgba(64,192,112,.12)';badge.style.color='var(--grn)';
-}else throw new Error('空回复');
 }catch(e){
-badge.innerHTML='❌ AI: <b style="color:var(--red)">离线</b> · '+e.message+' · <a href="#" onclick="toggleSettings();return false" style="color:var(--blu)">检查设置</a>';
+console.warn('[AI Status] Primary model failed:',e.message);
+// Auto-switch: try DeepSeek if primary fails
+if(CFG.model!=='deepseek'){
+try{
+await _testModel('deepseek');
+console.log('[AI Status] Auto-switching to DeepSeek');
+CFG.model='deepseek';
+try{localStorage.setItem('rift_cfg',JSON.stringify({model:'deepseek',temp:CFG.temp,workerUrl:WORKER_URL}))}catch(_){}
+badge.innerHTML='⚠️ AI: <b style="color:var(--org)">已切换DeepSeek</b> · 原模型不可用';
+badge.style.background='rgba(255,160,0,.12)';badge.style.color='var(--org)';
+return;
+}catch(e2){console.warn('[AI Status] DeepSeek also failed:',e2.message)}
+}
+const errShort=e.name==='AbortError'?'超时':e.message.slice(0,30);
+badge.innerHTML='❌ AI: <b style="color:var(--red)">离线</b> · '+errShort+' · <a href="#" onclick="toggleSettings();return false" style="color:var(--blu)">检查设置</a>';
 badge.style.background='rgba(224,64,80,.12)';badge.style.color='var(--red)';
 }
 }
