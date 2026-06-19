@@ -99,6 +99,11 @@ export default {
         return await handleAchievements(request, env);
       }
 
+      // Events pool — return random preset events from KV or built-in pool
+      if (path === '/api/events' && request.method === 'GET') {
+        return await handleEvents(request, env);
+      }
+
       return error('Not Found', 404);
     } catch (e) {
       console.error('[Worker]', e.message);
@@ -392,4 +397,48 @@ async function handleAchievements(request, env) {
     total: Object.keys(ACHIEVEMENTS).length,
     unlocked: earned.length,
   });
+}
+
+// ===== EVENT POOL (Server-side preset events) =====
+async function handleEvents(request, env) {
+  const url = new URL(request.url);
+  const count = Math.min(parseInt(url.searchParams.get('count') || '3'), 10);
+  const region = url.searchParams.get('region') || '';
+
+  // Try KV first for community/custom events
+  const evtKeys = [];
+  try {
+    const list = await env.RIFT_KV.list({ prefix: 'evt:' });
+    for (const key of list.keys) {
+      evtKeys.push(key.name);
+    }
+  } catch (e) { /* KV may be empty */ }
+
+  if (evtKeys.length > 0) {
+    // Return random events from KV
+    const shuffled = evtKeys.sort(() => Math.random() - 0.5).slice(0, count);
+    const events = [];
+    for (const key of shuffled) {
+      try {
+        const data = await env.RIFT_KV.get(key);
+        if (data) events.push(JSON.parse(data));
+      } catch (e) { /* skip bad entries */ }
+    }
+    if (events.length > 0) return json({ events, source: 'kv' });
+  }
+
+  // Fallback: built-in mini pool (subset of client presets for server diversity)
+  const builtinEvents = [
+    { theme:'adventure', title:'云端栈道', description:'你踏上了一条悬浮在云层之间的栈道，脚下是万丈深渊。', choices:[
+      {label:'大步流星走过去', result:'你勇敢地冲过了栈道。', effects:{damage:8,atk:1}},
+      {label:'小心翼翼前行', result:'你安全地走过了栈道，还在中途发现了闪光的东西。', effects:{gold:20}},
+      {label:'寻找其他路', result:'你找到了一条更安全的路。', effects:{heal:5}}]},
+    { theme:'mystery', title:'时空泡泡', description:'你被困在一个时间流速不同的泡泡中，周围的一切变得缓慢。', choices:[
+      {label:'利用时间差修炼', result:'你在加速的时间中获得了额外的修炼。', effects:{atk:1,def:1}},
+      {label:'尝试打破泡泡', result:'', effects:{}, check:{stat:'atk',dc:10,type:'roll'}, success:{gold:30,maxHp:10}, failure:{damage:15}},
+      {label:'等待泡泡自然消散', result:'泡泡几秒后消失了。', effects:{heal:10}}]},
+  ];
+
+  const selected = builtinEvents.sort(() => Math.random() - 0.5).slice(0, count);
+  return json({ events: selected, source: 'builtin' });
 }
