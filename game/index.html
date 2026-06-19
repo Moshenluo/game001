@@ -96,6 +96,25 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .echbtn .check-badge{display:inline-block;font-size:.78em;padding:1px 6px;border-radius:4px;margin-left:6px;font-weight:normal}
 .eres{background:var(--bgc);border:1px solid var(--bdr);border-radius:10px;padding:18px;margin-top:10px;text-align:center;animation:fadeIn .5s}.eres .rt{font-size:1em;margin-bottom:12px;line-height:1.6}.eres .rf{font-size:.9em;color:var(--t2)}.rf .pos{color:var(--grn)}.rf .neg{color:var(--red)}
 .barea{width:100%;display:flex;flex-direction:column;gap:14px}
+.barea-compact{width:100%;display:flex;flex-direction:column;gap:6px;min-height:calc(100dvh - 180px)}
+.b-top-row{display:flex;align-items:flex-start;gap:4px}
+.b-atb-corner{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
+.b-atb-corner .atb-ring{width:44px;height:44px}
+.b-atb-corner .atb-ring svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg)}
+.b-atb-corner .ring-icon{font-size:1em}
+.b-atb-corner .ring-pct{position:absolute;bottom:-4px;font-size:.5em;color:var(--t3);font-weight:bold}
+.b-entities{flex:1;display:flex;gap:6px;align-items:stretch}
+.b-entities .be{padding:10px 6px}
+.b-entities .be .bem{font-size:2em;margin-bottom:2px}
+.b-entities .be .ben{font-size:.88em;margin-bottom:4px}
+.b-entities .bvs{font-size:1em;padding:0 2px}
+.sfx-collapse{border:1px solid var(--bdr);border-radius:8px;margin:2px 0;overflow:hidden}
+.sfx-collapse summary{padding:6px 10px;font-size:.75em;color:var(--t3);cursor:pointer;user-select:none;background:var(--bgc)}
+.sfx-collapse[open] summary{border-bottom:1px solid var(--bdr)}
+.blog-collapse{border:1px solid var(--bdr);border-radius:8px;margin:2px 0;overflow:hidden}
+.blog-collapse summary{padding:6px 10px;font-size:.75em;color:var(--t3);cursor:pointer;user-select:none;background:var(--bgc)}
+.blog-collapse .blog{max-height:120px;border:none;border-radius:0;margin:0}
+.b-action-sticky{position:sticky;bottom:0;background:var(--bg);padding:8px 0 max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--bdr);z-index:10;margin-top:auto}
 .atb-ring-panel{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 8px;margin:6px 0}
 .atb-ring{position:relative;width:72px;height:72px;display:flex;align-items:center;justify-content:center}
 .atb-ring svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg)}
@@ -117,6 +136,14 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .blog::-webkit-scrollbar{width:6px}.blog::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
 .ls{color:#8ec07c;font-weight:bold}.le{color:#fb4934}.lp{color:#83a598}.lc{color:#fabd2f;font-weight:bold}.lk{color:#b16286;font-weight:bold}.ld{color:#b8bb26}.lo{color:#d3869b}.lcyan{color:#00bcd4}
 .bres{text-align:center;padding:16px;font-size:1.2em;border-radius:10px;margin-top:10px}.bres.w{background:rgba(64,192,112,.1);color:var(--grn);border:1px solid var(--grnd)}.bres.l{background:rgba(224,64,80,.1);color:var(--red);border:1px solid var(--redd)}
+.v-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1400;display:flex;align-items:center;justify-content:center;animation:fadeIn .4s;padding:16px}
+.v-card{background:var(--bg2);border:2px solid var(--grn);border-radius:16px;padding:28px 24px;text-align:center;max-width:380px;width:92%;box-shadow:0 12px 40px rgba(0,0,0,.6);animation:achSlide .5s ease-out;max-height:85vh;overflow-y:auto}
+.v-card.defeat{border-color:var(--red)}
+.v-icon{font-size:3em;margin-bottom:8px}.v-title{font-size:1.4em;font-weight:bold;margin-bottom:12px}
+.v-rewards{background:var(--bgc);border-radius:10px;padding:14px;margin:12px 0;text-align:left;font-size:.9em;line-height:1.8}
+.v-rewards .pos{color:var(--grn)}.v-rewards .neg{color:var(--red)}
+.v-levelup{background:rgba(240,192,64,.1);border:1px solid var(--gold);border-radius:8px;padding:10px;margin:10px 0;color:var(--gold);font-weight:bold;animation:pulse 1s infinite}
+.v-breakthrough{background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:10px;margin:10px 0;color:var(--red)}
 .cd-bar{position:relative;width:100%;height:6px;background:#1a1a2e;border-radius:3px;margin:8px 0;overflow:visible}.cd-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .1s linear}
 .ba-wrap{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
 .ba-btn{flex:1;min-width:100px;padding:14px 8px;background:var(--bgc);border:2px solid var(--bdr);border-radius:10px;color:var(--t1);cursor:pointer;text-align:center;transition:all .2s;font-size:.95em}
@@ -490,6 +517,10 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <div class="t-logo">命 运 裂 隙</div>
 <div class="t-sub">Rift of Fate — AI Roguelike</div>
 <p style="color:var(--t3);margin-bottom:30px;text-align:center;max-width:500px;line-height:1.6">选择难度，觉醒你的命运。AI 实时生成独一无二的觉醒体、技能与事件，每局都是全新的冒险。</p>
+<div style="width:100%;max-width:400px;margin:0 auto 20px">
+<label style="color:var(--t2);font-size:.85em;display:block;margin-bottom:6px;text-align:center">冒险者名号</label>
+<input id="playerNameInput" type="text" maxlength="20" placeholder="留空则使用觉醒名" style="width:100%;box-sizing:border-box;background:var(--bgc);border:1px solid var(--bdr);border-radius:8px;padding:10px 14px;color:var(--gold);font-size:1em;text-align:center;letter-spacing:1px;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--bdr)'">
+</div>
 <div class="dg">
 <div class="dc e" onclick="startGame('easy')"><h3>🌿 简单</h3><p>轻松体验<br>敌人较弱，奖励丰厚</p></div>
 <div class="dc n" onclick="startGame('normal')"><h3>⚔️ 普通</h3><p>均衡体验<br>有挑战也有回报</p></div>
@@ -1032,6 +1063,7 @@ const BT_DIFFICULTIES=[
 {name:'挑战',icon:'🔴',stars:5,color:'var(--gold)',reward:'传说级技能(AI定制)',rewardType:'legendary'}
 ];
 const BT_TIER_DIFFS={1:[0,1],2:[0,1,2],3:[0,1,2,3],4:[0,1,2,3],5:[1,2,3],6:[1,2,3],7:[1,2,3],8:[2,3],9:[2,3]};
+const BT_GROWTH_MULT=[1.0,1.15,1.30,1.50,1.70,1.90,2.15,2.40,2.70,3.0];
 const MONSTER_SKILLS=[
 {name:'狂暴突袭',emoji:'💢',desc:'暴怒一击,伤害+50%',mult:1.5,type:'damage'},
 {name:'毒液喷射',emoji:'☠️',desc:'喷射毒液,附加3回合持续伤害',dot:true,dotTurns:3,dotPct:0.08,type:'dot'},
@@ -1469,6 +1501,7 @@ if(_unlocked.has('gold50'))G.gold=50;
 G.currentAgeMonth=START_AGE*12;
 G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
 G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
+if(!G.playerName)G.playerName=G.awk?G.awk.name:'冒险者';
 _evtQueue=[];_fillPromise=null;_preloadedMonsters={};_pendingAI={};_fillNext=0;
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
 G.skCD={};G.bag=[];G.equipped={weapon:null,armor:null,accessory:null,special:null};G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G._regionVisits={};G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};G.debuffs={};G.battleSpeed=parseInt(localStorage.getItem('rift_bspd'))||1;
@@ -1480,7 +1513,7 @@ function getAgeYears(){return Math.floor(G.currentAgeMonth/12)}
 function getAgeMonths(){return G.currentAgeMonth%12}
 function getLifespanYears(){return Math.floor(G.lifespanMonths/12)}
 function isAlive(){return G.currentAgeMonth<G.lifespanMonths}
-function xpNeeded(){return 30+G.p.level*20}
+function xpNeeded(){const base=30+G.p.level*20;return Math.floor(base*(1+G.breakthroughTier*0.08))}
 function getNextBtLevel(){return(G.breakthroughTier+1)*10}
 function needsBreakthrough(){return G.breakthroughPending}
 
@@ -1489,10 +1522,11 @@ G.p.xp+=amt;let leveled=false;
 // Cap at next breakthrough level (player can choose when to breakthrough)
 const nextBtLv=(G.breakthroughTier+1)*10;
 const cap=G.breakthroughPending?nextBtLv:100;
+const gm=BT_GROWTH_MULT[Math.min(G.breakthroughTier,BT_GROWTH_MULT.length-1)];
 while(G.p.xp>=xpNeeded()&&G.p.level<cap&&G.p.level<100){
 G.p.xp-=xpNeeded();G.p.level++;
-G.p.maxHp+=8;G.p.atk+=2;G.p.def+=1;G.p.maxEn+=3;
-G.p.cr=Math.min(.8,G.p.cr+.005);G.p.cd+=.02;G.p.dg+=.003;G.p.lk=Math.min(30,G.p.lk+1);G.p.spd=Math.min(25,+(G.p.spd+0.5).toFixed(1));
+G.p.maxHp+=Math.round(8*gm);G.p.atk+=Math.round(2*gm);G.p.def+=Math.max(1,Math.round(1*gm));G.p.maxEn+=Math.round(3*gm);
+G.p.cr=Math.min(.8,G.p.cr+.005*gm);G.p.cd+=.02*gm;G.p.dg+=.003*gm;G.p.lk=Math.min(30,G.p.lk+Math.round(1*gm));G.p.spd=Math.min(25,+(G.p.spd+0.5*gm).toFixed(1));
 G.p.hp=G.p.maxHp;G.p.baseHp=G.p.maxHp;leveled=true;SoundEngine.play('levelup');
 }
 // Trigger breakthrough notification (optional - player can choose when)
@@ -1519,7 +1553,7 @@ const numSkills=stars>=5?R(2,3):stars>=3?R(1,2):stars>=2?R(0,1):0;
 const skills=[];
 const usedIdx=new Set();
 for(let i=0;i<numSkills;i++){let si;do{si=R(0,MONSTER_SKILLS.length-1)}while(usedIdx.has(si));usedIdx.add(si);skills.push({...MONSTER_SKILLS[si]})}
-const dc=G.dc;const sc=1+(lv-1)*0.08;
+const dc=G.dc;const sc=1+(lv-1)*0.05+Math.log2(Math.max(1,lv))*0.2;
 return{name:(stars>=5?'⭐':'★'.repeat(Math.min(stars,3)))+(names[idx]+'·'+['暴虐','噬魂','裂天','焚世','冰封','碎骨','噬心','灭世','狂怒','深渊'][R(0,9)]),
 emoji:emojis[idx],stars,lv,hp:Math.floor(baseHp*sc*dc.eHp),maxHp:Math.floor(baseHp*sc*dc.eHp),
 atk:Math.floor(baseAtk*sc*dc.eAtk),def:Math.floor(baseDef*sc),isBoss:stars>=4,isElite:stars>=2&&stars<4,skills,isBreakthrough:true};
@@ -1597,7 +1631,7 @@ $('uiAgeY').textContent=getAgeYears();$('uiAgeM').textContent=getAgeMonths();
 $('uiLifespan').textContent=getLifespanYears();
 $('uiMonth').textContent=G.month;
 $('uiEvt').textContent=Math.min(G.evtIdx+1,5);
-$('uiName').textContent=G.awk?G.awk.emoji+' '+G.awk.name:'冒险者';
+$('uiName').textContent=G.awk?G.awk.emoji+' '+(G.playerName||G.awk.name):'冒险者';
 $('uiLv').textContent=p.level;
 const titleInfo=getTitle(p.level);
 $('uiTitle').textContent=titleInfo.icon+' '+titleInfo.name;
@@ -1786,6 +1820,7 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 【第${G.month}月】【第${G.evtIdx+1}/5事件】【节奏:${rhythm}】【难度】${G.dc.name}
 【玩家】Lv.${p.level} HP:${Math.floor(p.hp)}/${p.maxHp} 攻击:${Math.floor(p.atk)} 防御:${Math.floor(p.def)} 幸运:${p.lk}
 【背包物品】${bagItems}
+【技能】${getSkillSummary()}
 【已遭遇】${G.themes.slice(-6).join(',')||'无'}（避免重复！）
 
 要求：
@@ -1809,8 +1844,9 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
    适当给予装备/圣物作为珍贵奖励，但不要每个事件都给
 6. effects中可加loseItem:true表示该选项会随机失去一个背包物品
 7. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
-8. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
-9. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
+8. effects中可加requireSkill:"技能名"表示需要拥有该技能才能选(如"治愈术")，或requireSkillCat:"damage|survival|support|energy"表示需要该类型技能。当玩家有对应技能时可解锁特殊高奖励选项。
+9. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
+10. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
 
 10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":6-14,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。DC6=简单(80%)，DC8=中等(70%)，DC10=困难(60%)，DC12=极难(50-55%)。
    玩家当前属性: 力量${getStatVal('atk')} 体质${getStatVal('def')} 幸运${getStatVal('lk')} 等级${G.p.level} — DC值据此设定
@@ -1851,9 +1887,15 @@ const reqItem=ch.effects?.requireItem;
 const hasItem=!reqItem||G.bag.some(bi=>bi.id===reqItem);
 const goldCost=ch.effects?.goldCost;
 const hasGold=!goldCost||G.gold>=goldCost;
-const canChoose=hasItem&&hasGold;
+const reqSkill=ch.effects?.requireSkill;
+const reqSkillCat=ch.effects?.requireSkillCat;
+let hasSkill=true;
+if(reqSkill)hasSkill=G.p.skills&&G.p.skills.some(s=>s.name===reqSkill);
+if(reqSkillCat)hasSkill=hasSkill&&G.p.skills&&G.p.skills.some(s=>s.cat===reqSkillCat);
+const canChoose=hasItem&&hasGold&&hasSkill;
 const reqLabel=reqItem&&ITEMS[reqItem]?` <span style="color:var(--org);font-size:.8em">[需要: ${ITEMS[reqItem].emoji}${ITEMS[reqItem].name}]</span>`:'';
 const goldLabel=goldCost?` <span style="color:var(--gold);font-size:.8em">[${goldCost}💰]</span>`:'';
+const skillLabel=reqSkill?` <span style="color:var(--pur);font-size:.8em">[需要技能: ${reqSkill}]</span>`:(reqSkillCat?` <span style="color:var(--pur);font-size:.8em">[需要${CAT_CN[reqSkillCat]||''}技能]</span>`:'');
 // Attribute check label
 let checkLabel='';let riskClass='risk-safe';
 if(ch.check){const rate=calcCheckRate(ch.check);const statName=STAT_CN[ch.check.stat]||ch.check.stat;
@@ -1862,9 +1904,9 @@ checkLabel=` <span class="check-badge" style="background:rgba(${pct>=60?'64,192,
 riskClass=pct>=60?'risk-mid':'risk-high'}}
 const ef=ch.effects||{};if(ef.damage||ef.atkLoss||ef.defLoss||ef.curse||ef.destroyItem||ef.goldSteal||ef.xpLoss){riskClass='risk-high'}else if(ch.check){riskClass=riskClass==='risk-safe'?'risk-mid':riskClass}
 b.className='echbtn '+riskClass;
-b.innerHTML=`<span class="cn">${['A','B','C'][i]}.</span> ${ch.label}${checkLabel}${reqLabel}${goldLabel}`;
+b.innerHTML=`<span class="cn">${['A','B','C'][i]}.</span> ${ch.label}${checkLabel}${reqLabel}${goldLabel}${skillLabel}`;
 if(!canChoose){b.style.opacity='.4';b.style.cursor='not-allowed';
-b.innerHTML+=!hasItem?` <span style="color:var(--red);font-size:.75em">(缺少物品)</span>`:` <span style="color:var(--red);font-size:.75em">(金币不足)</span>`;
+b.innerHTML+=!hasItem?` <span style="color:var(--red);font-size:.75em">(缺少物品)</span>`:!hasGold?` <span style="color:var(--red);font-size:.75em">(金币不足)</span>`:` <span style="color:var(--red);font-size:.75em">(缺少技能)</span>`;
 b.onclick=()=>{}}else{b.onclick=()=>selectChoice(ch)}
 cd.appendChild(b)})});
 }
@@ -1876,6 +1918,7 @@ const STAT_CN={atk:'力量',def:'体质',lk:'幸运',level:'等级'};
 function getStatVal(stat){const p=G.p;const bb=getBagBonuses();
 if(stat==='atk')return Math.floor(p.atk+bb.atk);if(stat==='def')return Math.floor(p.def+bb.def);
 if(stat==='lk')return p.lk+bb.luck;if(stat==='level')return p.level;return 0}
+function getSkillSummary(){if(!G.p||!G.p.skills||!G.p.skills.length)return '无技能';return G.p.skills.map(s=>`${s.emoji}${s.name}(${CAT_CN[s.cat]||s.cat},${(s.desc||'').slice(0,12)})`).join('; ')}
 function calcCheckRate(check){if(!check)return null;
 const stat=getStatVal(check.stat),dc=Number(check.dc)||10;
 if(check.type==='threshold')return stat>=dc?1.0:0;
@@ -2250,7 +2293,67 @@ const PRESET_EVENTS=[
 {theme:'mystery',title:'时间回溯',description:'你突然回到了几个小时前的位置，一切都还没有发生。',choices:[
 {label:'利用预知改变路线',result:'你避开了之前的危险，走了更好的路线。',effects:{heal:15,gold:20,luck:1}},
 {label:'尝试再次经历',result:'你在这次经历中获得了一些额外的感悟。',effects:{atk:1,def:1}},
-{label:'顺其自然',result:'时间线修正了自身，你安全回到了现在。',effects:{heal:10}}]}
+{label:'顺其自然',result:'时间线修正了自身，你安全回到了现在。',effects:{heal:10}}]},
+{theme:'stranger',title:'受伤的旅人',description:'路边一位旅人受了重伤，奄奄一息地向你求救。',choices:[
+{label:'使用治愈技能施救',result:'你运用治愈之力，成功挽救了旅人的生命。他感激地送上报酬。',effects:{heal:10,gold:30,luck:1},requireSkillCat:'survival'},
+{label:'用草药简单处理',result:'你尽力用草药处理伤口，旅人稳定了下来。',effects:{heal:5,gold:10}},
+{label:'无能为力，继续赶路',result:'你无法帮助他，只能默默离开。',effects:{}}]},
+{theme:'adventure',title:'封印之门',description:'一扇古老的石门被强大的封印锁住，门后传来低沉的嗡鸣声。',choices:[
+{label:'用攻击技能轰击封印',result:'强大的攻击击碎了封印，门后是一间宝库！',effects:{gold:50,item:'gemStone'},requireSkillCat:'damage'},
+{label:'研究封印寻找弱点',result:'',effects:{},check:{stat:'lk',dc:10,type:'roll'},success:{gold:30},failure:{damage:15}},
+{label:'放弃离开',result:'你记下了门的位置，也许以后再来。',effects:{heal:5}}]},
+{theme:'blessing',title:'能量水晶矿脉',description:'洞穴深处闪烁着耀眼的蓝色光芒，是一大片能量水晶矿脉！',choices:[
+{label:'用聚能技能引导能量',result:'你运用能量操控技巧，将矿脉中的精华凝聚成纯净水晶。',effects:{item:'enCrystal',atk:2,maxEn:10},requireSkillCat:'energy'},
+{label:'小心翼翼地采集',result:'你采到了几块品质不错的水晶。',effects:{gold:25,item:'magicEss'}},
+{label:'只看看就走',result:'你记住了这个位置。',effects:{heal:5}}]},
+{theme:'ruins',title:'古代训练场',description:'你发现了一个保存完好的古代战士训练场，训练器械上还残留着力量印记。',choices:[
+{label:'使用辅助技能强化训练',result:'你的辅助技能激活了训练场的增幅装置，获得了超强的训练效果！',effects:{atk:3,def:2,maxHp:15},requireSkillCat:'support'},
+{label:'按照壁画上的方法训练',result:'你模仿壁画上的姿势，效果不错。',effects:{atk:1,def:1}},
+{label:'只看看就走',result:'古代的智慧不是轻易能理解的。',effects:{}}]},
+{theme:'mystery',title:'灵魂共鸣石',description:'一块散发着紫色光芒的悬浮石头，靠近时你感到技能在共鸣。',choices:[
+{label:'用技能触碰共鸣石',result:'共鸣石与你的技能产生了奇妙的反应，你感到力量在涌动！',effects:{atk:2,heal:20,luck:2},requireSkillCat:'damage'},
+{label:'研究石头的构造',result:'',effects:{},check:{stat:'def',dc:9,type:'roll'},success:{def:2,gold:20},failure:{damage:12}},
+{label:'远远观察',result:'石头的秘密暂时无法解开。',effects:{heal:5}}]},
+{theme:'merchant',title:'流浪铸剑师',description:'一位流浪铸剑师正在路边锻造，他注意到你身上的武器和战斗技巧。',choices:[
+{label:'展示你的伤害技能',result:'铸剑师赞赏你的战斗技巧，为你免费强化了武器。',effects:{atk:3,item:'steelSword'},requireSkillCat:'damage'},
+{label:'请他修理装备',result:'铸剑师帮你修复了装备上的损伤。',effects:{def:2,maxHp:10},check:{stat:'lk',dc:8,type:'roll'},success:{def:3,maxHp:15},failure:{gold:-10}},
+{label:'只是路过',result:'铸剑师继续他的工作。',effects:{}}]},
+{theme:'curse',title:'瘟疫村庄',description:'一个村庄被神秘瘟疫笼罩，村民们痛苦不堪。',choices:[
+{label:'用生存技能净化瘟疫',result:'你的生存技能中蕴含的生命力驱散了瘟疫，村民们恢复了健康！',effects:{heal:25,gold:40,luck:2},requireSkillCat:'survival'},
+{label:'帮助村民隔离病患',result:'你的帮助减缓了瘟疫扩散。',effects:{gold:15,heal:10}},
+{label:'绕道而行',result:'你不想冒险，选择了绕行。',effects:{}}]},
+{theme:'adventure',title:'风暴中的灯塔',description:'猛烈的风暴中，一座古老灯塔的顶层闪烁着微弱的光芒。',choices:[
+{label:'用能量技能点亮灯塔',result:'你的能量技能点亮了灯塔，照亮了安全路线，还发现了一个隐藏宝藏！',effects:{gold:45,item:'treasMap'},requireSkillCat:'energy'},
+{label:'冒着风暴爬上去',result:'',effects:{},check:{stat:'def',dc:11,type:'roll'},success:{gold:30,atk:1},failure:{damage:20}},
+{label:'在灯塔底部避风',result:'你在灯塔底部安全度过了风暴。',effects:{heal:8}}]},
+{theme:'stranger',title:'迷失的吟游诗人',description:'一位吟游诗人在森林中迷路了，他愿意用歌曲交换帮助。',choices:[
+{label:'用辅助技能为他指引方向',result:'你的辅助技能帮助诗人找到了出路，他为你唱了一首增强之歌。',effects:{atk:2,def:2,luck:1},requireSkillCat:'support'},
+{label:'帮他找到出路',result:'诗人感激地为你演奏了一曲。',effects:{heal:15,gold:10}},
+{label:'自己赶路要紧',result:'你无法停下脚步。',effects:{}}]},
+{theme:'blessing',title:'元素祭坛',description:'一座古老的元素祭坛从地底升起，四种元素力量在其上流转。',choices:[
+{label:'用技能激活祭坛',result:'你的技能与祭坛产生了共鸣，获得了元素祝福！',effects:{atk:3,def:2,maxHp:20,maxEn:10},requireSkillCat:'damage'},
+{label:'向祭坛献上祭品',result:'祭坛接受了你的供奉，赐予了温和的祝福。',effects:{heal:20,def:1}},
+{label:'只是观看',result:'元素的力量太过强大，你不敢轻举妄动。',effects:{heal:5}}]},
+{theme:'ruins',title:'古代图书馆遗迹',description:'废弃的图书馆中，一本散发着光芒的古籍引起了你的注意。',choices:[
+{label:'用辅助技能解读古文字',result:'你的辅助技能帮助你读懂了古文字，书中记载了强大的修炼法门！',effects:{atk:2,maxHp:15,luck:2},requireSkillCat:'support'},
+{label:'翻阅保存完好的书页',result:'你从残页中学到了一些有用的知识。',effects:{atk:1,gold:15}},
+{label:'搜索其他房间',result:'你在其他房间找到了一些有价值的东西。',effects:{gold:20}}]},
+{theme:'mystery',title:'时空裂缝',description:'空气中出现了一道闪烁的裂缝，里面隐约可以看到另一个世界。',choices:[
+{label:'用能量技能稳定裂缝',result:'你稳定了裂缝并安全进入，发现了一个充满宝藏的异空间！',effects:{gold:60,item:'gemStone',atk:1},requireSkillCat:'energy'},
+{label:'小心翼翼地伸手探索',result:'',effects:{},check:{stat:'lk',dc:11,type:'roll'},success:{gold:40,item:'magicEss'},failure:{damage:18,xpLoss:0.15}},
+{label:'远离裂缝',result:'不稳定的东西还是不碰为妙。',effects:{heal:5}}]},
+{theme:'adventure',title:'铁壁堡垒',description:'你发现了一座被遗弃的堡垒，大门紧锁，围墙高耸。',choices:[
+{label:'用防御技能破墙而入',result:'你的防御技能在关键时刻变成了破城锤，墙壁应声而碎！',effects:{gold:35,item:'chainMail',def:2},requireSkill:'铁壁'},
+{label:'寻找暗门或通风口',result:'',effects:{},check:{stat:'lk',dc:9,type:'roll'},success:{gold:25,def:1},failure:{damage:10}},
+{label:'绕堡垒而行',result:'堡垒的秘密暂时与你无缘。',effects:{}}]},
+{theme:'blessing',title:'生命之泉',description:'森林深处，一汪碧绿的泉水散发着治愈的光芒。',choices:[
+{label:'用治愈术引导泉水',result:'你的治愈术与泉水共鸣，泉水化为金色洪流涌入你的身体！',effects:{heal:30,maxHp:25,def:2},requireSkill:'治愈术'},
+{label:'直接饮用泉水',result:'泉水入喉，你感到全身充满了活力。',effects:{heal:20,maxHp:5}},
+{label:'装一些泉水带走',result:'你用容器装了一些泉水。',effects:{item:'hpPotL',heal:10}}]},
+{theme:'curse',title:'暗影结界',description:'一片区域被浓重的暗影笼罩，黑暗中传来低沉的耳语。',choices:[
+{label:'用伤害技能撕裂暗影',result:'你的攻击技能化为光芒，撕裂了暗影结界，露出了隐藏的宝藏！',effects:{gold:40,item:'shadowDagger',atk:2},requireSkillCat:'damage'},
+{label:'鼓起勇气穿越暗影',result:'',effects:{},check:{stat:'def',dc:10,type:'roll'},success:{gold:20,atk:1},failure:{damage:15,curse:2}},
+{label:'绕路避开暗影',result:'暗影的力量太过诡异，你选择绕路。',effects:{heal:5}}]}
 ];
 
 // ===== REGION STORIES (3 layers per region) =====
@@ -2461,6 +2564,7 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 【第${G.month}月】【第${nextIdx+1}/5事件】【节奏:${rhythm}】【难度】${G.dc.name}
 【玩家】Lv.${p.level} HP:${Math.floor(p.hp)}/${p.maxHp} 攻击:${Math.floor(p.atk)} 防御:${Math.floor(p.def)} 幸运:${p.lk}
 【背包物品】${bagItems}
+【技能】${getSkillSummary()}
 【已遭遇】${G.themes.slice(-6).join(',')||'无'}（避免重复！）
 
 要求：
@@ -2484,8 +2588,9 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
    适当给予装备/圣物作为珍贵奖励，但不要每个事件都给
 6. effects中可加loseItem:true表示该选项会随机失去一个背包物品
 7. effects中可加requireItem:"物品id"表示需要拥有该物品才能选此选项(如rope绳索)
-8. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
-9. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
+8. effects中可加requireSkill:"技能名"表示需要拥有该技能才能选(如"治愈术")，或requireSkillCat:"damage|survival|support|energy"表示需要该类型技能。当玩家有对应技能时可解锁特殊高奖励选项。
+9. effects中可加gold:N给予金币(5-50)，加goldCost:N表示花费金币才能选此选项(商人交易等)
+10. 玩家当前金币: ${G.gold}💰 — 设置goldCost时不要超过玩家持有量
 
 10. 部分选项可以加属性判定! 格式: "check":{"stat":"atk|def|lk|level","dc":6-14,"type":"roll"}, 同时设"success":{...正面效果...}和"failure":{...负面效果...}。3个选项中至少1个有属性判定。安全选项无判定但收益低。DC6=简单(80%)，DC8=中等(70%)，DC10=困难(60%)，DC12=极难(50-55%)。
    玩家当前属性: 力量${getStatVal('atk')} 体质${getStatVal('def')} 幸运${getStatVal('lk')} 等级${G.p.level} — DC值据此设定
@@ -2883,7 +2988,7 @@ const tierName=MONSTER_TIERS[tierIdx].name;
 const lvRange=STAR_RANGES[monsterStar];
 const monsterLv=R(lvRange[0],lvRange[1]);
 // Stat scaling: base * star_scaling * tier_scaling * difficulty_scaling
-const starScale=1+(monsterLv-1)*0.06;// Level-based: 6% per monster level for meaningful scaling
+const starScale=1+(monsterLv-1)*0.04+Math.log2(Math.max(1,monsterLv))*0.15;
 const tierScale=tierMult;
 const diffScale=dc.eHp||1;
 if(isBoss){
@@ -2915,12 +3020,15 @@ if(G.aiMonsters.length){G.aiMonsters.forEach(am=>{if(am.min<=G.month)pool.push(a
 if(!pool.length)pool=[...ENEMIES];
 const e=pick(pool);
 const isElite=Math.random()<.15;const em=isElite?1.4:1;
-const mHp=Math.floor(e.hp*starScale*tierScale*diffScale*em*1.5);
-const mAtk=Math.floor(e.atk*starScale*tierScale*(dc.eAtk||1)*em*1.15);
+const _vRoll=Math.random();let _vMul=1.0,_vLabel='';
+if(_vRoll<0.20){_vMul=0.75+Math.random()*0.1}
+else if(_vRoll>0.80){_vMul=1.15+Math.random()*0.15;_vLabel='强壮的 '}
+const mHp=Math.floor(e.hp*starScale*tierScale*diffScale*em*_vMul*1.5);
+const mAtk=Math.floor(e.atk*starScale*tierScale*(dc.eAtk||1)*em*_vMul*1.15);
 const mDef=Math.floor((e.def||2)*starScale*tierScale*em);
 const mSkills=[];
 if(isElite){mSkills.push(pick(MONSTER_SKILLS));if(Math.random()<0.3)mSkills.push(pick(MONSTER_SKILLS))}
-const prefix=isElite?'精英 ':starBoost>=2?'危险 ':'';
+const prefix=isElite?'精英 ':(_vLabel||'')+(starBoost>=2?'危险 ':'');
 return{name:prefix+e.name,emoji:e.emoji,hp:mHp,maxHp:mHp,atk:mAtk,def:mDef,spd:isElite?R(7,16):R(5,15),
 key:e.id||'',lv:monsterLv,isBoss:false,isElite,region:G.region,stars:monsterStar,tier:tierIdx,tierName,skills:mSkills,isDangerous:starBoost>=2};
 }
@@ -2969,31 +3077,32 @@ const diffInfo=(enemy.stars&&enemy.isBreakthrough)?BT_DIFFICULTIES.find(d=>d.sta
 const starLabel=diffInfo?`<div style="color:${diffInfo.color};font-size:.85em;margin-bottom:4px">${diffInfo.icon} ${diffInfo.name}突破挑战</div>`
 :(enemy.stars?`<div style="font-size:.85em;margin-bottom:4px;color:${MONSTER_TIERS[enemy.tier||0].color}">${'★'.repeat(Math.min(enemy.stars,5))}${enemy.stars>5?'+'+(enemy.stars-5):''} ${enemy.stars}星${enemy.tierName||''}${enemy.isDangerous?' ⚠️危险':''}</div>`:'');
 const skillLabel=enemy.skills&&enemy.skills.length?`<div style="font-size:.8em;color:var(--org);margin-top:2px">技能: ${enemy.skills.map(s=>s.emoji+s.name).join(' ')}</div>`:'';
-card.innerHTML=`<div class="ecard"><span class="etag th-battle">${isBreakthrough?'突破战':isBossF?'BOSS战':enemy.isElite?'精英战':'战斗'}</span>
-<div class="bent"><div class="be pl"><div class="bem">${G.awk?G.awk.emoji:'🗡️'}</div><div class="ben">${G.awk?G.awk.name:'冒险者'}</div>
+card.innerHTML=`<div class="b-top-row">
+<div class="b-atb-corner"><div class="atb-ring pl" id="atbPRing"><svg viewBox="0 0 44 44"><circle class="ring-bg" cx="22" cy="22" r="19"/><circle class="ring-fill" id="atbPCirc" cx="22" cy="22" r="19" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span class="ring-icon">${G.awk?G.awk.emoji:'🗡️'}</span><span class="ring-pct" id="atbPPct">0%</span></div></div>
+<div class="b-entities">
+<div class="ecard" style="flex:1;padding:10px;margin:0"><span class="etag th-battle">${isBreakthrough?'突破战':isBossF?'BOSS战':enemy.isElite?'精英战':'战斗'}</span>
+<div class="bent"><div class="be pl"><div class="bem">${G.awk?G.awk.emoji:'🗡️'}</div><div class="ben">${G.playerName||(G.awk?G.awk.name:'冒险者')}</div>
 <div class="si">生命 <span class="sv hp" id="bPH">${Math.floor(p.hp)}/${_stMhp}</span></div>
 <div class="bar-w"><div class="bar-hp" id="bPB" style="width:${cl(p.hp/_stMhp*100,0,100)}%"></div></div>
-<div style="margin-top:4px;font-size:.8em;color:var(--t2)">攻击:${_stAtk} 防御:${_stDef} 能量:${Math.floor(p.en)}/${_stMEn}</div></div>
+<div style="margin-top:4px;font-size:.78em;color:var(--t2)">攻:${_stAtk} 防:${_stDef} 能:${Math.floor(p.en)}/${_stMEn}</div></div>
 <div class="bvs">VS</div>
 <div class="be en"><div class="bem">${enemy.emoji}</div><div class="ben">${enemy.isBoss?'👑 ':''}${enemy.name}</div>
 ${starLabel}
-<div class="si">Lv.${enemy.lv} 生命 <span class="sv" style="color:var(--red)" id="bEH">${enemy.hp}/${enemy.maxHp}</span></div>
+<div class="si">Lv.${enemy.lv} <span class="sv" style="color:var(--red)" id="bEH">${enemy.hp}/${enemy.maxHp}</span></div>
 <div class="bar-w"><div class="bar-hp low" id="bEB" style="width:100%"></div></div>
-<div style="margin-top:4px;font-size:.8em;color:var(--t2)">攻击:${enemy.atk} 防御:${enemy.def}</div>
-${skillLabel}</div></div></div>
-<div class="atb-ring-panel">
-<div class="atb-ring pl" id="atbPRing"><svg viewBox="0 0 72 72"><circle class="ring-bg" cx="36" cy="36" r="32"/><circle class="ring-fill" id="atbPCirc" cx="36" cy="36" r="32" stroke-dasharray="201" stroke-dashoffset="201"/></svg><span class="ring-icon">${G.awk?G.awk.emoji:'🗡️'}</span><span class="ring-pct" id="atbPPct">0%</span></div>
-<div class="atb-vs">VS</div>
-<div class="atb-ring en" id="atbERing"><svg viewBox="0 0 72 72"><circle class="ring-bg" cx="36" cy="36" r="32"/><circle class="ring-fill" id="atbECirc" cx="36" cy="36" r="32" stroke-dasharray="201" stroke-dashoffset="201"/></svg><span class="ring-icon">${enemy.emoji}</span><span class="ring-pct" id="atbEPct">0%</span></div>
+<div style="margin-top:4px;font-size:.78em;color:var(--t2)">攻:${enemy.atk} 防:${enemy.def}</div>
+${skillLabel}</div></div></div></div>
+<div class="b-atb-corner"><div class="atb-ring en" id="atbERing"><svg viewBox="0 0 44 44"><circle class="ring-bg" cx="22" cy="22" r="19"/><circle class="ring-fill" id="atbECirc" cx="22" cy="22" r="19" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span class="ring-icon">${enemy.emoji}</span><span class="ring-pct" id="atbEPct">0%</span></div></div>
 </div>
 <button class="bspd-btn" id="bspdBtn" onclick="G.battleSpeed=G.battleSpeed>=5?1:G.battleSpeed+1;localStorage.setItem('rift_bspd',G.battleSpeed);this.textContent='⏩ '+G.battleSpeed+'x';">⏩ ${G.battleSpeed}x</button>
+<details class="sfx-collapse"><summary>✦ 状态效果</summary>
 <div class="sfx-container" id="sfxBox">
-<div class="sfx-header"><span class="sfx-title">✦ 状态效果</span><span style="color:var(--t3);font-size:.9em">— 实时Buff/Debuff</span></div>
 <div class="sfx-row sfx-player" id="sfxPlayer"><span class="sfx-label">🗡️ 我方</span><span class="sfx-empty">暂无状态</span></div>
 <div class="sfx-row sfx-enemy" id="sfxEnemy"><span class="sfx-label">👾 敌方</span><span class="sfx-empty">暂无状态</span></div>
-</div>
-<div id="bAction"></div>
-<div class="blog" id="bLog"><div class="ls">--- 战斗开始 ---</div></div>`;
+</div></details>
+<div id="bAction" class="b-action-sticky"></div>
+<details class="blog-collapse"><summary>📜 战斗日志</summary>
+<div class="blog" id="bLog"><div class="ls">--- 战斗开始 ---</div></div></details>`;
 area.appendChild(card);
 setTimeout(()=>runBattle(enemy,isBreakthrough),600);
 }
@@ -3211,7 +3320,7 @@ const eSpd=+(enemy.spd||10);
 addL(`⚡ 速度: ${effPSpd.toFixed(0)} vs ${eSpd.toFixed(0)}`,'ls');
 if(_diffDmg!==1||_diffHeal!==1){let _dMsg=`🎯 ${G.dc.name||G.diff}`;if(_diffDmg>1)_dMsg+=` 受伤×${_diffDmg}`;if(_diffDmg<1)_dMsg+=` 受伤×${_diffDmg}`;if(_diffHeal<1)_dMsg+=` 治疗×${_diffHeal}`;if(_diffHeal>1)_dMsg+=` 治疗×${_diffHeal}`;addL(_dMsg,'ls')}
 function _updATB(){
-const C=201;
+const C=119.4;
 const pCirc=$('atbPCirc'),eCirc=$('atbECirc');
 if(pCirc){const pct=Math.min(100,pBar);pCirc.style.strokeDashoffset=C*(1-pct/100);const pEl=$('atbPPct');if(pEl)pEl.textContent=Math.floor(pct)+'%';const pR=$('atbPRing');if(pR)pR.classList.toggle('ready',pBar>=90)}
 if(eCirc){const pct=Math.min(100,eBar);eCirc.style.strokeDashoffset=C*(1-pct/100);const eEl=$('atbEPct');if(eEl)eEl.textContent=Math.floor(pct)+'%';const eR=$('atbERing');if(eR)eR.classList.toggle('ready',eBar>=90)}
@@ -3532,8 +3641,8 @@ await completeBreakthrough(G._btStars||3);
 }else{
 addL(`--- 你被击败了... ---`,'ls');
 clearAllDebuffs();
-if(isBreakthrough){setTimeout(()=>{showScr('gameScr');addL('突破失败...你可以继续修炼再试','le');G._btMonster=null;advanceEvt()},2000)}
-else{setTimeout(()=>gameOver('death'),1500)}
+if(isBreakthrough){showVictoryModal({defeat:true,icon:'⚡',title:'突破失败',subtitle:'实力不足，继续修炼',rewardsHTML:'<div style="color:var(--t2)">你可以继续冒险，稍后再次挑战突破</div>',onContinue:()=>{showScr('gameScr');G._btMonster=null;advanceEvt()}})}
+else{showVictoryModal({defeat:true,icon:'💀',title:'战死沙场',subtitle:`你被 ${enemy.name} 击败了`,rewardsHTML:'<div style="color:var(--t2)">生命归零，冒险结束</div>',onContinue:()=>gameOver('death')})}
 }
 }catch(_bErr){console.error('[Battle] Critical error:',_bErr);
 try{addL('⚠️ 战斗系统异常，已自动恢复','le')}catch(e){}
@@ -3544,6 +3653,26 @@ const errBtn=document.createElement('button');errBtn.className='btn-big';errBtn.
 errBtn.onclick=function(){advanceEvt()};errDiv.appendChild(errBtn);
 const area=$('evtArea');if(area)area.appendChild(errDiv);
 }
+}
+
+function showVictoryModal(data){
+const ov=document.createElement('div');ov.className='v-overlay';
+const isWin=!data.defeat;
+let extraHTML='';
+if(data.levelUp)extraHTML+=`<div class="v-levelup">🎉 升级了! Lv.${G.p.level}</div>`;
+if(data.breakthrough)extraHTML+=`<div class="v-breakthrough"><div style="font-weight:bold">⚡ 突破试炼已开启!</div><div style="color:var(--t2);font-size:.85em;margin-top:4px">Lv.${getNextBtLevel()} — 点击顶部「突破!」按钮挑战</div></div>`;
+ov.innerHTML=`<div class="v-card ${isWin?'':'defeat'}">
+<div class="v-icon">${data.icon||(isWin?'⚔️':'💀')}</div>
+<div class="v-title" style="color:${isWin?'var(--grn)':'var(--red)'}">${data.title}</div>
+${data.subtitle?`<div style="color:var(--t2);font-size:.9em;margin-bottom:8px">${data.subtitle}</div>`:''}
+<div class="v-rewards">${data.rewardsHTML}</div>
+${extraHTML}
+<div id="victoryDropArea"></div>
+<button class="btn-big" style="margin-top:14px;width:100%" id="vContBtn">继续</button>
+</div>`;
+document.body.appendChild(ov);
+$('vContBtn').onclick=function(){ov.style.opacity='0';ov.style.transition='opacity .3s';setTimeout(()=>{ov.remove();if(data.onContinue)data.onContinue()},300)};
+return ov;
 }
 
 async function battleWin(enemy){
@@ -3580,21 +3709,11 @@ maybeCheckAchievements();
 let winExtras=`+${aH} 生命 | +${xpGain} 经验 | +${goldReward}💰`;
 if(_bbKill.killHeal>0)winExtras+=` | 💀 击杀回复+${_bbKill.killHeal}`;
 addL(winExtras,'lp');
-const res=document.createElement('div');res.className='bres w fi';
-res.innerHTML=`<div style="font-size:1.3em;margin-bottom:8px">${enemy.isBoss?'👑 Boss击败!':'⚔️ 战斗胜利!'}</div>
-<div style="font-size:.9em">+${aH} 生命 | +${xpGain} 经验 | +${goldReward}💰${leveled?' | 🎉 升级了! Lv.'+G.p.level:''}</div>`;
-const dropArea=document.createElement('div');dropArea.id='itemDropArea';res.appendChild(dropArea);
-// Show breakthrough notification if pending
-if(G.breakthroughPending){
-const btNote=document.createElement('div');btNote.style.cssText='background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:10px;margin-top:8px;text-align:center;animation:fadeIn .5s';
-btNote.innerHTML=`<div style="color:var(--red);font-weight:bold">⚡ 突破试炼已开启!</div><div style="color:var(--t2);font-size:.85em">Lv.${getNextBtLevel()} 突破任务 — 点击顶部「突破!」按钮选择难度挑战</div>`;
-res.appendChild(btNote);
-}
-// Always show continue button
-const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.style.marginTop='12px';
-btn.onclick=function(){advanceEvt()};res.appendChild(btn);
-$('evtArea').appendChild(res);
-setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'center'}),200);
+const _rwHTML=`<div><span class="pos">+${aH} 生命恢复</span></div>
+<div><span class="pos">+${xpGain} 经验</span></div>
+<div><span class="pos">+${goldReward} 💰</span></div>
+${_bbKill.killHeal>0?`<div><span class="pos">💀 击杀回复 +${_bbKill.killHeal}</span></div>`:''}`;
+showVictoryModal({icon:enemy.isBoss?'👑':'⚔️',title:enemy.isBoss?'Boss击败!':'战斗胜利!',subtitle:`${enemy.name} 已被击败`,rewardsHTML:_rwHTML,levelUp:leveled,breakthrough:G.breakthroughPending,onContinue:()=>advanceEvt()});
 // Item drop
 const dropChance=30+enemy.lv*1+G.dc.dropB+G.p.lk*.5+(enemy.isElite?35:0)+(enemy.isBoss?75:0);
 if(Math.random()*100<dropChance){dropItem(enemy)}
@@ -3602,8 +3721,7 @@ updateUI();
 // Preload next event while player views rewards
 preloadNextEvent();
 }catch(e){console.error('[battleWin]',e);
-const res=document.createElement('div');res.className='bres w fi';
-const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.onclick=function(){advanceEvt()};res.appendChild(btn);$('evtArea').appendChild(res);btn.scrollIntoView({behavior:'smooth',block:'center'})}
+showVictoryModal({icon:'⚠️',title:'战斗结算异常',subtitle:'已自动恢复',rewardsHTML:'<div style="color:var(--t2)">点击继续冒险</div>',onContinue:()=>advanceEvt()})}
 }
 
 function dropItem(enemy){
@@ -3640,7 +3758,7 @@ overlay.innerHTML=`<div style="background:var(--bg2);border:2px solid ${bdrClr};
 overlay.onclick=function(e){if(e.target===overlay){overlay.style.opacity='0';overlay.style.transition='opacity .3s';setTimeout(()=>overlay.remove(),300)}};
 document.body.appendChild(overlay);
 }else{
-const area=$('itemDropArea');if(area)area.innerHTML='<div style="color:var(--org);font-size:.85em;padding:8px">背包已满，物品丢失</div>'}
+const area=$('victoryDropArea')||$('itemDropArea');if(area)area.innerHTML='<div style="color:var(--org);font-size:.85em;padding:8px">背包已满，物品丢失</div>'}
 updateUI();
 }
 
@@ -4033,7 +4151,7 @@ const reasonText=reason==='lifespan'?`寿终正寝 — 享年${ageStr}`:'战死�
 const regionName=G.currentMapData?G.currentMapData.icon+' '+G.currentMapData.name:G.region?(REGIONS[G.region]?REGIONS[G.region].icon+' '+REGIONS[G.region].name:'-'):'-';
 // Build journey summary for AI
 const journeyParts=[];
-journeyParts.push(`${G.awk?G.awk.name:'冒险者'}(${DIR_NAMES[G.awk?.direction]||''}系)`);
+journeyParts.push(`${G.playerName||(G.awk?G.awk.name:'冒险者')}(${DIR_NAMES[G.awk?.direction]||''}系)`);
 journeyParts.push(`${G.dc.name}难度`);
 journeyParts.push(`Lv.${p.level} ${G.breakthroughTier}次突破`);
 journeyParts.push(`击杀${G.kills}只怪物`);
@@ -4046,7 +4164,7 @@ const journeySummary=journeyParts.join('，');
 let narrative='';
 try{
 const narPrompt=`为Roguelike游戏《命运裂隙》的冒险者写一段简短的死亡/结局叙事(2-3句话)。
-【冒险者】${G.awk?G.awk.emoji+G.awk.name+'「'+G.awk.title+'」':'无名冒险者'}
+【冒险者】${G.awk?G.awk.emoji+(G.playerName||G.awk.name)+'「'+G.awk.title+'」':'无名冒险者'}
 【结局】${reasonText}
 【旅途】${journeySummary}
 【最终地区】${regionName}
@@ -4055,7 +4173,7 @@ const narPrompt=`为Roguelike游戏《命运裂隙》的冒险者写一段简短
 const narResult=await callAIText(narPrompt,10000);
 if(narResult&&narResult.trim())narrative=narResult.trim();
 }catch(e){console.error('[Death Narrative]',e)}
-if(!narrative)narrative=`${G.awk?G.awk.name:'冒险者'}的旅途在${regionName}终结。裂隙中的命运永远无法预测，但这段冒险将被铭记。`;
+if(!narrative)narrative=`${G.playerName||(G.awk?G.awk.name:'冒险者')}的旅途在${regionName}终结。裂隙中的命运永远无法预测，但这段冒险将被铭记。`;
 $('goScr').querySelector('.go-t').textContent=reason==='lifespan'?'寿终正寝':'战死沙场';
 box.innerHTML=`
 <div style="background:var(--bgc);border:1px solid var(--gold);border-radius:10px;padding:14px;margin-bottom:14px;font-size:.95em;line-height:1.8;color:var(--t1);font-style:italic">${narrative}</div>
@@ -4194,7 +4312,7 @@ try{
 const score=G.p.level*100+G.kills*10+G.breakthroughTier*200+Math.floor(G.totalGold/10);
 await fetch(WORKER_URL+'/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},
 body:JSON.stringify({
-name:G.awk?G.awk.name:'冒险者',level:G.p.level,kills:G.kills,months:G.month,
+name:G.playerName||(G.awk?G.awk.name:'冒险者'),level:G.p.level,kills:G.kills,months:G.month,
 difficulty:G.diff,score,gold:G.totalGold,breakthroughs:G.breakthroughTier
 })});
 }catch(e){console.warn('[Leaderboard] submit failed:',e)}
@@ -4330,6 +4448,7 @@ result.innerHTML='<div style="color:var(--red)">需要 Worker 服务才能云端
 result.innerHTML='<div class="loading">正在保存...</div>';
 try{
 const saveData={
+playerName:G.playerName||'',
 awk:G.awk,p:{...G.p},diff:G.diff,month:G.month,evtIdx:G.evtIdx,
 kills:G.kills,bossKills:G.bossKills,npcKills:G.npcKills,
 evts:G.evts,aiEvts:G.aiEvts,preEvts:G.preEvts,dmgDealt:G.dmgDealt,
@@ -4344,7 +4463,7 @@ isBoss:G.isBoss,maxSlot:G.maxSlot,nextSkillLv:G.nextSkillLv,
 themes:G.themes,starKills:G.starKills,bestiary:G.bestiary,debuffs:G.debuffs
 };
 const res=await fetch(WORKER_URL+'/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({playerId:PLAYER_ID||undefined,playerName:G.awk?G.awk.name:'冒险者',data:saveData})});
+body:JSON.stringify({playerId:PLAYER_ID||undefined,playerName:G.playerName||(G.awk?G.awk.name:'冒险者'),data:saveData})});
 const data=await res.json();
 if(data.ok){
 PLAYER_ID=data.playerId;
@@ -4405,6 +4524,7 @@ if(!sd.equipped){G.bag.forEach(item=>{const slot=getItemSlot(item.id);if(slot&&!
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
 G.themes=sd.themes||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
 G.awk=sd.awk;G.p=sd.p;
+G.playerName=sd.playerName||(G.awk?G.awk.name:'冒险者');
 document.getElementById('loadModal').classList.remove('on');
 await showTrans('命运正在重连...',1200);
 showScr('gameScr');updateUI();advanceEvt();
@@ -4471,6 +4591,7 @@ badge.style.background='rgba(224,64,80,.12)';badge.style.color='var(--red)';
 // ===== START =====
 async function startGame(diff){
 G.diff=diff;G.dc=DIFF[diff];
+const _nameIn=$('playerNameInput');G.playerName=_nameIn?_nameIn.value.trim().slice(0,20):'';
 await showTrans('命运正在觉醒...',1500);showScr('awkScr');
 $('awkWrap').innerHTML=`<div style="color:var(--gold);font-size:1.4em;margin-bottom:10px">觉 醒</div>
 <div style="color:var(--t2);margin-bottom:20px">点击法阵，觉醒你的命运</div>
