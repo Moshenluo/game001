@@ -320,13 +320,13 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
   .bag-grid{grid-template-columns:repeat(6,1fr)}
   .pbar{padding:16px 22px}
   .bar-w{height:10px}
-  .reg-grid{grid-template-columns:1fr 1fr 1fr;max-width:800px}
+  .reg-grid{grid-template-columns:1fr 1fr 1fr;max-width:900px}
   .reg-card{padding:20px}
   .reg-card .rg-icon{font-size:2.2em}
   .reg-card .rg-name{font-size:1.2em}
   .reg-card .rg-desc{font-size:.85em}
 }
-.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:640px;margin:16px 0}
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:720px;margin:16px 0;padding:0 4px}
 .reg-card{background:var(--bgc);border:2px solid var(--bdr);border-radius:12px;padding:16px;cursor:pointer;transition:all .3s;text-align:left}
 .reg-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px var(--shd)}
 .reg-card .rg-icon{font-size:1.8em;margin-bottom:6px}
@@ -379,9 +379,13 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .ach-card .ach-icon{font-size:1.5em;margin-bottom:4px}
 .ach-card .ach-name{font-size:.85em;font-weight:bold;color:var(--t1)}
 .ach-card .ach-desc{font-size:.7em;color:var(--t3);margin-top:2px}
-.ach-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--bg2);border:2px solid var(--gold);border-radius:12px;padding:12px 24px;z-index:2000;animation:fadeIn .5s;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5)}
-.ach-toast .at-title{color:var(--gold);font-weight:bold;font-size:1em}
-.ach-toast .at-desc{color:var(--t2);font-size:.8em;margin-top:4px}
+.ach-toast{position:relative;background:linear-gradient(135deg,rgba(30,25,15,.97),rgba(20,18,12,.97));border:2px solid var(--gold);border-radius:14px;padding:14px 20px;z-index:2000;animation:achSlide .5s ease-out;box-shadow:0 8px 30px rgba(0,0,0,.6),inset 0 1px 0 rgba(240,192,64,.15);display:flex;align-items:center;gap:14px;min-width:240px;max-width:360px}
+.ach-toast .at-icon{font-size:2em;flex-shrink:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(240,192,64,.1);border-radius:10px;border:1px solid rgba(240,192,64,.3)}
+.ach-toast .at-body{flex:1;min-width:0}
+.ach-toast .at-label{color:var(--gold);font-size:.7em;letter-spacing:1px;text-transform:uppercase;opacity:.8}
+.ach-toast .at-title{color:var(--t1);font-weight:bold;font-size:1em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ach-toast .at-desc{color:var(--t2);font-size:.78em;margin-top:3px;line-height:1.3}
+@keyframes achSlide{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 /* Bottom Toolbar */
 .toolbar{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(10,10,18,.95);border-top:1px solid var(--bdr);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:100;padding:4px 0 max(4px,env(safe-area-inset-bottom))}
 .tb-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 4px;background:none;border:none;color:var(--t2);cursor:pointer;font-size:.72em;transition:all .2s;min-height:44px;justify-content:center}
@@ -2431,7 +2435,7 @@ if(pCritB>0&&pCritDur>0)pBuf+=`<span class="sfx-badge sfx-buff">⭐暴击+${Math
 // Awakening passives (persistent indicators via passiveEngine)
 const {_peEfx, _pePen} = (() => { const all = passiveEngine.listAll(); return {_peEfx: all.effects, _pePen: all.penalties}; })();
 const effectIcons = {
-  shield:'🛡️护盾', hp_regen:'🌿再生', lifesteal:'🩸吸血', dot_apply:'🔥灼烧被动',
+  shield:'🛡️护盾', hp_regen:'🌿再生', lifesteal:'🩸吸血', dot_apply:'🔥灼烧',
   chain_strike:'⚡雷击', crit_heal:'💖暴击回血', dodge_bonus:'💨闪避+',
   full_evade:'🕳️维度闪避', freeze_chance:'❄️冻结', skill_dmg_mult:'⚡技能+',
   heal_amplify:'💚治疗+', immortal:'🔥不灭', low_hp_atk:'📯低血增伤',
@@ -2439,19 +2443,30 @@ const effectIcons = {
   kill_buff:'⚔️击杀buff', conditional_dmg:'📯条件增伤', crit_after_dodge:'🎯闪避暴击',
   def_mult:'🛡️防御修正', full_hp_atk:'💪满血攻击', summon:'👤召唤',
   on_lethal_atk_buff:'🔥濒死强化', all_random_mult:'🎲随机翻倍',
+  counter_attack:'⚔️反击', reflect:'🌿反伤', speed_boost:'💨速度+',
+  first_strike:'⚡先手', low_hp_speed:'💨低血加速', speed_dmg:'💨速度增伤',
+  crit_boost:'🎯暴击+', crit_damage:'🎯暴击伤害', crit_dmg:'🎯暴击伤害',
+  atk_boost:'📯攻击+', def_boost:'🛡️防御+', hp_boost:'💪生命+',
+  dot_damage:'🔥持续伤害', burn:'🔥灼烧', poison:'☠️毒素',
+  slow_enemy:'🐌减速', energy_regen:'🌀能量回复', en_regen:'🌀能量回复',
+  dmg_reduce:'🛡️减伤', damage_reduce:'🛡️减伤', block:'🛡️格挡',
+  thorns:'🌿荆棘', aura:'✨光环', buff:'✨强化',
 };
+// Fallback: translate common English keywords to Chinese
+const _efxKeywords={crit:'暴击',dmg:'伤害',damage:'伤害',atk:'攻击',def:'防御',hp:'生命',spd:'速度',speed:'速度',heal:'治疗',shield:'护盾',dodge:'闪避',evade:'闪避',burn:'灼烧',poison:'毒素',dot:'持续',regen:'回复',boost:'提升',buff:'强化',debuff:'削弱',slow:'减速',freeze:'冻结',stun:'眩晕',paralyze:'麻痹',lifesteal:'吸血',reflect:'反伤',thorns:'荆棘',kill:'击杀',energy:'能量',en:'能量',summon:'召唤',immortal:'不灭',chain:'连锁',strike:'打击',counter:'反击',aura:'光环'};
+function _efxLabel(type){const icon=effectIcons[type];if(icon)return icon;let label='✦';for(const[k,v]of Object.entries(_efxKeywords)){if(type.toLowerCase().includes(k)){label=v;break}}return label+(type.length>12?'':type)};
 _peEfx.forEach(e => {
-  if(e.type==='immortal' && G.immortalUsed) return; // hide used immortal
-  const icon = effectIcons[e.type] || '✦'+e.type;
+  if(e.type==='immortal' && G.immortalUsed) return;
+  const icon = effectIcons[e.type] || _efxLabel(e.type);
   const val = typeof e.value === 'number' && e.value > 0 && e.value < 1 ? Math.floor(e.value*100)+'%' : (e.value===1?'':e.value);
   pBuf += `<span class="sfx-badge sfx-special">${icon}${val}</span>`;
 });
 if(passiveEngine.has('crit_after_dodge')&&focusNext)pBuf+=`<span class="sfx-badge sfx-buff">🎯下次必暴</span>`;
 // Player debuffs
 if(paralyzed)pBuf+=`<span class="sfx-badge sfx-debuff">⚡麻痹</span>`;
-const penIcons = {self_burn:'🔥自灼', hp_loss:'🩸血耗', damage_taken:'💔易伤', paralyze:'⚡麻痹', norm_dmg_mult:'⬇️攻击削弱', miss_self_pct:'🌙非暴击自伤', high_hp_atk:'⬇️高血攻击', high_hp_en_regen:'⬇️高血能耗', def_mult:'🛡️防御削弱', full_hp_atk:'⬇️满血攻击', low_self_dmg:'⬇️低血减伤', def_per_summon:'⬇️召唤减防', all_neg_mult:'⬇️负面放大'};
+const penIcons = {self_burn:'🔥自灼', hp_loss:'🩸血耗', damage_taken:'💔易伤', paralyze:'⚡麻痹', norm_dmg_mult:'⬇️攻击削弱', miss_self_pct:'🌙非暴击自伤', high_hp_atk:'⬇️高血攻击', high_hp_en_regen:'⬇️高血能耗', def_mult:'🛡️防御削弱', full_hp_atk:'⬇️满血攻击', low_self_dmg:'⬇️低血减伤', def_per_summon:'⬇️召唤减防', all_neg_mult:'⬇️负面放大', speed_debuff:'💨速度削弱', atk_debuff:'⬇️攻击削弱', def_debuff:'⬇️防御削弱', slow_speed:'💨减速', hp_drain:'🩸失血', en_drain:'🌀能耗', crit_reduce:'🎯暴击削弱', heal_reduce:'💚治疗削弱', burn_self:'🔥自灼', dot_self:'☠️自伤'};
 _pePen.forEach(e => {
-  const icon = penIcons[e.type] || '⚠️'+e.type;
+  const icon = penIcons[e.type] || _efxLabel(e.type).replace(/^./,'⚠️');
   const val = typeof e.value === 'number' && Math.abs(e.value) < 1 && e.value !== 0 ? (e.value>0?'+':'')+Math.floor(e.value*100)+'%' : '';
   pBuf += `<span class="sfx-badge sfx-debuff">${icon}${val}</span>`;
 });
@@ -2941,16 +2956,12 @@ const btn=document.createElement('button');btn.className='btn-big';btn.textConte
 }
 
 function dropItem(enemy){
-const area=$('itemDropArea');if(!area)return;
 const r=Math.random()*100;let pool;
 if(enemy.isBoss){pool=['hpPotL','enCrystal','berserk','mystKey','awkShard','magicEss','gemStone','treasMap','skullTrophy',
-// Relics & epic equipment (boss exclusive)
 'bloodAmulet','thunderCrown','phoenixFeather','voidEye','ancientTome','flameBlade','frostEdge','dragonPlate','starPendant','guardianShield']}
 else if(enemy.isElite){pool=['hpPotL','atkPot','defPot','enCrystal','magicEss','monsterMat','gemStone','bomb','ancientCoin','ruinGuide',
-// Rare equipment (elite+)
 'steelSword','shadowDagger','chainMail','energyOrb','luckyCharm','boneRing']}
 else{pool=['hpPot','atkPot','defPot','ironOre','monsterMat','antidote','rope','tent','ruinGuide',
-// Common equipment (any fight)
 'ironSword','leatherArmor','ironRing']}
 const itemId=pick(pool);const it=ITEMS[itemId];if(!it)return;
 if(addToBag(itemId)){
@@ -2963,10 +2974,22 @@ if(s.critDamage)parts.push(`暴伤+${s.critDamage.toFixed(1)}`);if(s.dodgeRate)p
 if(s.luck)parts.push(`幸运+${s.luck}`);if(s.lifesteal)parts.push(`吸血${(s.lifesteal*100).toFixed(0)}%`);
 if(s.hpRegen)parts.push(`每回合+${s.hpRegen}HP`);if(s.killHeal)parts.push(`击杀+${s.killHeal}HP`);
 if(s.chainCount)parts.push(`每${s.chainCount}击雷击`);
-dropStats=`<div style="color:var(--org);font-size:.8em;margin-top:2px">${parts.join(' | ')}</div>`}
-const typeBadge=(it.type==='equipment'||it.type==='relic')?`<div style="color:var(--gold);font-size:.75em;margin-top:2px">[${TYPE_CN[it.type]}] 被动生效</div>`:'';
-area.innerHTML=`<div class="item-drop" style="border-color:${it.type==='relic'?'var(--pur)':it.type==='equipment'?'var(--gold)':'var(--bdr)'}"><div style="font-size:2em">${it.emoji}</div><div style="color:${RARITY_CLR[it.rarity]};font-weight:bold">${it.name}</div><div style="color:var(--t2);font-size:.85em">${it.desc}</div>${dropStats}${typeBadge}<div style="color:var(--grn);font-size:.8em;margin-top:4px">已放入背包</div></div>`;
-}else{area.innerHTML='<div style="color:var(--org);font-size:.85em;padding:8px">背包已满，物品丢失</div>'}
+dropStats=`<div style="color:var(--org);font-size:.85em;margin-top:6px">${parts.join(' | ')}</div>`}
+const typeBadge=(it.type==='equipment'||it.type==='relic')?`<div style="color:var(--gold);font-size:.8em;margin-top:4px">[${TYPE_CN[it.type]}] 被动生效</div>`:'';
+const bdrClr=it.type==='relic'?'var(--pur)':it.type==='equipment'?'var(--gold)':'var(--bdr)';
+const overlay=document.createElement('div');
+overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1500;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s;cursor:pointer';
+overlay.innerHTML=`<div style="background:var(--bg2);border:2px solid ${bdrClr};border-radius:16px;padding:24px 28px;text-align:center;max-width:300px;width:85%;box-shadow:0 12px 40px rgba(0,0,0,.6);cursor:default;animation:achSlide .4s ease-out">
+<div style="color:var(--gold);font-size:.8em;letter-spacing:2px;margin-bottom:10px">战利品</div>
+<div style="font-size:2.5em;margin-bottom:8px">${it.emoji}</div>
+<div style="color:${RARITY_CLR[it.rarity]};font-weight:bold;font-size:1.1em">${it.name}</div>
+<div style="color:var(--t2);font-size:.85em;margin-top:6px">${it.desc}</div>${dropStats}${typeBadge}
+<div style="color:var(--grn);font-size:.85em;margin-top:10px">已放入背包</div>
+<div style="color:var(--t3);font-size:.7em;margin-top:10px">点击任意处关闭</div></div>`;
+overlay.onclick=function(e){if(e.target===overlay){overlay.style.opacity='0';overlay.style.transition='opacity .3s';setTimeout(()=>overlay.remove(),300)}};
+document.body.appendChild(overlay);
+}else{
+const area=$('itemDropArea');if(area)area.innerHTML='<div style="color:var(--org);font-size:.85em;padding:8px">背包已满，物品丢失</div>'}
 updateUI();
 }
 
@@ -3225,9 +3248,10 @@ const regionOrder=['soulrest','shadow_forest','scorch','grey','coral','ice','aby
 regionOrder.forEach(rk=>{
 const rg=REGION_GROUPS[rk];if(!rg)return;
 const locs=WORLD_LOCATIONS.filter(l=>l.region===rk);if(!locs.length)return;
-// Region header with background image
-const hdr=document.createElement('div');hdr.style.cssText='grid-column:1/-1;display:flex;align-items:center;gap:10px;color:var(--gold);font-size:.9em;margin:10px 0 2px;padding:6px 10px;border-bottom:1px solid rgba(240,192,64,.2);background:rgba(240,192,64,.04);border-radius:6px';
-hdr.innerHTML=`${rg.bg?`<img src="${rg.bg}" style="width:60px;height:36px;border-radius:4px;object-fit:cover;flex-shrink:0;border:1px solid rgba(240,192,64,.3)" loading="lazy">`:''}${rg.icon} <b>${rg.name}</b> <span style="color:var(--t3);font-size:.8em;margin-left:4px">${rg.desc}</span>`;
+// Region header with background image as banner
+const hdr=document.createElement('div');hdr.style.cssText='grid-column:1/-1;position:relative;border-radius:10px;overflow:hidden;margin:12px 0 4px;min-height:90px;display:flex;align-items:flex-end';
+if(rg.bg){hdr.innerHTML=`<img src="${rg.bg}" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(transparent 30%,rgba(10,10,18,.85))"></div>`}else{hdr.style.background='var(--bgc)';hdr.style.border='1px solid var(--bdr)'}
+hdr.innerHTML+=`<div style="position:relative;z-index:1;padding:10px 14px;width:100%"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.3em">${rg.icon}</span><b style="color:var(--gold);font-size:1.05em">${rg.name}</b></div><div style="color:var(--t2);font-size:.78em;margin-top:3px">${rg.desc}</div></div>`;
 grid.appendChild(hdr);
 locs.forEach(loc=>{
 const locked=pl<loc.minLv;
@@ -3581,9 +3605,9 @@ const container=$('achToasts');
 newAchs.forEach((id,i)=>{
 const def=ACH_DEFS[id];if(!def)return;
 const toast=document.createElement('div');toast.className='ach-toast';
-toast.innerHTML=`<div class="at-title">${def.icon} 成就解锁: ${def.name}</div><div class="at-desc">${def.desc}</div>`;
+toast.innerHTML=`<div class="at-icon">${def.icon}</div><div class="at-body"><div class="at-label">成就解锁</div><div class="at-title">${def.name}</div><div class="at-desc">${def.desc}</div></div>`;
 container.appendChild(toast);
-setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .5s';setTimeout(()=>toast.remove(),600)},3000+i*500);
+setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .5s';setTimeout(()=>toast.remove(),600)},3500+i*600);
 });
 }
 
