@@ -1613,14 +1613,9 @@ G.breakthroughPending=false;
 const overflow=gainXP(0);
 updateUI();
 // Show continue UI after skill selection
-const area=$('evtArea');
-const res=document.createElement('div');res.className='bres w fi';res.style.borderColor='var(--gold)';
-res.innerHTML=`<div style="font-size:1.2em;color:var(--gold);margin-bottom:6px">⚡ 突破完成!</div>
-<div style="font-size:.9em;color:var(--t2)">寿命延长 +${bonusYears}年 | 已解锁 Lv.${(G.breakthroughTier+1)*10} 成长上限</div>`;
-const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续冒险';btn.style.marginTop='10px';
-btn.onclick=function(){advanceEvt()};res.appendChild(btn);
-area.appendChild(res);
-setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'center'}),200);
+showContinueModal({icon:'⚡',title:'突破完成!',color:'var(--gold)',
+contentHTML:`<div style="margin-bottom:8px">寿命延长 +${bonusYears}年</div><div style="color:var(--t2)">已解锁 Lv.${(G.breakthroughTier+1)*10} 成长上限</div>`,
+btnText:'继续冒险',onContinue:()=>advanceEvt()});
 }
 
 // ===== UI UPDATE =====
@@ -1977,19 +1972,15 @@ if(ef.requireItem&&ITEMS[ef.requireItem]){const idx=G.bag.findIndex(bi=>bi.id===
 const evtGold=R(2,6+G.month);G.gold+=evtGold;G.totalGold+=evtGold;texts.push(`<span class="pos">+${evtGold}💰</span>`);
 if(!texts.length)texts.push('<span style="color:var(--t3)">无变化</span>');
 gainXP(R(5,15));
-const res=document.createElement('div');res.className='eres fi';
-// Show attribute check result if applicable
-if(ch._checkResult){const ckDiv=document.createElement('div');ckDiv.style.cssText=`color:${ch._checkClr};font-weight:bold;font-size:1.05em;margin-bottom:8px;padding:8px 12px;background:rgba(0,0,0,.2);border-radius:8px;text-align:center`;ckDiv.textContent=ch._checkResult;res.appendChild(ckDiv)}
-const rt=document.createElement('div');rt.className='rt';rt.textContent=ch.result||'你做出了选择。';res.appendChild(rt);
-const rf=document.createElement('div');rf.className='rf';rf.innerHTML=texts.join(' | ');res.appendChild(rf);
-if(G.p.hp<=0){const dead=document.createElement('div');dead.style.cssText='color:var(--red);font-size:1.1em;margin-top:10px';dead.textContent='你倒下了...';res.appendChild(dead);$('evtArea').appendChild(res);updateUI();setTimeout(()=>gameOver('death'),1200);return}
-const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.style.marginTop='14px';
-btn.onclick=function(){advanceEvt()};res.appendChild(btn);$('evtArea').appendChild(res);
-setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'center'}),100);updateUI();
+let checkHTML='';
+if(ch._checkResult){checkHTML=`<div style="color:${ch._checkClr};font-weight:bold;margin-bottom:8px">${ch._checkResult}</div>`}
+const resultHTML=`${checkHTML}<div style="margin-bottom:8px">${ch.result||'你做出了选择。'}</div><div style="font-size:.85em">${texts.join(' | ')}</div>`;
+updateUI();
+if(G.p.hp<=0){showContinueModal({icon:'💀',title:'你倒下了...',color:'var(--red)',defeat:true,contentHTML:'<div style="color:var(--t2)">你的冒险到此结束...</div>',btnText:'继续',onContinue:()=>gameOver('death')});return}
+showContinueModal({icon:'📜',title:'事件结果',contentHTML:resultHTML,onContinue:()=>advanceEvt()});
 }catch(e){console.error('[selectChoice]',e);
-const res=document.createElement('div');res.className='eres fi';
-if(G.p.hp<=0){res.innerHTML='<div style="color:var(--red)">你倒下了...</div>';$('evtArea').appendChild(res);updateUI();setTimeout(()=>gameOver('death'),1200);return}
-const btn=document.createElement('button');btn.className='btn-big';btn.textContent='继续';btn.onclick=function(){advanceEvt()};res.appendChild(btn);$('evtArea').appendChild(res);btn.scrollIntoView({behavior:'smooth',block:'center'})}
+if(G.p.hp<=0){showContinueModal({icon:'💀',title:'你倒下了...',color:'var(--red)',defeat:true,contentHTML:'<div style="color:var(--t2)">你的冒险到此结束...</div>',btnText:'继续',onContinue:()=>gameOver('death')});return}
+showContinueModal({icon:'⚠️',title:'事件处理出错',contentHTML:'<div style="color:var(--t2)">发生了未知错误，请继续冒险。</div>',onContinue:()=>advanceEvt()})}
 }
 
 function advanceEvt(){G.evtIdx++;
@@ -3095,13 +3086,13 @@ ${skillLabel}</div></div></div></div>
 <div class="b-atb-corner"><div class="atb-ring en" id="atbERing"><svg viewBox="0 0 44 44"><circle class="ring-bg" cx="22" cy="22" r="19"/><circle class="ring-fill" id="atbECirc" cx="22" cy="22" r="19" stroke-dasharray="119.4" stroke-dashoffset="119.4"/></svg><span class="ring-icon">${enemy.emoji}</span><span class="ring-pct" id="atbEPct">0%</span></div></div>
 </div>
 <button class="bspd-btn" id="bspdBtn" onclick="G.battleSpeed=G.battleSpeed>=5?1:G.battleSpeed+1;localStorage.setItem('rift_bspd',G.battleSpeed);this.textContent='⏩ '+G.battleSpeed+'x';">⏩ ${G.battleSpeed}x</button>
-<details class="sfx-collapse"><summary>✦ 状态效果</summary>
+<details class="sfx-collapse" open><summary>✦ 状态效果</summary>
 <div class="sfx-container" id="sfxBox">
 <div class="sfx-row sfx-player" id="sfxPlayer"><span class="sfx-label">🗡️ 我方</span><span class="sfx-empty">暂无状态</span></div>
 <div class="sfx-row sfx-enemy" id="sfxEnemy"><span class="sfx-label">👾 敌方</span><span class="sfx-empty">暂无状态</span></div>
 </div></details>
 <div id="bAction" class="b-action-sticky"></div>
-<details class="blog-collapse"><summary>📜 战斗日志</summary>
+<details class="blog-collapse" open><summary>📜 战斗日志</summary>
 <div class="blog" id="bLog"><div class="ls">--- 战斗开始 ---</div></div></details>`;
 area.appendChild(card);
 setTimeout(()=>runBattle(enemy,isBreakthrough),600);
@@ -3535,13 +3526,9 @@ if(p.hp<=0){p.hp=1;addL(`⚠️ 险些丧命，以1HP逃脱!`,'le')}
 updBU();
 // End battle as escaped (no rewards)
 await _sl(800);
-const escRes=document.createElement('div');escRes.className='bres w fi';escRes.style.borderColor='var(--org)';
-escRes.innerHTML=`<div style="font-size:1.2em;margin-bottom:6px;color:var(--org)">🏃 逃跑成功</div>
-<div style="font-size:.9em;color:var(--t2)">你成功逃离了战斗，但付出了惨痛代价。<br>损失 ${hpLoss} 点生命值</div>`;
-const escBtn=document.createElement('button');escBtn.className='btn-big';escBtn.textContent='继续';escBtn.style.marginTop='10px';
-escBtn.onclick=function(){advanceEvt()};escRes.appendChild(escBtn);
-$('evtArea').appendChild(escRes);
-setTimeout(()=>escBtn.scrollIntoView({behavior:'smooth',block:'center'}),100);
+showContinueModal({icon:'🏃',title:'逃跑成功',color:'var(--org)',
+contentHTML:`<div style="margin-bottom:8px">你成功逃离了战斗，但付出了惨痛代价。</div><div style="color:var(--red)">损失 ${hpLoss} 点生命值</div>`,
+onContinue:()=>advanceEvt()});
 updateUI();return;// Exit runBattle entirely
 }else{
 // Failed - wasted turn, enemy gets free attack
@@ -3647,11 +3634,7 @@ else{showVictoryModal({defeat:true,icon:'💀',title:'战死沙场',subtitle:`�
 }catch(_bErr){console.error('[Battle] Critical error:',_bErr);
 try{addL('⚠️ 战斗系统异常，已自动恢复','le')}catch(e){}
 await _sl(500);
-const errDiv=document.createElement('div');errDiv.className='bres w fi';errDiv.style.borderColor='var(--org)';
-errDiv.innerHTML='<div style="color:var(--org);margin-bottom:6px">战斗出现异常</div>';
-const errBtn=document.createElement('button');errBtn.className='btn-big';errBtn.textContent='继续冒险';
-errBtn.onclick=function(){advanceEvt()};errDiv.appendChild(errBtn);
-const area=$('evtArea');if(area)area.appendChild(errDiv);
+showContinueModal({icon:'⚠️',title:'战斗出现异常',color:'var(--org)',contentHTML:'<div style="color:var(--t2)">已自动恢复，请继续冒险。</div>',btnText:'继续冒险',onContinue:()=>advanceEvt()});
 }
 }
 
@@ -3669,6 +3652,19 @@ ${data.subtitle?`<div style="color:var(--t2);font-size:.9em;margin-bottom:8px">$
 ${extraHTML}
 <div id="victoryDropArea"></div>
 <button class="btn-big" style="margin-top:14px;width:100%" id="vContBtn">继续</button>
+</div>`;
+document.body.appendChild(ov);
+$('vContBtn').onclick=function(){ov.style.opacity='0';ov.style.transition='opacity .3s';setTimeout(()=>{ov.remove();if(data.onContinue)data.onContinue()},300)};
+return ov;
+}
+
+function showContinueModal(data){
+const ov=document.createElement('div');ov.className='v-overlay';
+ov.innerHTML=`<div class="v-card${data.defeat?' defeat':''}">
+${data.icon?`<div class="v-icon">${data.icon}</div>`:''}
+<div class="v-title" style="color:${data.color||'var(--grn)'}">${data.title||''}</div>
+<div class="v-rewards">${data.contentHTML||''}</div>
+<button class="btn-big" style="margin-top:14px;width:100%" id="vContBtn">${data.btnText||'继续'}</button>
 </div>`;
 document.body.appendChild(ov);
 $('vContBtn').onclick=function(){ov.style.opacity='0';ov.style.transition='opacity .3s';setTimeout(()=>{ov.remove();if(data.onContinue)data.onContinue()},300)};
