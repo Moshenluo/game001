@@ -497,6 +497,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 <input id="loadCodeInput" placeholder="输入玩家代码 (如 P1A2B3C4D)" style="text-align:center;font-family:monospace;font-size:1.1em;letter-spacing:2px">
 <div id="loadResult" style="margin-top:12px"></div>
 <div class="btn-row"><button class="btn-sm btn-no" onclick="document.getElementById('loadModal').classList.remove('on')">取消</button><button class="btn-sm btn-ok" onclick="doLoadGame()">加载</button></div>
+<div style="text-align:center;margin-top:8px"><button class="btn-sm" style="background:var(--t3);font-size:.8em" onclick="loadLocalAutosave()">从本地自动存档恢复</button></div>
 </div></div>
 <!-- Achievements Modal -->
 <div class="modal-bg" id="achModal"><div class="modal" style="max-width:600px">
@@ -1579,7 +1580,7 @@ G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
 if(!G.playerName)G.playerName=G.awk?G.awk.name:'冒险者';
 _evtQueue=[];_fillPromise=null;_preloadedMonsters={};_pendingAI={};_fillNext=0;
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
-G.skCD={};G.bag=[];G.equipped={weapon:null,armor:null,accessory:null,special:null};G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.seenOneShots=[];G._monthThemes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G._regionVisits={};G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};G.debuffs={};G.battleSpeed=parseInt(localStorage.getItem('rift_bspd'))||1;
+G.skCD={};G.bag=[];G.equipped={weapon:null,armor:null,accessory:null,special:null};G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.seenOneShots=[];G._monthThemes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G._regionVisits={};G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};G.debuffs={};G.skillUsage={};G.battleSpeed=parseInt(localStorage.getItem('rift_bspd'))||1;
 if(_awakenPreload){_evtQueue=_awakenPreload.queue||[];G._monthThemes=_awakenPreload.monthThemes||[];_pendingAI=_awakenPreload.aiPending||{};_awakenPreload=null}
 await showTrans('踏入命运裂隙...',1200);window._tutSkipRegion=true;showRegionPicker();setTimeout(()=>showTutorial('awk'),800);
 }
@@ -1773,7 +1774,7 @@ for(let i=0;i<5;i++){const d=document.createElement('div');d.className='edot';if
 
 // ===== MONTH SYSTEM =====
 function startMonth(){
-G.evtIdx=0;G._monthThemes=[];G.isBoss=(G.month%5===0);
+G.evtIdx=0;G._monthThemes=[];G.isBoss=(G.month%5===0);G._merchantVisited=false;
 showScr('gameScr');
 const db=$('uiDiff');db.textContent=G.dc.name;
 db.style.background=G.dc.color.includes('grn')?'rgba(64,192,112,.2)':G.dc.color.includes('blu')?'rgba(64,128,224,.2)':G.dc.color.includes('org')?'rgba(224,128,48,.2)':'rgba(224,64,80,.2)';
@@ -1796,6 +1797,8 @@ else if(shopBtn){shopBtn.style.display='none'}
 updateUI();
 // Batch preload events for this month
 _evtQueue=[];_pendingAI={};_fillNext=0;preloadNextEvent().catch(()=>{});
+// 15% chance: traveling merchant appears before first event
+if(Math.random()<0.15&&!G._merchantVisited){showTravelingMerchant();return}
 nextEvent();
 }
 
@@ -2986,6 +2989,54 @@ dd.innerHTML=`<div style="background:var(--bgc);border:1px solid var(--bdr);bord
 </div>`;
 }
 
+// ===== TRAVELING MERCHANT =====
+const MERCHANT_RARE_ITEMS=['berserk','fateElixir','reviveFeather','luckyCoin','focusPill','ironSkin','hpPotL','enCrystal','smokeBomb','bomb'];
+function showTravelingMerchant(){
+G._merchantVisited=true;
+const lk=G.p?G.p.lk:5;
+const count=3+Math.floor(Math.random()*3); // 3-5 items
+const pool=[...MERCHANT_RARE_ITEMS];
+const offered=[];
+for(let i=0;i<count&&pool.length;i++){
+const idx=Math.floor(Math.random()*pool.length);
+offered.push(pool.splice(idx,1)[0]);
+}
+// Prices: 1.5x-2.5x base price, luck reduces price slightly
+const priceList=offered.map(id=>{
+const item=ITEMS[id];if(!item)return{id,price:50};
+const base=ITEM_BASE_PRICE[item.rarity]||30;
+const mult=1.5+Math.random()-lk*0.01; // luck reduces markup
+return{id,price:Math.max(10,Math.floor(base*Math.max(1.2,mult)))};
+});
+let html=`<div class="modal-bg" id="merchantModal" style="z-index:1500"><div class="modal" style="max-width:400px">
+<h3 style="color:var(--gold)">🧳 神秘行商</h3>
+<p style="color:var(--t2);font-size:.85em;margin-bottom:10px">「嘿嘿，这些都是稀罕货，过了这村没这店!」<br><span style="font-size:.8em;color:var(--t3)">本月限定 · 离开后消失</span></p>
+<div style="color:var(--gold);font-size:.9em;margin-bottom:8px">💰 ${G.gold} 金币</div>`;
+priceList.forEach(({id,price})=>{
+const item=ITEMS[id];if(!item)return;
+const canBuy=G.gold>=price&&G.bag.length<G.bagMax;
+html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;margin:4px 0">
+<span>${item.emoji} <b>${item.name}</b> <span style="color:var(--t3);font-size:.8em">${item.desc}</span></span>
+<button class="btn-sm ${canBuy?'':'btn-no'}" data-mid="${id}" data-mprice="${price}" ${canBuy?'':'disabled'}>${price}💰</button>
+</div>`;
+});
+html+=`<div style="margin-top:12px;text-align:center"><button class="btn-big btn-no" id="merchantLeave">告辞，继续冒险</button></div></div></div>`;
+document.body.insertAdjacentHTML('beforeend',html);
+const modal=document.getElementById('merchantModal');
+modal.querySelectorAll('[data-mid]').forEach(btn=>{
+btn.onclick=()=>{
+const id=btn.dataset.mid;const pr=parseInt(btn.dataset.mprice);
+if(G.gold>=pr&&G.bag.length<G.bagMax){
+G.gold-=pr;addToBag(id);SoundEngine.play('gold');
+btn.disabled=true;btn.textContent='已购买';btn.classList.add('btn-no');
+modal.querySelector('div[style*="gold"]').innerHTML=`💰 ${G.gold} 金币`;
+addL(`🧳 从行商购买了 ${ITEMS[id].name}`,'lp');updateUI();
+}else{addL(G.gold<pr?'💰 金币不足!':'🎒 背包已满!','le')}
+};
+});
+modal.querySelector('#merchantLeave').onclick=()=>{modal.remove();nextEvent()};
+}
+
 // ===== SHOP SYSTEM =====
 let _shopTab='buy';let _shopTier='basic';
 const ITEM_BASE_PRICE={common:10,rare:25,epic:60,material:15};
@@ -3276,7 +3327,9 @@ area.innerHTML='';const wrap=document.createElement('div');wrap.className='ba-su
 if(!avail.length){wrap.innerHTML='<div style="color:var(--t3);text-align:center;padding:10px">没有可用技能</div>';
 const bb=document.createElement('button');bb.className='btn-sm btn-no';bb.textContent='返回';bb.onclick=()=>showMain();wrap.appendChild(bb);area.appendChild(wrap);return}
 avail.forEach(sk=>{const btn=document.createElement('div');btn.className='ba-sub-btn';
-btn.innerHTML=`${sk.emoji} <b>${sk.name}</b> <span style="color:var(--t3)">(${CAT_CN[sk.cat]||''} CD:${sk.cd} 能量:${sk.cost||0})</span>`;
+const _sLv=getSkillLv(sk.name);const _profBadge=_sLv.lv>1?`<span style="color:var(--gold);font-size:.8em"> Lv.${_sLv.lv}</span>`:'';
+const _progNext=_sLv.next;const _progBar=_progNext?`<div style="height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:3px;width:60px;display:inline-block"><div style="height:100%;background:var(--gold);border-radius:2px;width:${Math.min(100,_sLv.uses/_progNext*100)}%"></div></div>`:'';
+btn.innerHTML=`${sk.emoji} <b>${sk.name}</b>${_profBadge} <span style="color:var(--t3)">(${CAT_CN[sk.cat]||''} CD:${Math.max(1,sk.cd-applySkillProficiency(sk).cdReduce)} 能量:${sk.cost||0})</span>${_progBar}`;
 btn.onclick=()=>{cleanup();resolve({type:'skill',skill:sk})};wrap.appendChild(btn)});
 const bb=document.createElement('button');bb.className='btn-sm btn-no';bb.style.marginTop='6px';bb.textContent='← 返回';bb.onclick=()=>showMain();wrap.appendChild(bb);area.appendChild(wrap)}
 function showItems(){const consumables=G.bag.filter(i=>i.type==='consumable');
@@ -3292,6 +3345,23 @@ showMain();
 
 // Global battle log function (used by both runBattle and battleWin)
 function addL(t,c='ls'){const log=$('bLog');if(!log)return;const d=document.createElement('div');d.className=c;d.innerHTML=t;log.appendChild(d);log.scrollTop=log.scrollHeight}
+
+// ===== SKILL PROFICIENCY =====
+const SKILL_LV_THRESHOLDS=[0,5,15,30]; // Lv1=0+, Lv2=5+, Lv3=15+, Lv4=30+
+function getSkillLv(skillName){
+const uses=G.skillUsage&&G.skillUsage[skillName]||0;
+let lv=1;for(let i=SKILL_LV_THRESHOLDS.length-1;i>=0;i--){if(uses>=SKILL_LV_THRESHOLDS[i]){lv=i+1;break}}
+return{lv,uses,next:SKILL_LV_THRESHOLDS[lv]||null};
+}
+function applySkillProficiency(sk){
+// Returns a modified copy of skill stats based on proficiency level
+const info=getSkillLv(sk.name);const lv=info.lv;
+const bonus={dmgMult:1,healMult:1,cdReduce:0,extraEffect:null};
+if(lv>=2){bonus.dmgMult=1.2;bonus.healMult=1.15} // +20% dmg, +15% heal
+if(lv>=3){bonus.dmgMult=1.4;bonus.healMult=1.3;bonus.cdReduce=1} // +40% dmg, -1 CD
+if(lv>=4){bonus.dmgMult=1.6;bonus.healMult=1.5;bonus.cdReduce=1;bonus.extraEffect=sk.dmg?'burn':null} // +60% dmg, burn on dmg skills
+return bonus;
+}
 
 async function runBattle(enemy, isBreakthrough){
 const log=$('bLog'),p=G.p;let turn=0;
@@ -3622,20 +3692,27 @@ const _peSlowEn=passiveEngine.getVal('slow_enemy');
 if(_peSlowEn&&Math.random()<_peSlowEn){eBar=Math.max(0,eBar-20);_updATB();addL(`🐌 减速敌人!`,'lo')}
 }
 else if(action.type==='skill'){
-const sk=action.skill;G.skCD[sk.id]=sk.cd;p.en-=sk.cost||0;
-SoundEngine.play('skill');addL(`${sk.emoji} 释放: ${sk.name}`,'lk');
+const sk=action.skill;
+// Track skill usage for proficiency
+if(!G.skillUsage)G.skillUsage={};G.skillUsage[sk.name]=(G.skillUsage[sk.name]||0)+1;
+const _prof=applySkillProficiency(sk);
+const _effCD=Math.max(1,sk.cd-_prof.cdReduce);G.skCD[sk.id]=_effCD;p.en-=sk.cost||0;
+const _sLvInfo=getSkillLv(sk.name);
+SoundEngine.play('skill');addL(`${sk.emoji} 释放: ${sk.name}${_sLvInfo.lv>1?' <span style="color:var(--gold)">Lv.'+_sLvInfo.lv+'</span>':''}`,'lk');
 if(sk.dmg){
-let dmg=Math.floor((sk.dmg+pAtk*.3)*(1+passiveEngine.getVal('skill_dmg_mult')));
+let dmg=Math.floor((sk.dmg+pAtk*.3)*(1+passiveEngine.getVal('skill_dmg_mult'))*_prof.dmgMult);
 if(sk.piercing){enemy.hp-=dmg;addL(`🎯 穿透! ${dmg} 伤害`,'lp');showDmgPopup('-'+dmg,'','bEH')}
 else{dmg=Math.max(1,dmg-Math.floor(enemy.def*.3));enemy.hp-=dmg;addL(`⚔️ 造成 ${dmg} 伤害`,'lp');showDmgPopup('-'+dmg,'','bEH')}
 G.dmgDealt+=dmg;
 let isCrit=Math.random()<(effCR+pCritB)||focusNext;
 if(isCrit){const bonus=Math.floor(dmg*((effCD+(G.tempBuffs.cd||0))-1));enemy.hp-=bonus;G.dmgDealt+=bonus;addL(`💥 暴击! 额外 ${bonus}`,'lc');G.crits++;focusNext=false;const _skShake=(enemy.isBoss||enemy.isElite||isBreakthrough)?'shake-heavy':'shake-screen';document.body.classList.add(_skShake);setTimeout(()=>document.body.classList.remove(_skShake),600);showDmgPopup('-'+bonus,'crit','bEH')}
 if(sk.dot){eDot=sk.dot;eDotDur=3}
+// Lv4 proficiency: burn effect on damage skills
+if(_prof.extraEffect==='burn'){eDot=(eDot||0)+Math.floor(sk.dmg*0.15);eDotDur=Math.max(eDotDur,3);addL(`🔥 熟练灼烧!`,'lo')}
 if(bloodSteal>0){const st=Math.floor(dmg*bloodSteal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st}
 if(sk.steal){const st=Math.floor(dmg*sk.steal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st;addL(`🩸 吸血 +${st}`,'lo')}
 }
-if(sk.healAmt){SoundEngine.play('heal');let h=Math.floor(sk.healAmt*G.dc.heal*_diffHeal*(1+passiveEngine.getVal('heal_amplify')));if(p.hp>p.baseHp*1.5)h=Math.floor(h*.5);p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`💚 恢复 ${h} HP`,'lp');showDmgPopup('+'+h,'heal','bPH')}
+if(sk.healAmt){SoundEngine.play('heal');let h=Math.floor(sk.healAmt*_prof.healMult*G.dc.heal*_diffHeal*(1+passiveEngine.getVal('heal_amplify')));if(p.hp>p.baseHp*1.5)h=Math.floor(h*.5);p.hp=Math.min(bEffMaxHp,p.hp+h);G.healing+=h;addL(`💚 恢复 ${h} HP`,'lp');showDmgPopup('+'+h,'heal','bPH')}
 if(sk.defBuff){pDefBuff=sk.defBuff;pDefDur=sk.dur||2;addL(`🛡️ 防御+${sk.defBuff}`,'ld')}
 if(sk.shield){pShield=sk.shield;addL(`🔮 护盾 ${sk.shield}`,'ld')}
 if(sk.reflect){pReflect=sk.reflect;pRefDur=sk.dur||3;addL(`🌿 反伤${Math.floor(sk.reflect*100)}%`,'ld')}
@@ -4754,11 +4831,6 @@ $('saveResult').innerHTML='';
 async function doSaveGame(){
 if(!G.p)return;
 const result=$('saveResult');
-if(!isWorkerAvailable()){
-result.innerHTML='<div style="color:var(--red)">需要 Worker 服务才能云端存档</div>';return;
-}
-result.innerHTML='<div class="loading">正在保存...</div>';
-try{
 const saveData={
 playerName:G.playerName||'',
 awk:G.awk,p:{...G.p},diff:G.diff,month:G.month,evtIdx:G.evtIdx,
@@ -4772,8 +4844,17 @@ breakthroughTier:G.breakthroughTier,
 regionsVisited:G.regionsVisited,bag:G.bag,_regionVisits:G._regionVisits||{},
 equipped:{weapon:G.equipped&&G.equipped.weapon?G.equipped.weapon.uid:null,armor:G.equipped&&G.equipped.armor?G.equipped.armor.uid:null,accessory:G.equipped&&G.equipped.accessory?G.equipped.accessory.uid:null,special:G.equipped&&G.equipped.special?G.equipped.special.uid:null},
 isBoss:G.isBoss,maxSlot:G.maxSlot,nextSkillLv:G.nextSkillLv,
-themes:G.themes,seenOneShots:G.seenOneShots||[],starKills:G.starKills,bestiary:G.bestiary,debuffs:G.debuffs
+themes:G.themes,seenOneShots:G.seenOneShots||[],starKills:G.starKills,bestiary:G.bestiary,debuffs:G.debuffs,
+skillUsage:G.skillUsage||{},tempBuffs:G.tempBuffs||{},_monthThemes:G._monthThemes||[],immortalUsed:G.immortalUsed||false,
+version:2
 };
+// Always save locally as backup
+try{localStorage.setItem('rift_autosave',JSON.stringify(saveData))}catch(e){}
+if(!isWorkerAvailable()){
+result.innerHTML='<div style="color:var(--org)">Worker不可用，已保存到本地浏览器</div><div style="color:var(--t3);font-size:.75em;margin-top:4px">本地存档仅限此浏览器，建议配置Worker以获得云存档</div>';return;
+}
+result.innerHTML='<div class="loading">正在保存...</div>';
+try{
 const res=await fetch(WORKER_URL+'/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
 body:JSON.stringify({playerId:PLAYER_ID||undefined,playerName:G.playerName||(G.awk?G.awk.name:'冒险者'),data:saveData})});
 const data=await res.json();
@@ -4815,6 +4896,10 @@ body:JSON.stringify({playerId})});
 const data=await res.json();
 if(!data.data){alert('存档数据无效');return}
 const sd=data.data;
+// Data integrity check
+if(!sd.p||!sd.awk){alert('存档数据不完整（缺少角色或觉醒数据）');return}
+if(!sd.p.level)sd.p.level=1;if(!sd.p.hp)sd.p.hp=sd.p.maxHp||50;if(!sd.p.maxHp)sd.p.maxHp=50;
+if(!sd.p.skills)sd.p.skills=[];if(!sd.p.atk)sd.p.atk=5;if(!sd.p.def)sd.p.def=3;
 PLAYER_ID=playerId;localStorage.setItem('rift_player_id',playerId);
 // Restore game state
 G.diff=sd.diff;G.dc=DIFF[sd.diff]||DIFF.normal;
@@ -4835,12 +4920,47 @@ if(sd.equipped){for(const slot of['weapon','armor','accessory','special']){if(sd
 if(!sd.equipped){G.bag.forEach(item=>{const slot=getItemSlot(item.id);if(slot&&!G.equipped[slot]){G.equipped[slot]=item}})}
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
 G.themes=sd.themes||[];G.seenOneShots=sd.seenOneShots||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
+G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G.immortalUsed=sd.immortalUsed||false;
 G.awk=sd.awk;G.p=sd.p;
 G.playerName=sd.playerName||(G.awk?G.awk.name:'冒险者');
 document.getElementById('loadModal').classList.remove('on');
 await showTrans('命运正在重连...',1200);
 showScr('gameScr');updateUI();advanceEvt();
 }catch(e){alert('恢复失败: '+e.message)}
+}
+
+async function loadLocalAutosave(){
+try{
+const raw=localStorage.getItem('rift_autosave');
+if(!raw){$('loadResult').innerHTML='<div style="color:var(--red)">未找到本地自动存档</div>';return}
+const sd=JSON.parse(raw);
+if(!sd.p||!sd.awk){$('loadResult').innerHTML='<div style="color:var(--red)">本地存档数据不完整</div>';return}
+if(!sd.p.level)sd.p.level=1;if(!sd.p.hp)sd.p.hp=sd.p.maxHp||50;if(!sd.p.maxHp)sd.p.maxHp=50;
+if(!sd.p.skills)sd.p.skills=[];if(!sd.p.atk)sd.p.atk=5;if(!sd.p.def)sd.p.def=3;
+$('loadResult').innerHTML=`<div style="color:var(--grn)">找到本地存档! ${sd.playerName||'冒险者'}</div>
+<div style="color:var(--t2);font-size:.85em;margin-top:6px">Lv.${sd.p.level} | ${sd.diff||'normal'} | 第${sd.month||1}月 | 击杀${sd.kills||0}</div>
+<button class="btn-sm btn-ok" style="margin-top:10px" id="localLoadBtn">继续冒险</button>`;
+$('localLoadBtn').onclick=async()=>{
+G.diff=sd.diff;G.dc=DIFF[sd.diff]||DIFF.normal;
+G.month=sd.month||1;G.evtIdx=sd.evtIdx||0;
+G.kills=sd.kills||0;G.bossKills=sd.bossKills||0;G.npcKills=sd.npcKills||0;
+G.evts=sd.evts||0;G.aiEvts=sd.aiEvts||0;G.preEvts=sd.preEvts||0;
+G.dmgDealt=sd.dmgDealt||0;G.healing=sd.healing||0;G.crits=sd.crits||0;G.dodges=sd.dodges||0;
+G.aiSkills=sd.aiSkills||0;G.totalSkills=sd.totalSkills||0;
+G.gold=sd.gold||0;G.totalGold=sd.totalGold||0;
+G.currentAgeMonth=sd.currentAgeMonth||192;G.lifespanMonths=sd.lifespanMonths||480;
+G.breakthroughTier=sd.breakthroughTier||0;
+G.regionsVisited=sd.regionsVisited||[];G.bag=sd.bag||[];G._regionVisits=sd._regionVisits||{};
+G.equipped={weapon:null,armor:null,accessory:null,special:null};
+if(sd.equipped){for(const slot of['weapon','armor','accessory','special']){if(sd.equipped[slot]){const bagItem=G.bag.find(i=>i.uid===sd.equipped[slot]);if(bagItem)G.equipped[slot]=bagItem}}}
+G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
+G.themes=sd.themes||[];G.seenOneShots=sd.seenOneShots||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
+G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G.immortalUsed=sd.immortalUsed||false;
+G.awk=sd.awk;G.p=sd.p;G.playerName=sd.playerName||(G.awk?G.awk.name:'冒险者');
+document.getElementById('loadModal').classList.remove('on');
+await showTrans('命运正在重连...',1200);showScr('gameScr');updateUI();advanceEvt();
+};
+}catch(e){$('loadResult').innerHTML='<div style="color:var(--red)">加载失败: '+e.message+'</div>'}
 }
 
 // ===== WORKER STATUS BADGE =====
