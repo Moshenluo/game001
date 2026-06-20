@@ -1408,7 +1408,7 @@ const dirName=DIR_NAMES[awk.direction]||awk.direction;
 const dirColor=DIR_COLORS[awk.direction]||'#f0c040';
 const prompt=`Square game character portrait icon, dark fantasy RPG art style. Character name: ${awk.name}, title: ${awk.title||'unknown'}, element: ${dirName}. Core symbol: ${awk.emoji}. Style: mystical dark background, glowing ${dirColor} energy aura, detailed digital illustration, centered portrait composition. No text.`;
 try{
-const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),15000);
+const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),60000);
 const res=await fetch('https://api.highwayapi.ai/v3/gpt-image-2-text-to-image',{
 method:'POST',
 headers:{'Content-Type':'application/json','Authorization':'Bearer sk_T0j2q5MKukBqeg8yQkGx6FDGGzVHl1S1BmoMmK9JwP0'},
@@ -1499,9 +1499,8 @@ if(awk.passiveMechanics.penalties)awk.passiveMechanics.penalties=_clampPM(awk.pa
 }
 awk.narrativeStyle=awk.narrativeStyle||'通用冒险';awk._isAI=isAI;G.awk=awk;
 if(st.parentNode)st.parentNode.removeChild(st);
-// Start background tasks in parallel: AI maps + icon generation + event preload
+// Start background tasks in parallel: AI maps + event preload
 generateAIMaps();
-const _iconP=generateAwkIcon(awk);
 _preloadDuringAwaken().catch(()=>{});
 // Stage 3: Burst — flash + particles explosion
 triggerAwkFlash();
@@ -1509,21 +1508,30 @@ burstAwkParticles(c, 16, dirColor);
 c.classList.remove('s1','s2');c.classList.add('burst');
 c.querySelectorAll('.awk-particle,.awk-glow').forEach(el=>el.remove());
 await sleep(700);
-// Wait for icon generation (likely still in progress or already done)
-try{const iconUrl=await _iconP;if(iconUrl)awk.iconUrl=iconUrl}catch(e){}
-// Stage 4: Card reveal
+// Stage 4: Card reveal immediately with emoji, icon loads in background
 showAwkCard(awk);
+// Start icon generation in background — will dynamically update card when ready
+generateAwkIcon(awk).then(iconUrl=>{
+if(iconUrl){awk.iconUrl=iconUrl;_swapAwkIcon(iconUrl,awk)}
+}).catch(()=>{});
+}
+
+function _swapAwkIcon(iconUrl,awk){
+const emojiDiv=document.querySelector('.awk-card .emoji');
+if(!emojiDiv)return;
+const wrap=document.createElement('div');wrap.className='awk-icon-wrap';
+wrap.style.borderColor=DIR_COLORS[awk.direction]||'#f0c040';
+const img=document.createElement('img');img.className='awk-icon';img.src=iconUrl;img.alt=awk.name;
+img.onerror=function(){wrap.replaceWith(emojiDiv);emojiDiv.style.display=''};
+wrap.appendChild(img);emojiDiv.parentNode.replaceChild(wrap,emojiDiv);
 }
 
 function showAwkCard(a){
 const wrap=$('awkWrap'),ptL={dual_edge:'⚔️ 双刃被动',positive:'✨ 纯正面',none:'💪 无被动(高属性)'}[a.passiveType]||'无',clr=DIR_COLORS[a.direction]||'#f0c040';
 const aiT=a._isAI?'<span style="background:var(--pur);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px;animation:pulse 2s infinite">AI 生成</span>':'<span style="background:var(--t3);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px">预设模板</span>';
 const pw=!a._isAI?'<div style="background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:8px;margin:10px 0;font-size:.8em;color:var(--red)">⚠️ AI生成失败，使用了预设模板。<br>原因: '+(a._errDetail||'未知')+'<br><a href="#" onclick="toggleSettings();return false" style="color:var(--blu)">打开设置(⚙️)</a> 切换模型为 DeepSeek 或检查网络</div>':'';
-const iconHTML=a.iconUrl
-  ?`<div class="awk-icon-wrap" style="border-color:${clr}"><img class="awk-icon" src="${a.iconUrl}" alt="${a.name}"><div class="emoji" style="display:none">${a.emoji}</div></div>`
-  :`<div class="emoji">${a.emoji}</div>`;
 wrap.innerHTML=`${pw}<div class="awk-card" style="border-color:${clr}"><div style="display:flex;justify-content:center;margin-bottom:6px">${aiT}</div>
-${iconHTML}<div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
+<div class="emoji">${a.emoji}</div><div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
 <div style="color:var(--t2);font-size:.85em;margin:8px 0">${a.description||''}</div>
 <div class="passive"><span class="pn">${ptL}: ${a.passiveName}</span><br>${a.passiveDescription}</div>
 <div class="stats">
