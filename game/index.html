@@ -1411,7 +1411,7 @@ try{
 const res=await fetch('https://api.jiekou.ai/v1/images/generations',{
 method:'POST',
 headers:{'Content-Type':'application/json','Authorization':'Bearer sk_T0j2q5MKukBqeg8yQkGx6FDGGzVHl1S1BmoMmK9JwP0'},
-body:JSON.stringify({model:'gpt-image-1',prompt:prompt,size:'1024x1024',n:1})
+body:JSON.stringify({model:'gpt-image-2',prompt:prompt,size:'1024x1024',n:1})
 });
 if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||('HTTP '+res.status))}
 const data=await res.json();
