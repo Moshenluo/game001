@@ -1785,7 +1785,7 @@ for(let i=0;i<5;i++){const d=document.createElement('div');d.className='edot';if
 
 // ===== MONTH SYSTEM =====
 function startMonth(){
-G.evtIdx=0;G._monthThemes=[];G._queuedEvt=null;G.isBoss=(G.month%5===0);G._merchantVisited=false;
+G.evtIdx=0;G._monthThemes=[];G._monthTitles=[];G._queuedEvt=null;G.isBoss=(G.month%5===0);G._merchantVisited=false;
 showScr('gameScr');
 const db=$('uiDiff');db.textContent=G.dc.name;
 db.style.background=G.dc.color.includes('grn')?'rgba(64,192,112,.2)':G.dc.color.includes('blu')?'rgba(64,128,224,.2)':G.dc.color.includes('org')?'rgba(224,128,48,.2)':'rgba(224,64,80,.2)';
@@ -1833,6 +1833,7 @@ if(storyEvents){
     if(!G.seenOneShots.includes(_osKey))G.seenOneShots.push(_osKey);
     if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_osKey))G._monthThemes.push(_osKey);
     if(!G.themes)G.themes=[];if(!G.themes.includes(_osKey))G.themes.push(_osKey);
+    if(!G._monthTitles)G._monthTitles=[];if(!G._monthTitles.includes(evt.title))G._monthTitles.push(evt.title);
     G._queuedEvt=null;
     await triggerEvent(evt);
     return;
@@ -1851,18 +1852,25 @@ await triggerEvent(qEvt);
 // ===== AI EVENT =====
 async function triggerEvent(queuedEvent){
 G.evts++;const area=$('evtArea');
+const _isServedDup=(e)=>{if(!e||!e.title)return false;if(e._storyEvent)return false;
+if(!G._monthTitles)G._monthTitles=[];return G._monthTitles.includes(e.title)};
+const _markServed=(e)=>{if(!e||!e.title)return;if(!G._monthTitles)G._monthTitles=[];if(!G._monthTitles.includes(e.title))G._monthTitles.push(e.title);
+if(e.theme){const k=e.theme+'_'+e.title;if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(k))G._monthThemes.push(k);if(!G.themes)G.themes=[];if(!G.themes.includes(k))G.themes.push(k)}};
 // Check queue first (instant delivery)
-if(queuedEvent){
-G.aiEvts++;
+if(queuedEvent&&!_isServedDup(queuedEvent)){
+G.aiEvts++;_markServed(queuedEvent);
 normalizePreloadedEvent(queuedEvent);
 area.innerHTML='<div class="loading" style="padding:40px;text-align:center">⚡ 事件已就绪!</div>';
 await sleep(200);
 renderEvent(queuedEvent,true);
 return;
 }
+if(queuedEvent&&_isServedDup(queuedEvent)){console.warn('[Dedup] triggerEvent queued dup rejected:',queuedEvent.title)}
 // Check if queue has events (fallback when advanceEvt couldn't pass directly)
-if(_evtQueue.length>0){
-const evt=_evtQueue.shift();G.aiEvts++;
+while(_evtQueue.length>0){
+const evt=_evtQueue.shift();
+if(_isServedDup(evt)){console.warn('[Dedup] triggerEvent queue dup rejected:',evt.title);continue}
+G.aiEvts++;_markServed(evt);
 normalizePreloadedEvent(evt);
 area.innerHTML='<div class="loading" style="padding:40px;text-align:center">⚡ 事件已就绪!</div>';
 await sleep(200);
@@ -1948,7 +1956,7 @@ evt=_getPresetEvent(G.evtIdx);isAI=false;
 if(!evt){area.innerHTML='<div class="ecard fi" style="text-align:center"><div class="etitle" style="color:var(--t3)">命运之线暂时中断...</div><div class="edesc" style="color:var(--t2);font-size:.9em">AI 叙事者暂时失去了灵感，请稍后重试</div><button class="btn-big" onclick="triggerEvent()" style="margin-top:12px">重新连接命运</button></div>';return}
 }
 G.aiEvts++;
-if(isAI&&evt.theme){const _tKey=evt.theme+'_'+evt.title;if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey)}
+if(isAI&&evt.theme){const _tKey=evt.theme+'_'+evt.title;if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey);if(!G._monthTitles)G._monthTitles=[];if(!G._monthTitles.includes(evt.title))G._monthTitles.push(evt.title)}
 if(evt.oneShot){const _osKey=evt.theme+'_'+evt.title;if(!G.seenOneShots)G.seenOneShots=[];if(!G.seenOneShots.includes(_osKey))G.seenOneShots.push(_osKey)}
 (evt.choices||[]).forEach(ch=>{const ef=ch.effects||{};
 if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
@@ -2083,14 +2091,24 @@ showContinueModal({icon:'⚠️',title:'事件处理出错',contentHTML:'<div st
 
 function advanceEvt(){G.evtIdx++;
 const slot=G.evtIdx;
-const _mSet=G._monthThemes||[];
-let evt=null;
-if(_pendingAI[slot]){evt=_pendingAI[slot];delete _pendingAI[slot];
-if(evt&&evt.theme){const _k=evt.theme+'_'+evt.title;if(_mSet.includes(_k)&&!evt._storyEvent){console.warn('[Dedup] AI event rejected (dup):',evt.title);evt=null}}}
-if(!evt){const qEvt=_evtQueue.shift();
-if(qEvt&&qEvt.theme){const _k=qEvt.theme+'_'+qEvt.title;
-if(_mSet.includes(_k)&&!qEvt._storyEvent){console.warn('[Dedup] Queue event rejected (dup):',qEvt.title)}else{evt=qEvt}}else{evt=qEvt}}
-if(!evt&&slot<5)evt=_getPresetEvent(slot);
+if(!G._monthTitles)G._monthTitles=[];
+const _isDup=(e)=>{if(!e||!e.theme)return false;if(e._storyEvent)return false;
+const k=e.theme+'_'+e.title;return(G._monthThemes||[]).includes(k)||G._monthTitles.includes(e.title)};
+const _markEvt=(e)=>{if(!e||!e.theme)return;const k=e.theme+'_'+e.title;
+if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(k))G._monthThemes.push(k);
+if(!G._monthTitles.includes(e.title))G._monthTitles.push(e.title);
+if(!G.themes)G.themes=[];if(!G.themes.includes(k))G.themes.push(k)};
+let evt=null,attempts=0;
+// Try _pendingAI first
+if(_pendingAI[slot]){const ai=_pendingAI[slot];delete _pendingAI[slot];
+if(!_isDup(ai)){evt=ai}else{console.warn('[Dedup] AI rejected:',ai.title);attempts++}}
+// Try queue (keep shifting until non-dup or empty)
+while(!evt&&_evtQueue.length>0&&attempts<6){const qEvt=_evtQueue.shift();
+if(!_isDup(qEvt)){evt=qEvt}else{console.warn('[Dedup] Queue rejected:',qEvt.title);attempts++}}
+// Fallback: fresh presets (up to 3 attempts)
+while(!evt&&slot<5&&attempts<10){const fresh=_getPresetEvent(slot);
+if(!_isDup(fresh)){evt=fresh}else{console.warn('[Dedup] Preset rejected:',fresh.title);attempts++}}
+if(evt)_markEvt(evt);
 G._queuedEvt=evt;
 if(G._queuedEvt)preloadNextEvent().catch(()=>{});
 nextEvent()}
@@ -2693,11 +2711,12 @@ if(_pendingAI[slot]||_evtQueue.some(e=>e&&e._slot===slot&&e._isAI))continue;
 try{const aiEvt=await _genPreloadEvent(slot);
 if(aiEvt&&aiEvt.theme){
 const _aiKey=aiEvt.theme+'_'+aiEvt.title;
-const _mSet=G._monthThemes||[];
-if(_mSet.includes(_aiKey)){console.log('[Preload] AI dup rejected:',aiEvt.title);continue}
+const _mSet=G._monthThemes||[];const _mTitles=G._monthTitles||[];
+if(_mSet.includes(_aiKey)||_mTitles.includes(aiEvt.title)){console.log('[Preload] AI dup rejected:',aiEvt.title);continue}
 aiEvt._isAI=true;_pendingAI[slot]=aiEvt;
 if(!_mSet.includes(_aiKey))_mSet.push(_aiKey);
 if(!G.themes.includes(_aiKey))G.themes.push(_aiKey);
+if(!_mTitles.includes(aiEvt.title))_mTitles.push(aiEvt.title);
 console.log('[Preload] AI enhanced:',aiEvt.title)}
 }catch(e){console.warn('[Preload] AI slot',slot,'failed:',e)}
 }}
@@ -2785,7 +2804,7 @@ if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
 if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold));
 ch.effects=ef});
 evt._isPreloaded=true;evt._slot=nextIdx;
-const _tKey=evt.theme+'_'+evt.title;if(evt.theme){if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey)}
+const _tKey=evt.theme+'_'+evt.title;if(evt.theme){if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey);if(!G._monthTitles)G._monthTitles=[];if(!G._monthTitles.includes(evt.title))G._monthTitles.push(evt.title)}
 if(evt.oneShot){if(!G.seenOneShots)G.seenOneShots=[];if(!G.seenOneShots.includes(_tKey))G.seenOneShots.push(_tKey)}
 console.log('[Preload] Event ready:',evt.title);
 return evt}
@@ -2804,7 +2823,7 @@ if(ef.atkLoss)ef.atkLoss=cl(Math.round(ef.atkLoss),1,5);
 if(ef.defLoss)ef.defLoss=cl(Math.round(ef.defLoss),1,5);
 if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
 if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold))});
-const _tKey=evt.theme+'_'+evt.title;if(evt.theme){if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey)}
+const _tKey=evt.theme+'_'+evt.title;if(evt.theme){if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey);if(!G._monthTitles)G._monthTitles=[];if(!G._monthTitles.includes(evt.title))G._monthTitles.push(evt.title)}
 if(evt.oneShot){if(!G.seenOneShots)G.seenOneShots=[];if(!G.seenOneShots.includes(_tKey))G.seenOneShots.push(_tKey)}
 return evt;
 }
@@ -3589,6 +3608,7 @@ let _enemyTurn=eBar>=100;
 if(_playerTurn&&_enemyTurn){if(eSpd>effPSpd){_playerTurn=false}else{_enemyTurn=false}}
 // Compute shared combat vars (available to all phases)
 const _bbShared=getBagBonuses();
+let _playerDefended=false;
 pDef=p.def+_bbShared.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
 effDG=p.dg+_bbShared.dodgeRate-getDebuffDodgeReduction();
 // Phase 1: Turn start (always runs)
@@ -3664,7 +3684,7 @@ pBar=0;_updATB();continue;
 }
 const action=await waitForAction(_battleCountdown);
 if(!action||p.hp<=0||enemy.hp<=0)break;
-let _playerDefended=false;
+_playerDefended=false;
 
 // Resolve player action
 if(action.type==='attack'){
@@ -4870,7 +4890,7 @@ regionsVisited:G.regionsVisited,bag:G.bag,_regionVisits:G._regionVisits||{},
 equipped:{weapon:G.equipped&&G.equipped.weapon?G.equipped.weapon.uid:null,armor:G.equipped&&G.equipped.armor?G.equipped.armor.uid:null,accessory:G.equipped&&G.equipped.accessory?G.equipped.accessory.uid:null,special:G.equipped&&G.equipped.special?G.equipped.special.uid:null},
 isBoss:G.isBoss,maxSlot:G.maxSlot,nextSkillLv:G.nextSkillLv,
 themes:G.themes,seenOneShots:G.seenOneShots||[],starKills:G.starKills,bestiary:G.bestiary,debuffs:G.debuffs,
-skillUsage:G.skillUsage||{},tempBuffs:G.tempBuffs||{},_monthThemes:G._monthThemes||[],immortalUsed:G.immortalUsed||false,
+skillUsage:G.skillUsage||{},tempBuffs:G.tempBuffs||{},_monthThemes:G._monthThemes||[],_monthTitles:G._monthTitles||[],immortalUsed:G.immortalUsed||false,
 version:2
 };
 // Always save locally as backup
@@ -4945,7 +4965,7 @@ if(sd.equipped){for(const slot of['weapon','armor','accessory','special']){if(sd
 if(!sd.equipped){G.bag.forEach(item=>{const slot=getItemSlot(item.id);if(slot&&!G.equipped[slot]){G.equipped[slot]=item}})}
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
 G.themes=sd.themes||[];G.seenOneShots=sd.seenOneShots||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
-G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G.immortalUsed=sd.immortalUsed||false;
+G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G._monthTitles=sd._monthTitles||[];G.immortalUsed=sd.immortalUsed||false;
 G.awk=sd.awk;G.p=sd.p;
 G.playerName=sd.playerName||(G.awk?G.awk.name:'冒险者');
 document.getElementById('loadModal').classList.remove('on');
@@ -4980,7 +5000,7 @@ G.equipped={weapon:null,armor:null,accessory:null,special:null};
 if(sd.equipped){for(const slot of['weapon','armor','accessory','special']){if(sd.equipped[slot]){const bagItem=G.bag.find(i=>i.uid===sd.equipped[slot]);if(bagItem)G.equipped[slot]=bagItem}}}
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
 G.themes=sd.themes||[];G.seenOneShots=sd.seenOneShots||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
-G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G.immortalUsed=sd.immortalUsed||false;
+G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G._monthTitles=sd._monthTitles||[];G.immortalUsed=sd.immortalUsed||false;
 G.awk=sd.awk;G.p=sd.p;G.playerName=sd.playerName||(G.awk?G.awk.name:'冒险者');
 document.getElementById('loadModal').classList.remove('on');
 await showTrans('命运正在重连...',1200);showScr('gameScr');updateUI();advanceEvt();
