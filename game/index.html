@@ -1408,7 +1408,7 @@ const dirName=DIR_NAMES[awk.direction]||awk.direction;
 const dirColor=DIR_COLORS[awk.direction]||'#f0c040';
 const prompt=`Square game character portrait icon, dark fantasy RPG art style. Character name: ${awk.name}, title: ${awk.title||'unknown'}, element: ${dirName}. Core symbol: ${awk.emoji}. Style: mystical dark background, glowing ${dirColor} energy aura, detailed digital illustration, centered portrait composition. No text.`;
 try{
-const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),60000);
+const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),20000);
 const res=await fetch('https://api.highwayapi.ai/v3/gpt-image-2-text-to-image',{
 method:'POST',
 headers:{'Content-Type':'application/json','Authorization':'Bearer sk_T0j2q5MKukBqeg8yQkGx6FDGGzVHl1S1BmoMmK9JwP0'},
@@ -1499,21 +1499,33 @@ if(awk.passiveMechanics.penalties)awk.passiveMechanics.penalties=_clampPM(awk.pa
 }
 awk.narrativeStyle=awk.narrativeStyle||'通用冒险';awk._isAI=isAI;G.awk=awk;
 if(st.parentNode)st.parentNode.removeChild(st);
-// Start background tasks in parallel: AI maps + event preload
+// Kick off icon generation NOW — runs during the animation stages below
+const _iconP=generateAwkIcon(awk);
+// Start background tasks: AI maps + event preload
 generateAIMaps();
 _preloadDuringAwaken().catch(()=>{});
-// Stage 3: Burst — flash + particles explosion
-triggerAwkFlash();
-burstAwkParticles(c, 16, dirColor);
-c.classList.remove('s1','s2');c.classList.add('burst');
+// Stage 3: Shaping — destiny crystallizing (extended animation)
+st.innerHTML='✦ 命运正在凝结...';st.style.color=dirColor;
+c.style.setProperty('--awk-color',dirColor);
+c.classList.add('s1');
+addAwkGlow(c,dirColor);
+addAwkParticles(c,8,dirColor,{dist:100,dur:2.5,size:4});
+await sleep(1500);
+// Stage 4: Intensify — energy surge
+c.classList.remove('s1');c.classList.add('s2');
+c.querySelectorAll('.awk-particle').forEach(p=>p.remove());
+addAwkParticles(c,14,dirColor,{dist:90,dur:1.2,size:3,randomAngle:true});
+st.innerHTML='✦ 灵魂共鸣...';
+await sleep(1800);
+// Stage 5: Burst — flash + particles explosion
 c.querySelectorAll('.awk-particle,.awk-glow').forEach(el=>el.remove());
-await sleep(700);
-// Stage 4: Card reveal immediately with emoji, icon loads in background
+triggerAwkFlash();
+burstAwkParticles(c,16,dirColor);
+c.classList.remove('s1','s2');c.classList.add('burst');
+await sleep(1200);
+// Stage 6: Card reveal — icon likely ready by now
+try{const iconUrl=await _iconP;if(iconUrl)awk.iconUrl=iconUrl}catch(e){}
 showAwkCard(awk);
-// Start icon generation in background — will dynamically update card when ready
-generateAwkIcon(awk).then(iconUrl=>{
-if(iconUrl){awk.iconUrl=iconUrl;_swapAwkIcon(iconUrl,awk)}
-}).catch(()=>{});
 }
 
 function _swapAwkIcon(iconUrl,awk){
@@ -1530,8 +1542,11 @@ function showAwkCard(a){
 const wrap=$('awkWrap'),ptL={dual_edge:'⚔️ 双刃被动',positive:'✨ 纯正面',none:'💪 无被动(高属性)'}[a.passiveType]||'无',clr=DIR_COLORS[a.direction]||'#f0c040';
 const aiT=a._isAI?'<span style="background:var(--pur);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px;animation:pulse 2s infinite">AI 生成</span>':'<span style="background:var(--t3);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px">预设模板</span>';
 const pw=!a._isAI?'<div style="background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:8px;margin:10px 0;font-size:.8em;color:var(--red)">⚠️ AI生成失败，使用了预设模板。<br>原因: '+(a._errDetail||'未知')+'<br><a href="#" onclick="toggleSettings();return false" style="color:var(--blu)">打开设置(⚙️)</a> 切换模型为 DeepSeek 或检查网络</div>':'';
+const iconHTML=a.iconUrl
+  ?`<div class="awk-icon-wrap" style="border-color:${clr}"><img class="awk-icon" src="${a.iconUrl}" alt="${a.name}" onerror="this.style.display='none'"></div>`
+  :`<div class="emoji">${a.emoji}</div>`;
 wrap.innerHTML=`${pw}<div class="awk-card" style="border-color:${clr}"><div style="display:flex;justify-content:center;margin-bottom:6px">${aiT}</div>
-<div class="emoji">${a.emoji}</div><div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
+${iconHTML}<div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
 <div style="color:var(--t2);font-size:.85em;margin:8px 0">${a.description||''}</div>
 <div class="passive"><span class="pn">${ptL}: ${a.passiveName}</span><br>${a.passiveDescription}</div>
 <div class="stats">
