@@ -1747,6 +1747,17 @@ if($('bagCount2'))$('bagCount2').textContent=G.bag.length+'/'+G.bagMax;
 $('uiGold').textContent=G.gold;
 renderDebuffBar();
 const sb=$('skBar');sb.innerHTML='';
+// Awakening passive display in skill bar
+if(G.awk&&G.awk.passiveName&&G.awk.passiveName!=='无'){
+const _awkClr=DIR_COLORS[G.awk.direction]||'var(--gold)';
+const _pm=G.awk.passiveMechanics||{};
+let _pmSummary='';
+if(_pm.effects)_pmSummary+=_pm.effects.map(e=>{const t=e.type||'';const v=typeof e.value==='number'?(e.value<1&&e.value>0?Math.round(e.value*100)+'%':e.value):e.value;return t.replace(/_/g,' ')+':'+v}).join(', ');
+if(_pm.penalties)_pmSummary+=(_pmSummary?' | ':'')+'⚠️'+_pm.penalties.map(e=>{const t=e.type||'';const v=typeof e.value==='number'?(e.value<1&&e.value>0?Math.round(e.value*100)+'%':e.value):e.value;return t.replace(/_/g,' ')+':'+v}).join(', ');
+const _pt=document.createElement('span');_pt.className='skt';
+_pt.style.cssText=`border:1px solid ${_awkClr};color:${_awkClr};background:rgba(0,0,0,.2)`;
+_pt.innerHTML=`${G.awk.emoji||'✦'}<span style="font-size:.85em">${G.awk.passiveName}</span><div class="sktip" style="border-color:${_awkClr}"><b style="color:${_awkClr}">${G.awk.emoji||'✦'} ${G.awk.passiveName}</b> <span style="font-size:.8em;color:var(--t3)">[${G.awk.passiveType==='dual_edge'?'双刃':G.awk.passiveType==='positive'?'正面':'无被动'}]</span><br>${G.awk.passiveDescription||''}${_pmSummary?'<br><span style="font-size:.85em;color:var(--t2)">'+_pmSummary+'</span>':''}<br><span style="font-size:.8em;color:var(--t3)">觉醒被动 · 永久生效</span></div>`;
+sb.appendChild(_pt)}
 p.skills.forEach(sk=>{const cd=G.skCD[sk.id]||0;
 const t=document.createElement('span');t.className='skt'+(cd>0?' cd':'');
 t.innerHTML=`${sk.emoji}${sk.name}<div class="sktip"><b>${sk.emoji} ${sk.name}</b><br>${sk.desc}<br>CD:${sk.cd}回合 | 能量:${sk.cost||0}<br>分类:${CAT_CN[sk.cat]||sk.cat}<br>永久技能</div>`;sb.appendChild(t)});
@@ -1774,7 +1785,7 @@ for(let i=0;i<5;i++){const d=document.createElement('div');d.className='edot';if
 
 // ===== MONTH SYSTEM =====
 function startMonth(){
-G.evtIdx=0;G._monthThemes=[];G.isBoss=(G.month%5===0);G._merchantVisited=false;
+G.evtIdx=0;G._monthThemes=[];G._queuedEvt=null;G.isBoss=(G.month%5===0);G._merchantVisited=false;
 showScr('gameScr');
 const db=$('uiDiff');db.textContent=G.dc.name;
 db.style.background=G.dc.color.includes('grn')?'rgba(64,192,112,.2)':G.dc.color.includes('blu')?'rgba(64,128,224,.2)':G.dc.color.includes('org')?'rgba(224,128,48,.2)':'rgba(224,64,80,.2)';
@@ -1820,6 +1831,8 @@ if(storyEvents){
     const _osKey=evt.theme+'_'+evt.title;
     if(!G.seenOneShots)G.seenOneShots=[];
     if(!G.seenOneShots.includes(_osKey))G.seenOneShots.push(_osKey);
+    if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_osKey))G._monthThemes.push(_osKey);
+    if(!G.themes)G.themes=[];if(!G.themes.includes(_osKey))G.themes.push(_osKey);
     G._queuedEvt=null;
     await triggerEvent(evt);
     return;
@@ -2070,8 +2083,15 @@ showContinueModal({icon:'⚠️',title:'事件处理出错',contentHTML:'<div st
 
 function advanceEvt(){G.evtIdx++;
 const slot=G.evtIdx;
-if(_pendingAI[slot]){G._queuedEvt=_pendingAI[slot];delete _pendingAI[slot]}
-else{G._queuedEvt=_evtQueue.shift()||null}
+const _mSet=G._monthThemes||[];
+let evt=null;
+if(_pendingAI[slot]){evt=_pendingAI[slot];delete _pendingAI[slot];
+if(evt&&evt.theme){const _k=evt.theme+'_'+evt.title;if(_mSet.includes(_k)&&!evt._storyEvent){console.warn('[Dedup] AI event rejected (dup):',evt.title);evt=null}}}
+if(!evt){const qEvt=_evtQueue.shift();
+if(qEvt&&qEvt.theme){const _k=qEvt.theme+'_'+qEvt.title;
+if(_mSet.includes(_k)&&!qEvt._storyEvent){console.warn('[Dedup] Queue event rejected (dup):',qEvt.title)}else{evt=qEvt}}else{evt=qEvt}}
+if(!evt&&slot<5)evt=_getPresetEvent(slot);
+G._queuedEvt=evt;
 if(G._queuedEvt)preloadNextEvent().catch(()=>{});
 nextEvent()}
 
@@ -2671,7 +2691,14 @@ for(let i=0;i<count;i++){
 const slot=startIdx+i;
 if(_pendingAI[slot]||_evtQueue.some(e=>e&&e._slot===slot&&e._isAI))continue;
 try{const aiEvt=await _genPreloadEvent(slot);
-if(aiEvt){aiEvt._isAI=true;_pendingAI[slot]=aiEvt;console.log('[Preload] AI enhanced:',aiEvt.title)}
+if(aiEvt&&aiEvt.theme){
+const _aiKey=aiEvt.theme+'_'+aiEvt.title;
+const _mSet=G._monthThemes||[];
+if(_mSet.includes(_aiKey)){console.log('[Preload] AI dup rejected:',aiEvt.title);continue}
+aiEvt._isAI=true;_pendingAI[slot]=aiEvt;
+if(!_mSet.includes(_aiKey))_mSet.push(_aiKey);
+if(!G.themes.includes(_aiKey))G.themes.push(_aiKey);
+console.log('[Preload] AI enhanced:',aiEvt.title)}
 }catch(e){console.warn('[Preload] AI slot',slot,'failed:',e)}
 }}
 
@@ -2758,7 +2785,7 @@ if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
 if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold));
 ch.effects=ef});
 evt._isPreloaded=true;evt._slot=nextIdx;
-const _tKey=evt.theme+'_'+evt.title;if(evt.theme&&!G.themes.includes(_tKey))G.themes.push(_tKey);
+const _tKey=evt.theme+'_'+evt.title;if(evt.theme){if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey)}
 if(evt.oneShot){if(!G.seenOneShots)G.seenOneShots=[];if(!G.seenOneShots.includes(_tKey))G.seenOneShots.push(_tKey)}
 console.log('[Preload] Event ready:',evt.title);
 return evt}
@@ -2777,7 +2804,7 @@ if(ef.atkLoss)ef.atkLoss=cl(Math.round(ef.atkLoss),1,5);
 if(ef.defLoss)ef.defLoss=cl(Math.round(ef.defLoss),1,5);
 if(ef.gold)ef.gold=cl(Math.round(ef.gold),1,20+G.month*5);
 if(ef.goldCost)ef.goldCost=cl(Math.round(ef.goldCost),1,Math.max(10,G.gold))});
-const _tKey=evt.theme+'_'+evt.title;if(evt.theme&&!G.themes.includes(_tKey))G.themes.push(_tKey);
+const _tKey=evt.theme+'_'+evt.title;if(evt.theme){if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes)G._monthThemes=[];if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey)}
 if(evt.oneShot){if(!G.seenOneShots)G.seenOneShots=[];if(!G.seenOneShots.includes(_tKey))G.seenOneShots.push(_tKey)}
 return evt;
 }
