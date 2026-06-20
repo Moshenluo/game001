@@ -104,6 +104,11 @@ export default {
         return await handleEvents(request, env);
       }
 
+      // Image generation proxy — forward to highwayapi.ai with server-side API key
+      if (path === '/api/image' && request.method === 'POST') {
+        return await handleImage(request, env);
+      }
+
       return error('Not Found', 404);
     } catch (e) {
       console.error('[Worker]', e.message);
@@ -441,4 +446,65 @@ async function handleEvents(request, env) {
 
   const selected = builtinEvents.sort(() => Math.random() - 0.5).slice(0, count);
   return json({ events: selected, source: 'builtin' });
+}
+
+// ===== Image Generation Proxy =====
+const IMAGE_API_URL = 'https://api.highwayapi.ai/v3/gpt-image-2-text-to-image';
+
+async function handleImage(request, env) {
+  const ip = getIP(request);
+  if (!(await checkRateLimit(env, ip))) {
+    return error('请求过于频繁，请稍后再试', 429);
+  }
+
+  const apiKey = env.IMAGE_API_KEY;
+  if (!apiKey) {
+    return error('Image API key not configured on server', 500);
+  }
+
+  const body = await request.json();
+  const { prompt, model, size, n } = body;
+
+  if (!prompt) return error('Missing prompt');
+
+  const proxyBody = {
+    model: model || 'gpt-image-2',
+    prompt: prompt,
+    size: size || '1024x1024',
+    n: n || 1,
+  };
+
+  try {
+    const res = await fetch(IMAGE_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey,
+      },
+      body: JSON.stringify(proxyBody),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('[Image Proxy] API error:', res.status, errText.substring(0, 300));
+      let detail = res.status;
+      try { const ej = JSON.parse(errText); if (ej.error) detail += ': ' + (ej.error.message || ej.error); } catch (_) { detail += ' ' + errText.slice(0, 120); }
+      return error('Image API: ' + detail, 502);
+    }
+
+    const data = await res.json();
+
+    // Log usage
+    const usageKey = 'usage:image:' + new Date().toISOString().slice(0, 10);
+    const usageCount = parseInt(await env.RIFT_KV.get(usageKey) || '0');
+    await env.RIFT_KV.put(usageKey, String(usageCount + 1), { expirationTtl: 86400 * 30 });
+
+    // Return as-is (same format the client expects)
+    return new Response(JSON.stringify(data), {
+      headers: { 'Content-Type': 'application/json', ...CORS },
+    });
+  } catch (e) {
+    console.error('[Image Proxy] Fetch failed:', e.message);
+    return error('Image API unreachable: ' + e.message, 503);
+  }
 }

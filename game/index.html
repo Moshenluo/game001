@@ -1409,9 +1409,9 @@ const dirColor=DIR_COLORS[awk.direction]||'#f0c040';
 const prompt=`Square game character portrait icon, dark fantasy RPG art style. Character name: ${awk.name}, title: ${awk.title||'unknown'}, element: ${dirName}. Core symbol: ${awk.emoji}. Style: mystical dark background, glowing ${dirColor} energy aura, detailed digital illustration, centered portrait composition. No text.`;
 try{
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),20000);
-const res=await fetch('https://api.highwayapi.ai/v3/gpt-image-2-text-to-image',{
+const res=await fetch(WORKER_URL+'/api/image',{
 method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer sk_T0j2q5MKukBqeg8yQkGx6FDGGzVHl1S1BmoMmK9JwP0'},
+headers:{'Content-Type':'application/json'},
 body:JSON.stringify({model:'gpt-image-2',prompt:prompt,size:'1024x1024',n:1}),
 signal:ctrl.signal
 });
@@ -1988,7 +1988,7 @@ if(G.evts===1){setTimeout(()=>showTutorial('event'),600)}
 });
 }
 
-function typeText(t,el,cb){el.textContent='';el.classList.add('typing');let i=0;const tm=setInterval(()=>{if(i<t.length){el.textContent+=t[i];i++}else{clearInterval(tm);el.classList.remove('typing');if(cb)cb()}},25)}
+function typeText(t,el,cb){el.textContent='';el.classList.add('typing');let i=0,done=false;const tm=setInterval(()=>{if(i<t.length){el.textContent+=t[i];i++}else{clearInterval(tm);el.classList.remove('typing');done=true;el.onclick=null;el.style.cursor='';if(cb)cb()}},25);el.style.cursor='pointer';el.onclick=function(){if(!done){clearInterval(tm);el.textContent=t;el.classList.remove('typing');done=true;el.onclick=null;el.style.cursor='';if(cb)cb()}}}
 
 // Attribute check system: calculates success probability for event choices
 const STAT_CN={atk:'力量',def:'体质',lk:'幸运',level:'等级'};
@@ -3515,6 +3515,7 @@ let pAtk=p.atk+_bb.atk+pAtkBuff+Math.floor(G.tempBuffs.atk||0);
 pDef=p.def+_bb.def+pDefBuff+Math.floor(G.tempBuffs.def||0);
 // Curse debuff: -20% ATK per curse stack
 if(G.p.curse&&G.p.curse>0){pAtk=Math.floor(pAtk*0.8);if(turn===1)addL(`☠️ 诅咒: ATK-20% (${G.p.curse}场)`,'le')}
+if(G.tempBuffs.moraleLoss&&G.tempBuffs.moraleLoss>0){pAtk=Math.max(1,pAtk-1);if(turn===1)addL(`😰 士气低落: ATK-1 (${G.tempBuffs.moraleLoss}场)`,'lo')}
 const effMaxHp=p.maxHp+_bb.maxHp;const effCR=p.cr+_bb.critRate+(p.lk*.002);const effCD=p.cd+_bb.critDamage;
 let bagLifesteal=_bb.lifesteal;let bagHpRegen=_bb.hpRegen;
 atkCount++;let bloodSteal=0;
@@ -3566,6 +3567,7 @@ pBar=0;_updATB();continue;
 }
 const action=await waitForAction(_battleCountdown);
 if(!action||p.hp<=0||enemy.hp<=0)break;
+let _playerDefended=false;
 
 // Resolve player action
 if(action.type==='attack'){
@@ -3651,8 +3653,12 @@ if(sk.firstStrike&&sk.dmg){const bonus=Math.floor(sk.dmg*0.3);enemy.hp-=bonus;G.
 // skills are permanent - no round-based expiration
 }
 else if(action.type==='defend'){
-pDefBuff=Math.max(pDefBuff,p.def);pDefDur=1;p.en=Math.min(bEffMaxEn,p.en+8);
-addL(`🛡️ 防御姿态! 防御翻倍，能量+8`,'ld');
+_playerDefended=true;
+pDefBuff=Math.max(pDefBuff,p.def);pDefDur=1;
+const _defEnRec=Math.floor(bEffMaxEn*(0.05+Math.random()*0.05));
+p.en=Math.min(bEffMaxEn,p.en+_defEnRec);
+pCritB+=0.15;pCritDur=Math.max(pCritDur,2);
+addL(`🛡️ 防御姿态! 防御翻倍+60%减伤, 能量+${_defEnRec}, 暴击+15%`,'ld');
 }
 else if(action.type==='item'){
 const item=action.item;const ef=item.effect||{};
@@ -3672,16 +3678,18 @@ if(G.tempBuffs.canEscape){fleeChance=1.0;G.tempBuffs.canEscape=false}
 const roll=Math.random();
 addL(`🏃 尝试逃跑... (成功率:${Math.floor(fleeChance*100)}%)`,'lo');
 if(roll<fleeChance){
-// Success - lose 70% current HP
-const hpLoss=Math.floor(p.hp*0.7);
+// Success - lose 15-25% current HP + morale debuff
+const hpPct=0.15+Math.random()*0.10;
+const hpLoss=Math.max(1,Math.floor(p.hp*hpPct));
 p.hp-=hpLoss;
-addL(`🏃 逃跑成功! 但慌乱中损失了 ${hpLoss} 点生命!`,'lp');SoundEngine.play('flee');
+if(!G.tempBuffs)G.tempBuffs={};G.tempBuffs.moraleLoss=(G.tempBuffs.moraleLoss||0)+2;
+addL(`🏃 逃跑成功! 损失 ${hpLoss} HP，士气低落(ATK-1 持续2场)!`,'lp');SoundEngine.play('flee');
 if(p.hp<=0){p.hp=1;addL(`⚠️ 险些丧命，以1HP逃脱!`,'le')}
 updBU();
 // End battle as escaped (no rewards)
 await _sl(800);
 showContinueModal({icon:'🏃',title:'逃跑成功',color:'var(--org)',
-contentHTML:`<div style="margin-bottom:8px">你成功逃离了战斗，但付出了惨痛代价。</div><div style="color:var(--red)">损失 ${hpLoss} 点生命值</div>`,
+contentHTML:`<div style="margin-bottom:8px">你成功逃离了战斗。</div><div style="color:var(--red)">损失 ${hpLoss} HP</div><div style="color:var(--org);margin-top:4px">士气低落: ATK-1 (持续2场战斗)</div>`,
 onContinue:()=>advanceEvt()});
 updateUI();return;// Exit runBattle entirely
 }else{
@@ -3722,6 +3730,8 @@ if(Math.random()<effDG+passiveEngine.getVal('dodge_bonus')){addL(`💨 闪避!`,
 const _peEvade = passiveEngine.getVal('full_evade');
 if(_peEvade && Math.random()<_peEvade){addL(`🕳️ 维度闪避! 完全回避!`,'lp');eDmg=0}
 if(eDmg>0){
+// Defend stance: 60% damage reduction
+if(_playerDefended){eDmg=Math.max(1,Math.floor(eDmg*0.4));addL(`🛡️ 防御减伤60%!`,'ld')}
 const _peDmgTaken = passiveEngine.getPenVal('damage_taken');
 if(_peDmgTaken)eDmg=Math.floor(eDmg*(1+_peDmgTaken));
 if(_diffDmg!==1)eDmg=Math.max(1,Math.floor(eDmg*_diffDmg));
@@ -3772,7 +3782,7 @@ await _sl(400);
 // Clear temp buffs and restore base stats
 if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd}
 if(G.tempBuffs.crit){}// pCritB was separate, p.cr unchanged
-G.tempBuffs={};G._skSpdBuff=0;
+const _ml=(G.tempBuffs.moraleLoss||0)-1;G.tempBuffs={};if(_ml>0)G.tempBuffs.moraleLoss=_ml;G._skSpdBuff=0;
 if(p.hp>0){
 if(isBreakthrough){
 addL(`--- 突破成功! ---`,'ls');
@@ -4409,15 +4419,41 @@ alert(html);
 }
 
 // ===== NPC BATTLE SYSTEM =====
+const NPC_TYPES={
+hostile:{names:['流浪剑客','赏金猎人','暗影刺客','狂战士','死灵法师','龙骑士'],emojis:['🗡️','🏹','🥷','💪','💀','🐲'],
+lines:['让开，你的路到此为止!','听说你身上有不少好东西...','哼，又是一个不自量力的冒险者。']},
+merchant:{names:'行脚商人',emoji:'🧳',
+lines:['嘿! 朋友，来看看我的好货!','走过路过不要错过，全大陆最实惠!','你来得正好，刚到了一批新鲜货。'],
+tradeItems:['berserk','hpPotL','enCrystal','focusPill','ironSkin','luckyCoin'],tradePrice:[80,60,50,70,65,100]},
+mentor:{names:'流浪导师',emoji:'📖',
+lines:['年轻人，我观你骨骼清奇...','修行路上，点拨一二也未尝不可。','来，让我看看你的实力。'],
+buffDesc:'攻击+3, 防御+2'},
+traveler:{names:'神秘旅者',emoji:'🌟',
+lines:['此地去路凶险，我给你一个忠告...','命运指引我在此等候，这是给你的指引。','前方有宝藏的气息，沿着这条路走。'],
+clueDesc:'藏宝线索'}
+};
+
 function startNPCBattle(){
 const pl=G.p.level;
-const npcNames=['流浪剑客','赏金猎人','暗影刺客','圣骑士','狂战士','魔法师','游侠','武僧','死灵法师','龙骑士'];
-const npcEmojis=['🗡️','🏹','🥷','⚜️','💪','🧙','🏃','👊','💀','🐲'];
-const idx=R(0,npcNames.length-1);
+// Determine NPC type: 40% hostile, 25% merchant, 20% mentor, 15% traveler
+const typeRoll=Math.random();
+let npcType,npcKey;
+if(typeRoll<0.4){npcKey='hostile';npcType=NPC_TYPES.hostile}
+else if(typeRoll<0.65){npcKey='merchant';npcType=NPC_TYPES.merchant}
+else if(typeRoll<0.85){npcKey='mentor';npcType=NPC_TYPES.mentor}
+else{npcKey='traveler';npcType=NPC_TYPES.traveler}
+
+const isHostile=npcKey==='hostile';
+const idx=R(0,(Array.isArray(npcType.names)?npcType.names:['']).length-1);
+const npcName=Array.isArray(npcType.names)?npcType.names[idx]:npcType.names;
+const npcEmoji=Array.isArray(npcType.emojis)?npcType.emojis[idx]:npcType.emoji;
+const dialogue=npcType.lines[R(0,npcType.lines.length-1)];
 const starInfo=getMonsterStarTier(pl);
 const tierMult=MONSTER_TIERS[starInfo.tierIdx].mult;
+
+// Build combat NPC (only used if fight happens)
 const npc={
-name:npcNames[idx],emoji:npcEmojis[idx],isNPC:true,
+name:npcName,emoji:npcEmoji,isNPC:true,
 hp:Math.floor((40+pl*5)*tierMult),maxHp:Math.floor((40+pl*5)*tierMult),
 atk:Math.floor((8+pl*1.5)*tierMult),def:Math.floor((3+pl*0.8)*tierMult),
 lv:pl+R(-2,2),isBoss:false,isElite:Math.random()<0.2,
@@ -4425,19 +4461,138 @@ stars:starInfo.star,tier:starInfo.tierIdx,tierName:starInfo.tier.name,
 skills:[pick(MONSTER_SKILLS)]
 };
 if(npc.isElite){npc.hp=Math.floor(npc.hp*1.4);npc.maxHp=npc.hp;npc.atk=Math.floor(npc.atk*1.4);npc.name='精英 '+npc.name;npc.skills.push(pick(MONSTER_SKILLS))}
+G._nextEnemy=npc;
+
 G.evts++;const area=$('evtArea');area.innerHTML='';
 const card=document.createElement('div');card.className='barea fi';
-card.innerHTML=`<div style="text-align:center;padding:20px;color:var(--org)">
-<div style="font-size:2em;margin-bottom:8px">${npc.emoji}</div>
-<div style="font-size:1.2em;font-weight:bold">${npc.name}</div>
-<div style="color:var(--t2);margin:6px 0">Lv.${npc.lv} — 一位${npc.isElite?'实力强劲的':'流浪的'}冒险者挡住了去路!</div>
-<div style="margin:12px 0">
-<button class="btn-big" onclick="this.closest('.barea').remove();startBattle(false)" style="background:var(--redd)">⚔️ 迎战</button>
-<button class="btn-big btn-no" onclick="this.closest('.barea').remove();advanceEvt()" style="margin-left:10px">🏃 避开</button>
-</div></div>`;
+
+// Build interaction buttons based on NPC type
+let btnsHTML='';
+if(isHostile){
+btnsHTML=`<button class="btn-big" id="npcFight" style="background:var(--redd)">⚔️ 迎战</button>
+<button class="btn-big btn-no" id="npcAvoid" style="margin-left:8px">🏃 避开</button>`;
+}else{
+btnsHTML=`<button class="btn-big" id="npcFight" style="background:var(--redd)">⚔️ 挑战</button>`;
+if(npcKey==='merchant'){
+btnsHTML+=`<button class="btn-big" id="npcTrade" style="background:var(--org);margin-left:8px">🛒 交易</button>`;
+}else if(npcKey==='mentor'){
+btnsHTML+=`<button class="btn-big" id="npcTalk" style="background:var(--cyan);margin-left:8px">🙏 请教</button>`;
+}else{
+btnsHTML+=`<button class="btn-big" id="npcTalk" style="background:var(--cyan);margin-left:8px">🔮 交谈</button>`;
+}
+btnsHTML+=`<button class="btn-big btn-no" id="npcLeave" style="margin-left:8px">👋 告辞</button>`;
+}
+
+card.innerHTML=`<div style="text-align:center;padding:16px">
+<div style="font-size:2.2em;margin-bottom:6px">${npcEmoji}</div>
+<div style="font-size:1.15em;font-weight:bold;color:var(--org)">${npcName}</div>
+<div style="color:var(--t2);font-size:.9em;margin:4px 0">${isHostile?'一位充满敌意的冒险者':'一位友善的旅人'}</div>
+<div style="background:rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;margin:10px 0;font-style:italic;color:var(--t1);font-size:.95em;line-height:1.5">
+「${dialogue}」
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px">${btnsHTML}</div>
+</div>`;
 area.appendChild(card);
-// Override genEnemy for this battle
-G._nextEnemy=npc;
+
+// Wire up buttons
+const fightBtn=card.querySelector('#npcFight');
+const avoidBtn=card.querySelector('#npcAvoid');
+const tradeBtn=card.querySelector('#npcTrade');
+const talkBtn=card.querySelector('#npcTalk');
+const leaveBtn=card.querySelector('#npcLeave');
+
+if(fightBtn)fightBtn.onclick=()=>{
+card.innerHTML=`<div style="text-align:center;padding:20px;color:var(--org)">
+<div style="font-size:1.1em">「找死!」</div>
+<div style="margin-top:10px"><button class="btn-big" id="npcConfirmFight" style="background:var(--redd)">⚔️ 开战!</button></div></div>`;
+card.querySelector('#npcConfirmFight').onclick=()=>{card.remove();startBattle(false)};
+};
+if(avoidBtn)avoidBtn.onclick=()=>{card.remove();advanceEvt()};
+if(leaveBtn)leaveBtn.onclick=()=>{card.remove();advanceEvt()};
+
+if(tradeBtn&&npcKey==='merchant'){
+tradeBtn.onclick=()=>{
+const t=npcType;
+let shopHTML=`<div style="text-align:center;padding:12px">
+<div style="font-size:1.1em;color:var(--gold);margin-bottom:10px">🛒 行商货架 <span style="font-size:.85em;color:var(--t2)">(你有 ${G.gold}💰)</span></div>`;
+t.tradeItems.forEach((itemId,i)=>{
+const item=ITEMS[itemId];if(!item)return;
+const price=t.tradePrice[i];
+const canBuy=G.gold>=price&&G.bag.length<G.bagMax;
+shopHTML+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:rgba(255,255,255,.04);border-radius:6px;margin:4px 0">
+<span>${item.emoji} ${item.name} <span style="color:var(--t3);font-size:.8em">${item.desc}</span></span>
+<button class="btn-sm ${canBuy?'':'btn-no'}" data-item="${itemId}" data-price="${price}" ${canBuy?'':'disabled'}>${price}💰</button>
+</div>`;
+});
+shopHTML+=`<div style="margin-top:10px"><button class="btn-big btn-no" id="shopClose">离开商店</button></div></div>`;
+card.innerHTML=shopHTML;
+card.querySelectorAll('[data-item]').forEach(btn=>{
+btn.onclick=()=>{
+const id=btn.dataset.item;const pr=parseInt(btn.dataset.price);
+if(G.gold>=pr&&G.bag.length<G.bagMax){
+G.gold-=pr;addToBag(id);SoundEngine.play('gold');
+btn.disabled=true;btn.textContent='已购买';btn.classList.add('btn-no');
+card.querySelector('span[style*="gold"]').textContent=`(你有 ${G.gold}💰)`;
+addL(`🛒 从行商购买了 ${ITEMS[id].name}`,'lp');
+updateUI();
+}else{addL(G.gold<pr?'💰 金币不足!':'🎒 背包已满!','le')}
+};
+});
+card.querySelector('#shopClose').onclick=()=>{card.remove();advanceEvt()};
+};
+}
+
+if(talkBtn){
+talkBtn.onclick=()=>{
+const lkCheck=G.p.lk+R(1,10);
+const success=lkCheck>=12;
+if(npcKey==='mentor'){
+if(success){
+G.p.atk+=3;G.p.def+=2;
+card.innerHTML=`<div style="text-align:center;padding:20px">
+<div style="font-size:1.1em;color:var(--cyan)">「好悟性! 老夫传你几招。」</div>
+<div style="color:var(--grn);margin-top:8px;font-size:1.05em">ATK+3, DEF+2</div>
+<div style="margin-top:10px"><button class="btn-big" id="mentorDone">感谢导师</button></div></div>`;
+addL(`📖 导师传授武学: ATK+3, DEF+2`,'lp');
+}else{
+card.innerHTML=`<div style="text-align:center;padding:20px">
+<div style="font-size:1.1em;color:var(--t2)">「嗯...你的修行还差得远，先自己练练吧。」</div>
+<div style="color:var(--org);margin-top:8px">HP+10% (安慰奖)</div>
+<div style="margin-top:10px"><button class="btn-big" id="mentorDone">告辞</button></div></div>`;
+const heal=Math.floor(G.p.maxHp*0.1);G.p.hp=Math.min(G.p.maxHp,G.p.hp+heal);
+addL(`📖 导师安慰: HP+${heal}`,'lo');
+}
+}else{// traveler
+if(success){
+// Give a random rare+ item as treasure clue reward
+const treasureItems=['luckyCoin','berserk','fateElixir','reviveFeather'];
+const reward=pick(treasureItems);
+if(G.bag.length<G.bagMax){
+addToBag(reward);
+card.innerHTML=`<div style="text-align:center;padding:20px">
+<div style="font-size:1.1em;color:var(--cyan)">「这是我在某处发现的，送给你吧。」</div>
+<div style="color:var(--grn);margin-top:8px">${ITEMS[reward].emoji} 获得 ${ITEMS[reward].name}</div>
+<div style="margin-top:10px"><button class="btn-big" id="travDone">感谢</button></div></div>`;
+addL(`🌟 神秘旅者赠礼: ${ITEMS[reward].name}`,'lp');
+}else{
+card.innerHTML=`<div style="text-align:center;padding:20px">
+<div style="font-size:1.1em;color:var(--t2)">「你背包满了...下次吧。」</div>
+<div style="margin-top:10px"><button class="btn-big" id="travDone">告辞</button></div></div>`;
+}
+}else{
+card.innerHTML=`<div style="text-align:center;padding:20px">
+<div style="font-size:1.1em;color:var(--t2)">「...看来缘分未到，保重。」</div>
+<div style="color:var(--org);margin-top:8px">金币+15 (路费)</div>
+<div style="margin-top:10px"><button class="btn-big" id="travDone">告辞</button></div></div>`;
+G.gold+=15;G.totalGold+=15;
+addL(`🌟 旅者给了15金币路费`,'lo');
+}
+}
+updateUI();
+const doneBtn=card.querySelector('#mentorDone')||card.querySelector('#travDone');
+if(doneBtn)doneBtn.onclick=()=>{card.remove();advanceEvt()};
+};
+}
 }
 
 // ===== LEADERBOARD =====
@@ -4471,27 +4626,27 @@ difficulty:G.diff,score,gold:G.totalGold,breakthroughs:G.breakthroughTier
 
 // ===== ACHIEVEMENTS =====
 const ACH_DEFS={
-first_blood:{name:'初战告捷',desc:'击败第一个敌人',icon:'⚔️'},
-kills_10:{name:'十杀勇者',desc:'累计击杀10个敌人',icon:'💀'},
-kills_50:{name:'半百屠夫',desc:'累计击杀50个敌人',icon:'☠️'},
-kills_100:{name:'百杀传说',desc:'累计击杀100个敌人',icon:'🏆'},
-boss_hunter:{name:'猎龙者',desc:'击败第一个BOSS',icon:'🐉'},
-boss_hunter_5:{name:'龙王克星',desc:'击败5个BOSS',icon:'👑'},
-level_10:{name:'初窥门径',desc:'达到10级',icon:'📈'},
-level_30:{name:'炉火纯青',desc:'达到30级',icon:'🔥'},
-level_50:{name:'登峰造极',desc:'达到50级',icon:'⭐'},
-level_100:{name:'超凡入圣',desc:'达到100级',icon:'✨'},
-breakthrough_1:{name:'破境初成',desc:'完成第一次突破',icon:'⚡'},
-breakthrough_5:{name:'五重天劫',desc:'完成5次突破',icon:'🌩️'},
-gold_1000:{name:'小富即安',desc:'累计获得1000金币',icon:'💰'},
-gold_5000:{name:'富甲一方',desc:'累计获得5000金币',icon:'🏦'},
-survive_12:{name:'一岁轮回',desc:'存活12个月(1年)',icon:'📅'},
-survive_60:{name:'五载春秋',desc:'存活60个月(5年)',icon:'🗓️'},
-legendary_challenge:{name:'传说挑战者',desc:'完成挑战级突破',icon:'🔴'},
-npc_victor:{name:'江湖扬名',desc:'击败5个NPC',icon:'🥋'},
-explorer:{name:'世界探索者',desc:'探索10个不同地点',icon:'🗺️'},
-lucky_star:{name:'幸运之星',desc:'幸运值达到25',icon:'🍀'},
-hell_clear:{name:'地狱行者',desc:'在地狱难度存活超过6个月',icon:'💀'}
+first_blood:{name:'初战告捷',desc:'击败第一个敌人',icon:'⚔️',shards:50},
+kills_10:{name:'十杀勇者',desc:'累计击杀10个敌人',icon:'💀',shards:80},
+kills_50:{name:'半百屠夫',desc:'累计击杀50个敌人',icon:'☠️',shards:150},
+kills_100:{name:'百杀传说',desc:'累计击杀100个敌人',icon:'🏆',shards:300},
+boss_hunter:{name:'猎龙者',desc:'击败第一个BOSS',icon:'🐉',shards:100},
+boss_hunter_5:{name:'龙王克星',desc:'击败5个BOSS',icon:'👑',shards:250},
+level_10:{name:'初窥门径',desc:'达到10级',icon:'📈',shards:50},
+level_30:{name:'炉火纯青',desc:'达到30级',icon:'🔥',shards:150},
+level_50:{name:'登峰造极',desc:'达到50级',icon:'⭐',shards:250},
+level_100:{name:'超凡入圣',desc:'达到100级',icon:'✨',shards:500},
+breakthrough_1:{name:'破境初成',desc:'完成第一次突破',icon:'⚡',shards:100},
+breakthrough_5:{name:'五重天劫',desc:'完成5次突破',icon:'🌩️',shards:300},
+gold_1000:{name:'小富即安',desc:'累计获得1000金币',icon:'💰',shards:80},
+gold_5000:{name:'富甲一方',desc:'累计获得5000金币',icon:'🏦',shards:200},
+survive_12:{name:'一岁轮回',desc:'存活12个月(1年)',icon:'📅',shards:150},
+survive_60:{name:'五载春秋',desc:'存活60个月(5年)',icon:'🗓️',shards:400},
+legendary_challenge:{name:'传说挑战者',desc:'完成挑战级突破',icon:'🔴',shards:500},
+npc_victor:{name:'江湖扬名',desc:'击败5个NPC',icon:'🥋',shards:150},
+explorer:{name:'世界探索者',desc:'探索10个不同地点',icon:'🗺️',shards:200},
+lucky_star:{name:'幸运之星',desc:'幸运值达到25',icon:'🍀',shards:100},
+hell_clear:{name:'地狱行者',desc:'在地狱难度存活超过6个月',icon:'💀',shards:400}
 };
 
 function getLocalAchievements(){
@@ -4531,8 +4686,9 @@ SoundEngine.play('achievement');
 const container=$('achToasts');
 newAchs.forEach((id,i)=>{
 const def=ACH_DEFS[id];if(!def)return;
+const shardText=def.shards?`<div style="color:var(--gold);font-size:.8em;margin-top:2px">💎 +${def.shards} 碎片</div>`:'';
 const toast=document.createElement('div');toast.className='ach-toast';
-toast.innerHTML=`<div class="at-icon">${def.icon}</div><div class="at-body"><div class="at-label">成就解锁</div><div class="at-title">${def.name}</div><div class="at-desc">${def.desc}</div></div>`;
+toast.innerHTML=`<div class="at-icon">${def.icon}</div><div class="at-body"><div class="at-label">成就解锁</div><div class="at-title">${def.name}</div><div class="at-desc">${def.desc}</div>${shardText}</div>`;
 container.appendChild(toast);
 setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .5s';setTimeout(()=>toast.remove(),600)},3500+i*600);
 });
@@ -4544,6 +4700,10 @@ const prev=getLocalAchievements();
 const newAchs=earned.filter(a=>!prev.includes(a));
 if(newAchs.length>0){
 saveLocalAchievements([...new Set([...prev,...earned])]);
+// Award fate shards for new achievements
+let totalAchShards=0;
+newAchs.forEach(id=>{const def=ACH_DEFS[id];if(def&&def.shards)totalAchShards+=def.shards});
+if(totalAchShards>0){const meta=getMeta();meta.shards+=totalAchShards;saveMeta(meta)}
 showAchievementToast(newAchs);
 }
 // Also sync to server if worker available
@@ -4568,7 +4728,8 @@ const earned=getLocalAchievements();
 let html='<div class="ach-grid">';
 Object.entries(ACH_DEFS).forEach(([id,def])=>{
 const isEarned=earned.includes(id);
-html+=`<div class="ach-card ${isEarned?'earned':''}"><div class="ach-icon">${def.icon}</div><div class="ach-name">${def.name}</div><div class="ach-desc">${def.desc}</div></div>`;
+const shardBadge=def.shards?`<div style="color:var(--gold);font-size:.75em">${isEarned?'✅':'💎'} ${def.shards}</div>`:'';
+html+=`<div class="ach-card ${isEarned?'earned':''}"><div class="ach-icon">${def.icon}</div><div class="ach-name">${def.name}</div><div class="ach-desc">${def.desc}</div>${shardBadge}</div>`;
 });
 html+='</div>';
 html+=`<div style="text-align:center;color:var(--t3);font-size:.85em;margin-top:10px">已解锁 ${earned.length} / ${Object.keys(ACH_DEFS).length} 个成就</div>`;

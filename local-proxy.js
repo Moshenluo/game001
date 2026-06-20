@@ -142,6 +142,22 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    // Image generation proxy (highwayapi.ai)
+    if (url === '/api/image' && req.method === 'POST') {
+      const IMAGE_KEY = process.env.IMAGE_API_KEY || 'sk_T0j2q5MKukBqeg8yQkGx6FDGGzVHl1S1BmoMmK9JwP0';
+      try {
+        const parsed = JSON.parse(body);
+        console.log(`[Image] model=${parsed.model || 'gpt-image-2'}, size=${parsed.size || '1024x1024'}`);
+        proxyRequest('https://api.highwayapi.ai/v3/gpt-image-2-text-to-image', JSON.stringify(parsed), {
+          'Authorization': 'Bearer ' + IMAGE_KEY
+        }, res);
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ error: 'Invalid JSON: ' + e.message }));
+      }
+      return;
+    }
+
     res.writeHead(404, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify({ error: 'Not found: ' + url }));
   });

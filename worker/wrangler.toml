@@ -15,7 +15,9 @@ routes = [
 binding = "RIFT_KV"
 id = "9d3f79f2ca6f4be4b035f95350d7cccc"
 
-# API Key — set via CLI: wrangler secret put DEEPSEEK_API_KEY
-# NEVER put the key here in plaintext!
+# API Keys — set via CLI:
+#   wrangler secret put DEEPSEEK_API_KEY
+#   wrangler secret put IMAGE_API_KEY
+# NEVER put keys here in plaintext!
 [vars]
 # AI_MODEL = "deepseek-chat"
