@@ -3383,10 +3383,10 @@ return{lv,uses,next:SKILL_LV_THRESHOLDS[lv]||null};
 function applySkillProficiency(sk){
 // Returns a modified copy of skill stats based on proficiency level
 const info=getSkillLv(sk.name);const lv=info.lv;
-const bonus={dmgMult:1,healMult:1,cdReduce:0,extraEffect:null};
-if(lv>=2){bonus.dmgMult=1.2;bonus.healMult=1.15} // +20% dmg, +15% heal
-if(lv>=3){bonus.dmgMult=1.4;bonus.healMult=1.3;bonus.cdReduce=1} // +40% dmg, -1 CD
-if(lv>=4){bonus.dmgMult=1.6;bonus.healMult=1.5;bonus.cdReduce=1;bonus.extraEffect=sk.dmg?'burn':null} // +60% dmg, burn on dmg skills
+const bonus={dmgMult:1,healMult:1,cdReduce:0};
+if(lv>=2){bonus.dmgMult=1.2;bonus.healMult=1.15}
+if(lv>=3){bonus.dmgMult=1.4;bonus.healMult=1.3;bonus.cdReduce=1}
+if(lv>=4){bonus.dmgMult=1.6;bonus.healMult=1.5;bonus.cdReduce=2}
 return bonus;
 }
 
@@ -3734,8 +3734,6 @@ G.dmgDealt+=dmg;
 let isCrit=Math.random()<(effCR+pCritB)||focusNext;
 if(isCrit){const bonus=Math.floor(dmg*((effCD+(G.tempBuffs.cd||0))-1));enemy.hp-=bonus;G.dmgDealt+=bonus;addL(`💥 暴击! 额外 ${bonus}`,'lc');G.crits++;focusNext=false;const _skShake=(enemy.isBoss||enemy.isElite||isBreakthrough)?'shake-heavy':'shake-screen';document.body.classList.add(_skShake);setTimeout(()=>document.body.classList.remove(_skShake),600);showDmgPopup('-'+bonus,'crit','bEH')}
 if(sk.dot){eDot=sk.dot;eDotDur=3}
-// Lv4 proficiency: burn effect on damage skills
-if(_prof.extraEffect==='burn'){eDot=(eDot||0)+Math.floor(sk.dmg*0.15);eDotDur=Math.max(eDotDur,3);addL(`🔥 熟练灼烧!`,'lo')}
 if(bloodSteal>0){const st=Math.floor(dmg*bloodSteal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st}
 if(sk.steal){const st=Math.floor(dmg*sk.steal);p.hp=Math.min(bEffMaxHp,p.hp+st);G.healing+=st;addL(`🩸 吸血 +${st}`,'lo')}
 }
@@ -5049,6 +5047,7 @@ badge.style.background='rgba(224,64,80,.12)';badge.style.color='var(--red)';
 
 // ===== START =====
 async function startGame(diff){
+localStorage.removeItem('rift_tutorial_done');localStorage.removeItem('rift_tut_steps');
 G.diff=diff;G.dc=DIFF[diff];
 const _nameIn=$('playerNameInput');G.playerName=_nameIn?_nameIn.value.trim().slice(0,20):'';
 await showTrans('命运正在觉醒...',1500);showScr('awkScr');
