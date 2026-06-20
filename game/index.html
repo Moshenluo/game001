@@ -1408,13 +1408,13 @@ const dirName=DIR_NAMES[awk.direction]||awk.direction;
 const dirColor=DIR_COLORS[awk.direction]||'#f0c040';
 const prompt=`Square game character portrait icon, dark fantasy RPG art style. Character name: ${awk.name}, title: ${awk.title||'unknown'}, element: ${dirName}. Core symbol: ${awk.emoji}. Style: mystical dark background, glowing ${dirColor} energy aura, detailed digital illustration, centered portrait composition. No text.`;
 try{
-const res=await fetch('https://api.jiekou.ai/v1/images/generations',{
+const res=await fetch('https://api.highwayapi.ai/v3/gpt-image-2-text-to-image',{
 method:'POST',
 headers:{'Content-Type':'application/json','Authorization':'Bearer sk_T0j2q5MKukBqeg8yQkGx6FDGGzVHl1S1BmoMmK9JwP0'},
 body:JSON.stringify({model:'gpt-image-2',prompt:prompt,size:'1024x1024',n:1})
 });
-if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||('HTTP '+res.status))}
-const data=await res.json();
+if(!res.ok){const txt=await res.text();let errMsg='HTTP '+res.status;try{const ej=JSON.parse(txt);if(ej.error)errMsg+=' '+(ej.error.message||ej.error)}catch(_){errMsg+=' '+txt.slice(0,200)}throw new Error(errMsg)}
+const data=await res.json();console.log('[AwkIcon] response keys:',Object.keys(data),'data:',JSON.stringify(data).slice(0,300));
 if(data.data?.[0]?.url)return data.data[0].url;
 if(data.data?.[0]?.b64_json)return 'data:image/png;base64,'+data.data[0].b64_json;
 return null;
