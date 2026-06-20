@@ -1894,7 +1894,7 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 【玩家】Lv.${p.level} HP:${Math.floor(p.hp)}/${p.maxHp} 攻击:${Math.floor(p.atk)} 防御:${Math.floor(p.def)} 幸运:${p.lk}
 【背包物品】${bagItems}
 【技能】${getSkillSummary()}
-【已遭遇】${G.themes.slice(-6).join(',')||'无'}（避免重复！）
+【已遭遇】${[...new Set([...G.themes,...(G._monthThemes||[])])].slice(-10).join(',')||'无'}（本月内绝对不要重复！）
 
 要求：
 1. 事件要有创意和沉浸感，不要千篇一律
@@ -1927,11 +1927,12 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 只输出JSON:{"theme":"...","title":"3-6字","description":"2-3句叙事","choices":[{"label":"选项","result":"结果","effects":{}},{"label":"","result":"","effects":{},"check":{"stat":"atk","dc":8,"type":"roll"},"success":{"gold":50},"failure":{"damage":15}},{"label":"","result":"","effects":{}}]}`;
 let evt=await callAI(prompt,20000),isAI=true;
 if(!evt||!evt.title||!evt.choices||!evt.choices.length){
-console.warn('[Event] AI returned invalid event, showing retry');
-area.innerHTML='<div class="ecard fi" style="text-align:center"><div class="etitle" style="color:var(--t3)">命运之线暂时中断...</div><div class="edesc" style="color:var(--t2);font-size:.9em">AI 叙事者暂时失去了灵感，请稍后重试</div><button class="btn-big" onclick="triggerEvent()" style="margin-top:12px">重新连接命运</button></div>';
-return}
+console.warn('[Event] AI returned invalid event, falling back to preset');
+evt=_getPresetEvent(G.evtIdx);isAI=false;
+if(!evt){area.innerHTML='<div class="ecard fi" style="text-align:center"><div class="etitle" style="color:var(--t3)">命运之线暂时中断...</div><div class="edesc" style="color:var(--t2);font-size:.9em">AI 叙事者暂时失去了灵感，请稍后重试</div><button class="btn-big" onclick="triggerEvent()" style="margin-top:12px">重新连接命运</button></div>';return}
+}
 G.aiEvts++;
-if(isAI&&evt.theme){const _tKey=evt.theme+'_'+evt.title;if(!G.themes.includes(_tKey))G.themes.push(_tKey)}
+if(isAI&&evt.theme){const _tKey=evt.theme+'_'+evt.title;if(!G.themes.includes(_tKey))G.themes.push(_tKey);if(!G._monthThemes.includes(_tKey))G._monthThemes.push(_tKey)}
 if(evt.oneShot){const _osKey=evt.theme+'_'+evt.title;if(!G.seenOneShots)G.seenOneShots=[];if(!G.seenOneShots.includes(_osKey))G.seenOneShots.push(_osKey)}
 (evt.choices||[]).forEach(ch=>{const ef=ch.effects||{};
 if(ef.heal)ef.heal=cl(Math.round(ef.heal),0,Math.floor(p.maxHp*.4));
@@ -2659,11 +2660,10 @@ _fillNext=startIdx+i+1;
 G.preEvts++}
 console.log('[Preload] Presets filled:',_evtQueue.length,'events');
 // Background: try AI enhancement (non-blocking)
-_genAIBackground(count).catch(e=>console.warn('[Preload] AI bg:',e));
+_genAIBackground(startIdx,count).catch(e=>console.warn('[Preload] AI bg:',e));
 }
 
-async function _genAIBackground(count){
-const startIdx=G.evtIdx;
+async function _genAIBackground(startIdx,count){
 for(let i=0;i<count;i++){
 const slot=startIdx+i;
 if(_pendingAI[slot]||_evtQueue.some(e=>e&&e._slot===slot&&e._isAI))continue;
@@ -2707,7 +2707,7 @@ ${G.region?'【当前地区】'+REGIONS[G.region].icon+REGIONS[G.region].name+' 
 【玩家】Lv.${p.level} HP:${Math.floor(p.hp)}/${p.maxHp} 攻击:${Math.floor(p.atk)} 防御:${Math.floor(p.def)} 幸运:${p.lk}
 【背包物品】${bagItems}
 【技能】${getSkillSummary()}
-【已遭遇】${G.themes.slice(-6).join(',')||'无'}（避免重复！）
+【已遭遇】${[...new Set([...G.themes,...(G._monthThemes||[])])].slice(-10).join(',')||'无'}（本月内绝对不要重复！）
 
 要求：
 1. 事件要有创意和沉浸感，不要千篇一律
