@@ -60,6 +60,7 @@ body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);co
 .awk-card{background:var(--bg2);border:2px solid var(--gold);border-radius:16px;padding:28px;max-width:400px;width:100%;text-align:center;animation:awkCardIn .8s cubic-bezier(.2,.8,.3,1.2)}
 @keyframes awkCardIn{0%{opacity:0;transform:scale(.7) translateY(30px)}60%{opacity:1;transform:scale(1.03) translateY(-5px)}100%{transform:scale(1) translateY(0)}}
 .awk-card .emoji{font-size:4em;margin-bottom:8px;animation:awkFloat 3s ease-in-out infinite}.awk-card .name{font-size:1.6em;color:var(--gold);font-weight:bold}.awk-card .title{font-size:1em;color:var(--t2);margin-bottom:12px}
+.awk-icon-wrap{width:140px;height:140px;margin:0 auto 12px;border-radius:50%;overflow:hidden;border:3px solid var(--gold);box-shadow:0 0 20px color-mix(in srgb,var(--gold) 40%,transparent),0 0 40px color-mix(in srgb,var(--gold) 15%,transparent);animation:awkFloat 3s ease-in-out infinite}.awk-icon{width:100%;height:100%;object-fit:cover;display:block}
 .awk-card .passive{background:var(--bgc);border-radius:8px;padding:12px;margin:12px 0;text-align:left;font-size:.9em;line-height:1.6}.awk-card .passive .pn{color:var(--org);font-weight:bold}
 .awk-card .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;text-align:left;font-size:.85em;margin:12px 0}.awk-card .stats .sl{color:var(--t3)}.awk-card .stats .sv{color:var(--t1);font-weight:bold}
 .btn-big{background:linear-gradient(135deg,var(--goldd),var(--gold));color:#111;border:none;border-radius:10px;padding:14px 40px;font-size:1.1em;font-weight:bold;cursor:pointer;margin-top:18px;transition:all .3s}.btn-big:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(240,192,64,.3)}
@@ -1402,6 +1403,45 @@ function triggerAwkFlash() {
   setTimeout(() => flash.remove(), 500);
 }
 
+async function generateAwkIcon(awk){
+const dirName=DIR_NAMES[awk.direction]||awk.direction;
+const dirColor=DIR_COLORS[awk.direction]||'#f0c040';
+const prompt=`Square game character portrait icon, dark fantasy RPG art style. Character name: ${awk.name}, title: ${awk.title||'unknown'}, element: ${dirName}. Core symbol: ${awk.emoji}. Style: mystical dark background, glowing ${dirColor} energy aura, detailed digital illustration, centered portrait composition. No text.`;
+try{
+const res=await fetch('https://api.jiekou.ai/v1/images/generations',{
+method:'POST',
+headers:{'Content-Type':'application/json','Authorization':'Bearer sk_T0j2q5MKukBqeg8yQkGx6FDGGzVHl1S1BmoMmK9JwP0'},
+body:JSON.stringify({model:'gpt-image-1',prompt:prompt,size:'1024x1024',n:1})
+});
+if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||('HTTP '+res.status))}
+const data=await res.json();
+if(data.data?.[0]?.url)return data.data[0].url;
+if(data.data?.[0]?.b64_json)return 'data:image/png;base64,'+data.data[0].b64_json;
+return null;
+}catch(e){console.warn('[AwkIcon] failed:',e.message);return null}
+}
+
+let _awakenPreload=null;
+async function _preloadDuringAwaken(){
+_awakenPreload=null;
+const queue=[];const aiPending={};
+G._monthThemes=G._monthThemes||[];
+for(let i=0;i<3;i++){const evt=_getPresetEvent(i);queue.push(evt)}
+_awakenPreload={queue:[...queue],monthThemes:[...G._monthThemes]};
+const aiPromises=queue.map((_,i)=>{
+const prompt=`为Roguelike游戏生成一个独特事件，主题:${queue[i].theme}，标题:${queue[i].title}，地区:${G.region||'未知'}。保持类似风格但加入更多叙事细节。输出JSON格式同预设事件。`;
+return callAI(prompt,15000).then(result=>{
+if(result&&result.theme&&result.title){
+const key=result.theme+'_'+result.title;
+if(!G._monthThemes.includes(key))G._monthThemes.push(key);
+aiPending[i]=result;
+_awakenPreload.aiPending={...aiPending};
+}
+}).catch(()=>{});
+});
+await Promise.all(aiPromises);
+}
+
 async function doAwaken(){
 const c=$('awkCircle');
 const wrap=$('awkWrap');
@@ -1456,14 +1496,18 @@ if(awk.passiveMechanics.penalties)awk.passiveMechanics.penalties=_clampPM(awk.pa
 }
 awk.narrativeStyle=awk.narrativeStyle||'通用冒险';awk._isAI=isAI;G.awk=awk;
 if(st.parentNode)st.parentNode.removeChild(st);
-// Start background AI map generation while player views awakening card
+// Start background tasks in parallel: AI maps + icon generation + event preload
 generateAIMaps();
+const _iconP=generateAwkIcon(awk);
+_preloadDuringAwaken().catch(()=>{});
 // Stage 3: Burst — flash + particles explosion
 triggerAwkFlash();
 burstAwkParticles(c, 16, dirColor);
 c.classList.remove('s1','s2');c.classList.add('burst');
 c.querySelectorAll('.awk-particle,.awk-glow').forEach(el=>el.remove());
 await sleep(700);
+// Wait for icon generation (likely still in progress or already done)
+try{const iconUrl=await _iconP;if(iconUrl)awk.iconUrl=iconUrl}catch(e){}
 // Stage 4: Card reveal
 showAwkCard(awk);
 }
@@ -1472,8 +1516,11 @@ function showAwkCard(a){
 const wrap=$('awkWrap'),ptL={dual_edge:'⚔️ 双刃被动',positive:'✨ 纯正面',none:'💪 无被动(高属性)'}[a.passiveType]||'无',clr=DIR_COLORS[a.direction]||'#f0c040';
 const aiT=a._isAI?'<span style="background:var(--pur);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px;animation:pulse 2s infinite">AI 生成</span>':'<span style="background:var(--t3);color:#fff;font-size:.7em;padding:2px 8px;border-radius:4px">预设模板</span>';
 const pw=!a._isAI?'<div style="background:rgba(224,64,80,.1);border:1px solid var(--redd);border-radius:8px;padding:8px;margin:10px 0;font-size:.8em;color:var(--red)">⚠️ AI生成失败，使用了预设模板。<br>原因: '+(a._errDetail||'未知')+'<br><a href="#" onclick="toggleSettings();return false" style="color:var(--blu)">打开设置(⚙️)</a> 切换模型为 DeepSeek 或检查网络</div>':'';
+const iconHTML=a.iconUrl
+  ?`<div class="awk-icon-wrap" style="border-color:${clr}"><img class="awk-icon" src="${a.iconUrl}" alt="${a.name}"><div class="emoji" style="display:none">${a.emoji}</div></div>`
+  :`<div class="emoji">${a.emoji}</div>`;
 wrap.innerHTML=`${pw}<div class="awk-card" style="border-color:${clr}"><div style="display:flex;justify-content:center;margin-bottom:6px">${aiT}</div>
-<div class="emoji">${a.emoji}</div><div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
+${iconHTML}<div class="name">${a.name}</div><div class="title">${a.title||''} — ${DIR_NAMES[a.direction]||''}方向</div>
 <div style="color:var(--t2);font-size:.85em;margin:8px 0">${a.description||''}</div>
 <div class="passive"><span class="pn">${ptL}: ${a.passiveName}</span><br>${a.passiveDescription}</div>
 <div class="stats">
@@ -1487,6 +1534,8 @@ wrap.innerHTML=`${pw}<div class="awk-card" style="border-color:${clr}"><div styl
 <div><span class="sl">幸运 </span><span class="sv">${a.initialStats.luck}</span></div>
 <div><span class="sl">速度 </span><span class="sv spd">${a.initialStats.speed||10}</span></div>
 </div><button class="btn-big" onclick="confirmAwk()">确认觉醒，进入裂隙</button></div>`;
+// Handle icon load error: hide broken img, show emoji fallback
+if(a.iconUrl){const img=wrap.querySelector('.awk-icon');if(img){img.onerror=function(){this.style.display='none';const em=this.parentNode.querySelector('.emoji');if(em)em.style.display='';}}}
 }
 
 async function confirmAwk(){
@@ -1505,6 +1554,7 @@ if(!G.playerName)G.playerName=G.awk?G.awk.name:'冒险者';
 _evtQueue=[];_fillPromise=null;_preloadedMonsters={};_pendingAI={};_fillNext=0;
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
 G.skCD={};G.bag=[];G.equipped={weapon:null,armor:null,accessory:null,special:null};G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.seenOneShots=[];G._monthThemes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G._regionVisits={};G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};G.debuffs={};G.battleSpeed=parseInt(localStorage.getItem('rift_bspd'))||1;
+if(_awakenPreload){_evtQueue=_awakenPreload.queue||[];G._monthThemes=_awakenPreload.monthThemes||[];_pendingAI=_awakenPreload.aiPending||{};_awakenPreload=null}
 await showTrans('踏入命运裂隙...',1200);window._tutSkipRegion=true;showRegionPicker();setTimeout(()=>showTutorial('awk'),800);
 }
 
