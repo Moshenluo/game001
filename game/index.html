@@ -2545,12 +2545,13 @@ function incrementRegionVisit(regionId){
 
 function _getPresetEvent(slotIdx){
 const monthSet=G._monthThemes||[];const globalSet=G.themes||[];const oneShots=G.seenOneShots||[];
-let pool=PRESET_EVENTS.filter(e=>{const key=e.theme+'_'+e.title;if(monthSet.includes(key))return false;if(e.oneShot&&oneShots.includes(key))return false;return true});
-if(pool.length===0)pool=PRESET_EVENTS.filter(e=>!(e.oneShot&&oneShots.includes(e.theme+'_'+e.title)));
+let pool=PRESET_EVENTS.filter(e=>{const key=e.theme+'_'+e.title;if(monthSet.includes(key))return false;if(globalSet.includes(key))return false;if(e.oneShot&&oneShots.includes(key))return false;return true});
+if(pool.length===0)pool=PRESET_EVENTS.filter(e=>{const key=e.theme+'_'+e.title;if(monthSet.includes(key))return false;if(e.oneShot&&oneShots.includes(key))return false;return true});
+if(pool.length===0)pool=PRESET_EVENTS.filter(e=>!monthSet.includes(e.theme+'_'+e.title));
 if(pool.length===0)pool=PRESET_EVENTS;
 const evt=JSON.parse(JSON.stringify(weightedPick(pool)));
 evt._isPreset=true;evt._slot=slotIdx;
-const key=evt.theme+'_'+evt.title;if(!monthSet.includes(key))monthSet.push(key);
+const key=evt.theme+'_'+evt.title;if(!monthSet.includes(key))monthSet.push(key);if(!globalSet.includes(key))globalSet.push(key);
 return evt;
 }
 
