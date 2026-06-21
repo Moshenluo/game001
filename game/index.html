@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
 <title>命运裂隙 - Rift of Fate | AI Roguelike</title>
 <style>
-:root{--bg:#0a0e17;--bg2:#131a2b;--bgc:#1a2340;--bgch:#222e50;--t1:#e8eaf0;--t2:#8892a8;--t3:#5a6478;--gold:#f0c040;--goldd:#a08020;--red:#e04050;--redd:#802030;--grn:#40c070;--grnd:#208040;--blu:#4080e0;--blud:#204080;--pur:#a050e0;--purd:#603080;--org:#e08030;--bdr:#2a3555;--shd:rgba(0,0,0,.5)}
+:root{--bg:#0a0e17;--bg2:#131a2b;--bgc:#1a2340;--bgch:#222e50;--t1:#e8eaf0;--t2:#8892a8;--t3:#5a6478;--gold:#f0c040;--goldd:#a08020;--red:#e04050;--redd:#802030;--grn:#40c070;--grnd:#208040;--blu:#4080e0;--blud:#204080;--pur:#a050e0;--purd:#603080;--org:#e08030;--cyan:#00bcd4;--bdr:#2a3555;--shd:rgba(0,0,0,.5)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
 .scr{display:none;min-height:100vh;min-height:100dvh;padding:20px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right));padding-bottom:max(20px,env(safe-area-inset-bottom));max-width:920px;margin:0 auto;flex-direction:column;align-items:center;justify-content:center}
@@ -908,7 +908,7 @@ const PRESET_SKILLS=[
 {name:'闪避步',cat:'survival',emoji:'💨',desc:'极速闪避下一次攻击',cd:2,cost:8,evade:true},{name:'治愈术',cat:'survival',emoji:'💚',desc:'调动生命能量恢复体力',cd:3,cost:15,healAmt:25},
 {name:'战吼',cat:'support',emoji:'📯',desc:'震撼战吼提升攻击力',cd:4,cost:15,atkBuff:6,dur:3},{name:'吸血斩',cat:'support',emoji:'🩸',desc:'攻击时吸取敌人生命力',cd:3,cost:12,steal:0.3,dmg:10},
 {name:'幸运星',cat:'support',emoji:'⭐',desc:'提升暴击率',cd:5,cost:20,critBoost:0.3,dur:4},{name:'回春术',cat:'survival',emoji:'🌸',desc:'持续恢复生命值',cd:4,cost:15,hot:8,dur:3},
-{name:'聚能',cat:'energy',emoji:'🌀',desc:'回复大量能量',cd:3,cost:0,energyGain:25},
+{name:'聚能',cat:'energy',emoji:'🌀',desc:'回复大量能量',cd:3,cost:5,energyGain:25},
 {name:'疾风步',cat:'support',emoji:'💨',desc:'提升速度5点持续全场',cd:4,cost:10,speedBuff:5},
 {name:'闪击',cat:'damage',emoji:'⚡',desc:'必定先手的快速攻击',cd:3,cost:18,dmg:12,firstStrike:true},
 {name:'迟缓术',cat:'support',emoji:'🐌',desc:'降低敌人行动速度',cd:3,cost:12,slowChance:0.6}
@@ -1252,6 +1252,21 @@ let G={diff:null,dc:null,month:1,evtIdx:0,p:null,awk:null,skCD:{},bag:[],bagMax:
 // Check if worker proxy is available (for leaderboard/achievements/save only)
 function isWorkerAvailable(){return WORKER_URL&&!WORKER_URL.includes('YOUR-SUBDOMAIN')&&!WORKER_URL.includes('xxx')&&(WORKER_URL.includes('workers.dev')||WORKER_URL.includes('localhost')||WORKER_URL.includes('127.0.0.1')||WORKER_URL.includes('mingyunliexi.online'))}
 
+// AI failure tracking — auto-switch to DeepSeek after consecutive failures
+let _aiFailCount=0;
+function _aiSuccess(){_aiFailCount=0}
+function _aiFail(){
+_aiFailCount++;
+if(_aiFailCount>=3&&CFG.model!=='deepseek'){
+console.warn('[AI] '+_aiFailCount+' consecutive failures, auto-switching to DeepSeek');
+const oldModel=CFG.model;CFG.model='deepseek';
+try{localStorage.setItem('rift_cfg',JSON.stringify({model:'deepseek',temp:CFG.temp,workerUrl:WORKER_URL}))}catch(_){}
+// Show toast notification
+const c=$('achToasts');if(c){const t=document.createElement('div');t.className='ach-toast';
+t.innerHTML='<div class="at-icon">⚠️</div><div class="at-body"><div class="at-label">AI 自动切换</div><div class="at-title">'+oldModel+' 不可用</div><div class="at-desc">已自动切换到 DeepSeek 模型</div></div>';
+c.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .5s';setTimeout(()=>t.remove(),600)},4000)}
+_aiFailCount=0}}
+
 async function callAI(prompt,timeout=20000,_modelOverride){
 const _doCall=async(model)=>{
 const m=model||CFG.model;const ep=getAIEndpoint(m);
@@ -1284,7 +1299,7 @@ if(s>=0&&e>s)jsonStr=text.substring(s,e);
 }
 function _repairJSON(str){str=str.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/.*$/gm,'');const firstChar=str.trim()[0];let inS=false,q='';let out='';for(let i=0;i<str.length;i++){const c=str[i],p=i>0?str[i-1]:'';if(inS){if(c===q&&p!=='\\'){out+='"';inS=false}else{out+=c}continue}if(c==='"'||c==="'"){inS=true;q=c;out+='"';continue}out+=c}str=out;str=str.replace(/(['"])?([a-zA-Z_]\w*)(['"])?\s*:/g,function(m,p1,k,p2){if(p1==='\"'||p1==="'")return m;return '"'+k+'":'});str=str.replace(/,(\s*[}\]])/g,'$1');try{return JSON.parse(str)}catch(_){return null}}
 if(!jsonStr){console.warn('[AI] No JSON found. Raw response (500 chars):',text.substring(0,500));throw new Error('No JSON found in AI response')}
-let parsed;try{parsed=JSON.parse(jsonStr)}catch(_){parsed=_repairJSON(jsonStr);if(!parsed){console.warn('[AI] JSON repair failed. Extracted:',jsonStr.substring(0,300));throw new Error('JSON parse failed after repair')}}return parsed;
+let parsed;try{parsed=JSON.parse(jsonStr)}catch(_){parsed=_repairJSON(jsonStr);if(!parsed){console.warn('[AI] JSON repair failed. Extracted:',jsonStr.substring(0,300));throw new Error('JSON parse failed after repair')}}_aiSuccess();return parsed;
 }catch(e){clearTimeout(timer);throw e}
 };
 // Try primary model, then fallback with retry on JSON failure
@@ -1317,7 +1332,7 @@ try{return await _tryCall('deepseek')}catch(e2){
 const errMsg2=e2.name==='AbortError'?'timeout':e2.message;
 console.warn('[AI] Fallback also failed:',errMsg2);
 window._lastAIErr+=' → fallback: '+errMsg2;
-return null}}
+_aiFail();return null}}
 return null}
 }
 
@@ -1334,13 +1349,13 @@ if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d
 const data=await res.json();return data.choices?.[0]?.message?.content||'';
 }catch(e){clearTimeout(timer);throw e}
 };
-try{return await _doTextCall(CFG.model)}catch(e){
+try{const _txtResult=await _doTextCall(CFG.model);_aiSuccess();return _txtResult}catch(e){
 const errMsg=e.name==='AbortError'?'timeout':e.message;
 console.warn('[AI Text] FAIL:',errMsg);
 // Always try DeepSeek on any error when using non-DeepSeek model
 if(CFG.model!=='deepseek'){
-try{return await _doTextCall('deepseek')}catch(e2){console.warn('[AI Text fallback]',e2.message);return ''}}
-return ''}
+try{const _fbResult=await _doTextCall('deepseek');_aiSuccess();return _fbResult}catch(e2){console.warn('[AI Text fallback]',e2.message);_aiFail();return ''}}
+_aiFail();return ''}
 }
 
 // AI connectivity test
@@ -1573,14 +1588,13 @@ G.p={hp:s.hp,maxHp:s.hp,atk:s.atk,def:s.def,en:s.energy,maxEn:s.energy,cr:s.crit
 const _meta=getMeta();const _unlocked=new Set(_meta.unlocked);
 META_UNLOCKS.forEach(u=>{if(_unlocked.has(u.id)){if(u.effect.hp)G.p.maxHp+=u.effect.hp;if(u.effect.atk)G.p.atk+=u.effect.atk;if(u.effect.def)G.p.def+=u.effect.def;if(u.effect.lk)G.p.lk+=u.effect.lk}});
 G.p.hp=G.p.maxHp;
-if(_unlocked.has('gold50'))G.gold=50;
 G.currentAgeMonth=START_AGE*12;
 G.lifespanMonths=(DIR_LIFESPAN[dir]||40)*12;
 G.breakthroughTier=0;G.breakthroughPending=false;G.starKills={};
 if(!G.playerName)G.playerName=G.awk?G.awk.name:'冒险者';
 _evtQueue=[];_fillPromise=null;_preloadedMonsters={};_pendingAI={};_fillNext=0;
 G.month=1;G.evtIdx=0;G.kills=0;G.evts=0;G.aiEvts=0;G.preEvts=0;G.dmgDealt=0;G.healing=0;G.crits=0;G.dodges=0;G.aiSkills=0;G.totalSkills=0;
-G.skCD={};G.bag=[];G.equipped={weapon:null,armor:null,accessory:null,special:null};G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.seenOneShots=[];G._monthThemes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G._regionVisits={};G.gold=0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};G.debuffs={};G.skillUsage={};G.battleSpeed=parseInt(localStorage.getItem('rift_bspd'))||1;
+G.skCD={};G.bag=[];G.equipped={weapon:null,armor:null,accessory:null,special:null};G.maxSlot=9;G.nextSkillLv=10;G.immortalUsed=false;G.themes=[];G.seenOneShots=[];G._monthThemes=[];G.tempBuffs={};G.region=null;G.aiMonsters=[];G.regionsVisited=[];G._regionVisits={};G.gold=_unlocked.has('gold50')?50:0;G.totalGold=0;G.currentMapData=null;G.deathNarrative='';G.bestiary={};G.debuffs={};G.skillUsage={};G.battleSpeed=parseInt(localStorage.getItem('rift_bspd'))||1;
 if(_awakenPreload){_evtQueue=_awakenPreload.queue||[];G._monthThemes=_awakenPreload.monthThemes||[];_pendingAI=_awakenPreload.aiPending||{};_awakenPreload=null}
 await showTrans('踏入命运裂隙...',1200);window._tutSkipRegion=true;showRegionPicker();setTimeout(()=>showTutorial('awk'),800);
 }
@@ -2051,7 +2065,7 @@ const ef=ch.effects||{},dc=G.dc;let texts=[];
 const _evtBB=getBagBonuses();const _evtMaxHp=G.p.maxHp+_evtBB.maxHp;const _evtMaxEn=G.p.maxEn+_evtBB.maxEn;
 if(ef.heal){let h=Math.floor(Number(ef.heal)*dc.reward*dc.heal)||0;if(G.p.hp>G.p.baseHp*1.5)h=Math.floor(h*.5);G.p.hp=Math.min(_evtMaxHp,G.p.hp+h);G.healing+=h;if(h)texts.push(`<span class="pos">+${h} 生命</span>`)}
 if(ef.atk){let a=Math.floor(Number(ef.atk)*dc.reward)||0;G.p.atk+=a;if(a)texts.push(`<span class="pos">+${a} 攻击</span>`)}
-if(ef.def){let d=Math.floor(Number(ef.def)*dc.reward)||0;G.p.def+=d;if(d)texts.push(`<span class="pos">+${d} 防御</span>`)}
+if(ef.def&&Number(ef.def)>0){let d=Math.floor(Number(ef.def)*dc.reward)||0;G.p.def+=d;if(d)texts.push(`<span class="pos">+${d} 防御</span>`)}
 if(ef.energy){let e=Math.floor(Number(ef.energy)*dc.reward)||0;G.p.en=Math.min(_evtMaxEn,G.p.en+e);if(e)texts.push(`<span class="pos">+${e} 能量</span>`)}
 if(ef.luck){let l=Math.floor(Number(ef.luck))||0;G.p.lk=Math.min(30,G.p.lk+l);if(l)texts.push(`<span class="pos">+${l} 幸运</span>`)}
 if(ef.critRate){G.p.cr=Math.min(.8,G.p.cr+Number(ef.critRate));texts.push(`<span class="pos">暴击+${(Number(ef.critRate)*100).toFixed(1)}%</span>`)}
@@ -3543,7 +3557,7 @@ else if(sk.lifesteal){let dmg=_skDmg(enemy.atk);p.hp-=dmg;const heal=Math.floor(
 else if(sk.healPct){const heal=Math.floor(enemy.maxHp*sk.healPct);enemy.hp=Math.min(enemy.maxHp,enemy.hp+heal);addL(`  💚 回复 ${heal} HP!`,'ls')}
 else if(sk.defBuff){eDefBuff=sk.defBuff;eDefDur=sk.dur||3;addL(`  🛡️ 防御提升!`,'ls')}
 else if(sk.instantKill){if(Math.random()<sk.instantKill&&p.hp/p.maxHp<0.3){p.hp=0;addL(`  💀 死亡凝视! 灵魂被抽离!`,'le')}else{let dmg=_skDmg(enemy.atk);p.hp-=dmg;addL(`  凝视造成 ${dmg} 伤害`,'le')}}
-else if(sk.atkDebuff){const rawMult=sk.mult||1.0;let dmg=_skDmg(Math.floor(enemy.atk*rawMult));p.hp-=dmg;pAtkBuff=Math.max(pAtkBuff-sk.atkDebuff,-0.5);addL(`  👻 造成${dmg}伤害, 你的攻击降低!`,'le')}
+else if(sk.atkDebuff){const rawMult=sk.mult||1.0;let dmg=_skDmg(Math.floor(enemy.atk*rawMult));p.hp-=dmg;pAtkBuff=Math.max(pAtkBuff-sk.atkDebuff,-0.5);pAtkDur=Math.max(pAtkDur,3);addL(`  👻 造成${dmg}伤害, 你的攻击降低(${pAtkDur}回合)!`,'le')}
 else{let dmg=_skDmg(enemy.atk);p.hp-=dmg;addL(`  造成 ${dmg} 伤害`,'le')}
 tryApplyMonsterDebuff(enemy.key);
 return true;}
@@ -3813,6 +3827,9 @@ await _sl(800);
 showContinueModal({icon:'🏃',title:'逃跑成功',color:'var(--org)',
 contentHTML:`<div style="margin-bottom:8px">你成功逃离了战斗。</div><div style="color:var(--red)">损失 ${hpLoss} HP</div><div style="color:var(--org);margin-top:4px">士气低落: ATK-1 (持续2场战斗)</div>`,
 onContinue:()=>advanceEvt()});
+// Cleanup temp buffs on flee (same as battle-end cleanup)
+if(G.tempBuffs.cd){p.cd-=G.tempBuffs.cd}
+const _mlFlee=(G.tempBuffs.moraleLoss||0)-1;G.tempBuffs={};if(_mlFlee>0)G.tempBuffs.moraleLoss=_mlFlee;G._skSpdBuff=0;
 updateUI();return;// Exit runBattle entirely
 }else{
 // Failed - wasted turn, enemy gets free attack
@@ -3910,7 +3927,7 @@ if(isBreakthrough){
 addL(`--- 突破成功! ---`,'ls');
 await _sl(1000);
 await completeBreakthrough(G._btStars||3);
-}else{battleWin(enemy)}
+}else{await battleWin(enemy)}
 }else{
 addL(`--- 你被击败了... ---`,'ls');
 clearAllDebuffs();
@@ -3940,7 +3957,7 @@ ${extraHTML}
 <button class="btn-big" style="margin-top:14px;width:100%" id="vContBtn">继续</button>
 </div>`;
 document.body.appendChild(ov);
-$('vContBtn').onclick=function(){ov.style.opacity='0';ov.style.transition='opacity .3s';setTimeout(()=>{ov.remove();if(data.onContinue)data.onContinue()},300)};
+$('vContBtn').onclick=function(){this.disabled=true;this.style.opacity='.5';ov.style.opacity='0';ov.style.transition='opacity .3s';setTimeout(()=>{ov.remove();if(data.onContinue)data.onContinue()},300)};
 return ov;
 }
 
@@ -3953,7 +3970,7 @@ ${data.icon?`<div class="v-icon">${data.icon}</div>`:''}
 <button class="btn-big" style="margin-top:14px;width:100%" id="vContBtn">${data.btnText||'继续'}</button>
 </div>`;
 document.body.appendChild(ov);
-$('vContBtn').onclick=function(){ov.style.opacity='0';ov.style.transition='opacity .3s';setTimeout(()=>{ov.remove();if(data.onContinue)data.onContinue()},300)};
+$('vContBtn').onclick=function(){this.disabled=true;this.style.opacity='.5';ov.style.opacity='0';ov.style.transition='opacity .3s';setTimeout(()=>{ov.remove();if(data.onContinue)data.onContinue()},300)};
 return ov;
 }
 
@@ -4173,6 +4190,8 @@ const MAP_TEMPLATES=[
 ];
 
 async function generateAIMaps(){
+if(G._genMapsLock)return;G._genMapsLock=true;
+try{
 G.aiMaps=[];
 const ageYears=getAgeYears();
 const hasTreasMap=G.bag.some(bi=>bi.id==='treasMap');
@@ -4225,6 +4244,7 @@ requireTreasMap:requireTreas
 if(!G.aiMaps.length)fallbackMaps();
 // Generate AI monsters for first map as preview
 if(G.aiMaps[0])generateAIMonstersForMap(G.aiMaps[0]);
+}finally{G._genMapsLock=false}
 }
 
 function fallbackMaps(){
@@ -4891,6 +4911,7 @@ equipped:{weapon:G.equipped&&G.equipped.weapon?G.equipped.weapon.uid:null,armor:
 isBoss:G.isBoss,maxSlot:G.maxSlot,nextSkillLv:G.nextSkillLv,
 themes:G.themes,seenOneShots:G.seenOneShots||[],starKills:G.starKills,bestiary:G.bestiary,debuffs:G.debuffs,
 skillUsage:G.skillUsage||{},tempBuffs:G.tempBuffs||{},_monthThemes:G._monthThemes||[],_monthTitles:G._monthTitles||[],immortalUsed:G.immortalUsed||false,
+region:G.region,currentMapData:G.currentMapData,
 version:2
 };
 // Always save locally as backup
@@ -4966,6 +4987,7 @@ if(!sd.equipped){G.bag.forEach(item=>{const slot=getItemSlot(item.id);if(slot&&!
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
 G.themes=sd.themes||[];G.seenOneShots=sd.seenOneShots||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
 G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G._monthTitles=sd._monthTitles||[];G.immortalUsed=sd.immortalUsed||false;
+G.region=sd.region||null;G.currentMapData=sd.currentMapData||null;
 G.awk=sd.awk;G.p=sd.p;
 G.playerName=sd.playerName||(G.awk?G.awk.name:'冒险者');
 document.getElementById('loadModal').classList.remove('on');
@@ -5001,6 +5023,7 @@ if(sd.equipped){for(const slot of['weapon','armor','accessory','special']){if(sd
 G.isBoss=sd.isBoss||false;G.maxSlot=sd.maxSlot||9;G.nextSkillLv=sd.nextSkillLv||10;
 G.themes=sd.themes||[];G.seenOneShots=sd.seenOneShots||[];G.starKills=sd.starKills||{};G.bestiary=sd.bestiary||{};G.debuffs=sd.debuffs||{};
 G.skillUsage=sd.skillUsage||{};G.tempBuffs=sd.tempBuffs||{};G._monthThemes=sd._monthThemes||[];G._monthTitles=sd._monthTitles||[];G.immortalUsed=sd.immortalUsed||false;
+G.region=sd.region||null;G.currentMapData=sd.currentMapData||null;
 G.awk=sd.awk;G.p=sd.p;G.playerName=sd.playerName||(G.awk?G.awk.name:'冒险者');
 document.getElementById('loadModal').classList.remove('on');
 await showTrans('命运正在重连...',1200);showScr('gameScr');updateUI();advanceEvt();
