@@ -1832,13 +1832,13 @@ updateUI();
 if(G.evtIdx>=5){monthComplete();return}
 if(!isAlive()){gameOver('lifespan');return}
 if(G.evtIdx===4&&G.isBoss){startBattle(true);return}
-// Check for region story event
+// Check for region story event (only once per month — skip if already served)
 const regionId=G.currentMapData?.region||G.region;
 const storyEvents=REGION_STORIES[regionId];
 if(storyEvents){
   const visits=getRegionVisits(regionId);
   const storyEvt=storyEvents.find(s=>s.visit===visits);
-  if(storyEvt&&G.evtIdx<4){
+  if(storyEvt&&G.evtIdx<4&&!(G._monthTitles||[]).includes(storyEvt.title)){
     const evt=JSON.parse(JSON.stringify(storyEvt));
     delete evt.visit;
     evt._isPreset=true;evt._storyEvent=true;evt.oneShot=true;
