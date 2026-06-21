@@ -1055,9 +1055,9 @@ return{star,tier:MONSTER_TIERS[tierIdx],tierIdx};
 }
 function tierStatLabel(star,tierIdx){return star+'星'+MONSTER_TIERS[tierIdx].name}
 // Region level requirements
-const REGION_MIN_LV={wild:1,town:1,road:1,ruins:10,abyss:25};
+const REGION_MIN_LV={wild:1,town:1,road:1,ruins:10,abyss:25,coastal:8,coral:8,ice:15};
 // Dangerous map flag: maps with dangerous=true can spawn monsters 2-4 stars above normal
-const REGION_DANGER={wild:0,town:0,road:0.05,ruins:0.15,abyss:0.25};
+const REGION_DANGER={wild:0,town:0,road:0.05,ruins:0.15,abyss:0.25,coastal:0.10,coral:0.10,ice:0.20};
 const BT_DIFFICULTIES=[
 {name:'简单',icon:'🟢',stars:2,color:'var(--blu)',reward:'基础技能',rewardType:'basic'},
 {name:'中等',icon:'🟡',stars:3,color:'var(--org)',reward:'优质技能',rewardType:'good'},
@@ -1245,6 +1245,7 @@ ruins:{name:'法老亡灵',emoji:'⚰️',hp:160,atk:24,def:11,min:5},
 road:{name:'流浪剑圣',emoji:'⚔️',hp:120,atk:26,def:8,min:5},
 abyss:{name:'深渊领主',emoji:'👿',hp:200,atk:30,def:14,min:5},
 coastal:{name:'深海霸主·克拉肯',emoji:'🦑',hp:150,atk:25,def:10,min:5},
+coral:{name:'深海霸主·克拉肯',emoji:'🦑',hp:150,atk:25,def:10,min:5},
 ice:{name:'永冬之王·冰霜巨龙',emoji:'🐉',hp:180,atk:28,def:13,min:5}
 };
 
@@ -3254,13 +3255,14 @@ const tierScale=tierMult;
 const diffScale=dc.eHp||1;
 if(isBoss){
 const reg=G.currentMapData;
-if(reg&&REGION_BOSSES[G.region]){
-const rb=REGION_BOSSES[G.region];
+const _bossRb=REGION_BOSSES[G.region]||(reg?.region?REGION_BOSSES[reg.region]:null);
+if(reg&&_bossRb){
+const rb=_bossRb;
 const bossHp=Math.floor(rb.hp*starScale*tierScale*diffScale*(dc.boss||1.5)*1.3);
 const bossAtk=Math.floor(rb.atk*starScale*tierScale*(dc.eAtk||1)*1.3);
 const bossDef=Math.floor(rb.def*starScale*0.9);
 return{name:rb.name,emoji:rb.emoji,hp:bossHp,maxHp:bossHp,atk:bossAtk,def:bossDef,spd:R(8,18),
-lv:monsterLv,isBoss:true,isElite:false,region:G.region,stars:monsterStar,tier:tierIdx,tierName,
+lv:monsterLv,isBoss:true,isElite:false,region:(reg?.region)||G.region,stars:monsterStar,tier:tierIdx,tierName,
 skills:[pick(MONSTER_SKILLS),pick(MONSTER_SKILLS.filter(s=>s.type!=='buff'))]};
 }
 const avail=BOSSES.filter(b=>b.min<=G.month);const b=avail.length?avail[avail.length-1]:BOSSES[0];
@@ -3984,7 +3986,7 @@ async function battleWin(enemy){
 try{
 G.kills++;if(enemy.isBoss)G.bossKills++;if(enemy.isNPC)G.npcKills++;
 // Bestiary tracking
-const _bName=enemy.name;if(_bName&&G.bestiary){if(!G.bestiary[_bName])G.bestiary[_bName]={kills:0,firstSeen:G.month,emoji:enemy.emoji||'👹',region:G.region||'unknown',isBoss:!!enemy.isBoss,maxStars:0};G.bestiary[_bName].kills++;if((enemy.stars||1)>G.bestiary[_bName].maxStars)G.bestiary[_bName].maxStars=enemy.stars||1}
+const _bName=enemy.name;if(_bName&&G.bestiary){if(!G.bestiary[_bName])G.bestiary[_bName]={kills:0,firstSeen:G.month,emoji:enemy.emoji||'👹',region:(G.currentMapData?.region)||G.region||'unknown',isBoss:!!enemy.isBoss,maxStars:0};G.bestiary[_bName].kills++;if((enemy.stars||1)>G.bestiary[_bName].maxStars)G.bestiary[_bName].maxStars=enemy.stars||1}
 // Decrement curse counter
 if(G.p.curse&&G.p.curse>0){G.p.curse--;if(G.p.curse===0)addL(`✨ 诅咒已消散`,'lp')}
 // Debuff decay after battle
@@ -4432,9 +4434,16 @@ showTrans(`${map.icon} 前往${map.name}...`,1000).then(()=>startMonth());
 
 // Legacy selectRegion for backward compat
 function selectRegion(id){
-const rg=REGIONS[id];if(!rg)return;
+let rg=REGIONS[id];
+// If id is a geographic key not in REGIONS, find a matching terrain type
+if(!rg&&REGION_GROUPS[id]){
+const loc=WORLD_LOCATIONS.find(l=>l.region===id);
+if(loc){rg=REGIONS[loc.type];if(rg){id=loc.type;G.currentMapData=loc}}
+}
+if(!rg)return;
 G.region=id;G.regionsVisited.push(id);
 incrementRegionVisit(id);
+if(G.currentMapData?.region)incrementRegionVisit(G.currentMapData.region);
 // Temple/Shrine auto-purification
 if(id==='soulrest'||id==='soulrest_shrine'||/神殿|神龛|temple|shrine/i.test(rg.name)){
 if(G.debuffs&&Object.keys(G.debuffs).length>0){clearAllDebuffs();addL('✨ 神龛净化了所有负面状态!','lp')}
