@@ -1126,6 +1126,9 @@ monsters:['demon','shadowBeast','wraith','darkMage','abyssalFiend','voidWalker',
 coastal:{name:'珊瑚海域',icon:'🐚',cls:'rg-coastal',desc:'碧蓝的珊瑚礁海岸，海盗与海怪出没。海风中带着咸味和危险。',
 battleRate:0.40,evtWeights:{adventure:3,treasure:3,stranger:3,mystery:2,gamble:2},
 monsters:['crab','siren','seaSerpent','pirate','krakenTent']},
+coral:{name:'珊瑚海域',icon:'🐚',cls:'rg-coastal',desc:'碧蓝的珊瑚礁海岸，海盗与海怪出没。海风中带着咸味和危险。',
+battleRate:0.40,evtWeights:{adventure:3,treasure:3,stranger:3,mystery:2,gamble:2},
+monsters:['crab','siren','seaSerpent','pirate','krakenTent']},
 ice:{name:'永终冰原',icon:'🏔️',cls:'rg-ice',desc:'永冻的冰雪荒原，极光之下隐藏着古老的冰霜巨兽。',
 battleRate:0.45,evtWeights:{adventure:3,mystery:3,trap:3,treasure:2,disaster:2},
 monsters:['iceWolf','frostGiant','blizzardSpirit','iceGolem','polarWyrm']}
@@ -1270,12 +1273,13 @@ _aiFailCount=0}}
 async function callAI(prompt,timeout=20000,_modelOverride){
 const _doCall=async(model)=>{
 const m=model||CFG.model;const ep=getAIEndpoint(m);
+const _body=JSON.stringify({model:m,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:4096});
 const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),timeout);
-const headers={'Content-Type':'application/json'};
 try{
-const res=await fetch(ep,{method:'POST',headers,
-body:JSON.stringify({model:m,messages:[{role:'system',content:'你是一个JSON生成器，只输出合法JSON，不要输出任何其他文字、不要用markdown代码块包裹。'},{role:'user',content:prompt}],temperature:CFG.temp,max_tokens:4096}),signal:ctrl.signal});
+let res=await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:_body,signal:ctrl.signal});
 clearTimeout(timer);
+// 429 retry: wait 3s and try once more
+if(res.status===429){console.warn('[AI] 429 rate limited, retrying in 3s...');await new Promise(r=>setTimeout(r,3000));const ctrl2=new AbortController();const t2=setTimeout(()=>ctrl2.abort(),timeout);res=await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:_body,signal:ctrl2.signal});clearTimeout(t2)}
 if(!res.ok){let d='HTTP '+res.status;try{const ej=await res.json();if(ej.error)d+=' '+ej.error}catch(_){}throw new Error(d)}
 const data=await res.json();let text=data.choices?.[0]?.message?.content||'';
 if(!text)throw new Error('AI returned empty content');
@@ -1824,7 +1828,7 @@ updateUI();
 _evtQueue=[];_pendingAI={};_fillNext=0;preloadNextEvent().catch(()=>{});
 // 15% chance: traveling merchant appears before first event
 if(Math.random()<0.15&&!G._merchantVisited){showTravelingMerchant();return}
-nextEvent();
+nextEvent().catch(e=>{console.error('[nextEvent] error:',e);try{$('evtArea').innerHTML='<div style="padding:40px;text-align:center;color:var(--org)">事件加载异常，点击继续</div><button class="btn-sm btn-ok" style="margin:16px auto;display:block" onclick="advanceEvt()">继续冒险</button>'}catch(_){}});
 }
 
 async function nextEvent(){
@@ -2125,7 +2129,7 @@ if(!_isDup(fresh)){evt=fresh}else{console.warn('[Dedup] Preset rejected:',fresh.
 if(evt)_markEvt(evt);
 G._queuedEvt=evt;
 if(G._queuedEvt)preloadNextEvent().catch(()=>{});
-nextEvent()}
+nextEvent().catch(e=>{console.error('[nextEvent] error:',e);try{$('evtArea').innerHTML='<div style="padding:40px;text-align:center;color:var(--org)">事件加载异常，点击继续</div><button class="btn-sm btn-ok" style="margin:16px auto;display:block" onclick="advanceEvt()">继续冒险</button>'}catch(_){}})}
 
 function consumeFromQueue(){
 const slot=G.evtIdx;
@@ -2719,7 +2723,9 @@ _genAIBackground(startIdx,count).catch(e=>console.warn('[Preload] AI bg:',e));
 }
 
 async function _genAIBackground(startIdx,count){
-for(let i=0;i<count;i++){
+const maxAI=Math.min(count,2);
+for(let i=0;i<maxAI;i++){
+if(i>0)await new Promise(r=>setTimeout(r,1200));
 const slot=startIdx+i;
 if(_pendingAI[slot]||_evtQueue.some(e=>e&&e._slot===slot&&e._isAI))continue;
 try{const aiEvt=await _genPreloadEvent(slot);
@@ -3094,7 +3100,7 @@ addL(`🧳 从行商购买了 ${ITEMS[id].name}`,'lp');updateUI();
 }else{addL(G.gold<pr?'💰 金币不足!':'🎒 背包已满!','le')}
 };
 });
-modal.querySelector('#merchantLeave').onclick=()=>{modal.remove();nextEvent()};
+modal.querySelector('#merchantLeave').onclick=()=>{modal.remove();nextEvent().catch(e=>{console.error('[nextEvent] error:',e);advanceEvt()})};
 }
 
 // ===== SHOP SYSTEM =====
